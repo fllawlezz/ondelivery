@@ -55,6 +55,7 @@ class FiltersSectionTwoCell: UICollectionViewCell, UICollectionViewDelegate, UIC
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! PriceCollectionViewCell;
+        cell.filtersSectionTwo = self;
         switch(indexPath.item){
             case 0:
                 cell.setPriceTitle(price: "$", cellPrice: 1);
@@ -78,4 +79,7 @@ class FiltersSectionTwoCell: UICollectionViewCell, UICollectionViewDelegate, UIC
         return 0;
     }
     
+    func handleSendPriceArray()->[Int]{
+        return pricesArray;
+    }
 }

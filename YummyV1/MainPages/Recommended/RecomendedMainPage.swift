@@ -24,6 +24,7 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     private var scrollViewHeight: CGFloat!;
     private let restDistance = [2,1,4,4.5,5,3,3,3.8,1.2,0.3];
     
+    var filtersData: FiltersDataModel?
     var restaurants:[Restaurant]?
     var advertisedRestaurants:[Restaurant]?
     
@@ -85,6 +86,7 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     @objc func handleFiltersShow(){
         let filtersPage = FiltersPage();
+        filtersPage.recommendedPage = self;
         filtersPage.hidesBottomBarWhenPushed = true;
         self.navigationController?.pushViewController(filtersPage, animated: true);
     }
@@ -130,8 +132,6 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
         darkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         darkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         
-        setUpFilters()
-        
         self.view.addSubview(selectedDarkView);
         selectedDarkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
         selectedDarkView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
@@ -157,32 +157,6 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     }
     
     //MARK: SetupFilters
-    // setup the filters for the user
-    private func setUpFilters(){
-//        dropDownView = UIView();
-//        dropDownView.translatesAutoresizingMaskIntoConstraints = false;
-//        dropDownView.backgroundColor = UIColor.black;
-//        self.view.addSubview(dropDownView);
-//        dropDownView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-//        dropDownView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-//        dropDownView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-//        let dropDownHeightAnchor = dropDownView.heightAnchor.constraint(equalToConstant: 50);
-//        dropDownHeightAnchor.isActive = true;
-//        anchors.append(dropDownHeightAnchor);
-//
-//        filtersView = FiltersView(darkView: darkView, dropDownView: dropDownView, anchors: dropDownHeightAnchor, mainView: self.view, collectionView: self.recommendedList);
-//        filtersView.translatesAutoresizingMaskIntoConstraints = false;
-//        filtersView.backgroundColor = UIColor.black;
-//        filtersView.recommendedPage = self;
-//        self.view.addSubview(filtersView);
-//        //need x,y,width,height
-//        filtersView.leftAnchor.constraint(equalTo: self.view.leftAnchor ).isActive = true;
-//        filtersView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-//        filtersView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-//        filtersView.heightAnchor.constraint(equalToConstant: 50).isActive = true;
-        
-//        self.spinner.stopAnimating();
-    }
     
     
     override func viewDidAppear(_ animated: Bool) {

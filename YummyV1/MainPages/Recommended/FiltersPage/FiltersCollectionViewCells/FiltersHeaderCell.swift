@@ -15,7 +15,7 @@ class FiltersHeaderCell: UICollectionReusableView{
         let titleString = UILabel();
         titleString.translatesAutoresizingMaskIntoConstraints = false;
         titleString.text = "Title goes here";
-        titleString.font = UIFont.montserratBold(fontSize: 16);
+        titleString.font = UIFont.montserratBold(fontSize: 18);
         titleString.textColor = UIColor.black;
         titleString.numberOfLines = 1;
         titleString.minimumScaleFactor = 0.1;

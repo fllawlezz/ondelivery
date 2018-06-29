@@ -10,6 +10,7 @@ import UIKit
 
 class FiltersPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
+    var recommendedPage: RecomendedMainPage!
     var filtersData: FiltersDataModel!
     
     var applyButton: UIButton = {
@@ -70,6 +71,19 @@ class FiltersPage: UIViewController, UICollectionViewDelegate, UICollectionViewD
         applyButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -5).isActive = true;
         applyButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
         
+        applyButton.addTarget(self, action: #selector(handleApplyFilters), for: .touchUpInside);
+        
+    }
+    
+    @objc func handleApplyFilters(){
+        let indexPath = IndexPath(item: 0, section: 1);
+        let cell = searchTypeCollectionView.cellForItem(at: indexPath) as! FiltersSectionTwoCell;
+        let pricesDataArray = cell.handleSendPriceArray();
+        
+        filtersData = FiltersDataModel(searchFilterType: selectedSearchType, priceFilters: pricesDataArray);
+        
+        recommendedPage.filtersData = self.filtersData;
+        self.navigationController?.popViewController(animated: true);
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

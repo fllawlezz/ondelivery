@@ -64,9 +64,7 @@ class PriceCollectionViewCell: UICollectionViewCell{
     func selected(){
         self.priceButton.backgroundColor = UIColor.appYellow;
         self.priceSelected = true;
-        
-        let index = filtersSectionTwo?.pricesArray.count;
-        self.cellPriceArrayIndex = index;
+    
         filtersSectionTwo?.pricesArray.append(self.cellPrice!);
         
     }
@@ -75,7 +73,12 @@ class PriceCollectionViewCell: UICollectionViewCell{
         self.priceButton.backgroundColor = UIColor.white;
         self.priceSelected = false;
         
-        filtersSectionTwo?.pricesArray.remove(at: cellPriceArrayIndex!);
+        let dataArray = filtersSectionTwo?.pricesArray;
+        var count = 0;
+        while(dataArray![count] != cellPrice! && count < (dataArray?.count)!){
+            count+=1;
+        }
+        filtersSectionTwo?.pricesArray.remove(at: count);
     }
     
 }

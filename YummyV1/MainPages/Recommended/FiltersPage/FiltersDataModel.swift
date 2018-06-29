@@ -10,6 +10,11 @@ import Foundation
 class FiltersDataModel:NSObject{
     
     var searchFilterType: Int?
-    var priceFilter: Int?
+    var priceFilters: [Int]?
+    
+    init(searchFilterType: Int, priceFilters: [Int]){
+        self.searchFilterType = searchFilterType;
+        self.priceFilters = priceFilters;
+    }
     
 }
