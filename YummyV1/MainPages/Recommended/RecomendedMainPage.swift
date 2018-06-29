@@ -8,21 +8,12 @@
 
 import UIKit
 
-
-
-var ratingsSliderValue:String!;
-var priceSliderValue: String!;
-var distanceSliderValue: String!;
-
 class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     private let cellReusueIdentifier = "restCell";
     private let indentifier = "one";
     private let identifier2 = "two";
     private let identifier3 = "three";
-    private var scrollViewWidth: CGFloat!;
-    private var scrollViewHeight: CGFloat!;
-    private let restDistance = [2,1,4,4.5,5,3,3,3.8,1.2,0.3];
     
     var filtersData: FiltersDataModel?
     var restaurants:[Restaurant]?
@@ -33,22 +24,8 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     //MARK: Views
     var recommendedList: UICollectionView!;
-    var recommendedFilters: UIView!;
-    var filtersDistance: UIButton!;
-    var filtersPrice: UIButton!;
-    var filtersRating: UIButton!;
-    var filtersView:FiltersView!;
-    var dropDownView:UIView!;
-    var darkView: UIView!;
     
     //MARK: Slider setup
-    var leftSliderLabel: UILabel!;
-    var rightSliderLabel: UILabel!;
-    var currentValue: UILabel!;
-    var sliderTitle: UILabel!;
-    var slider: UISlider!;
-    
-    var cellIndex: IndexPath!;
     var json: NSDictionary!;
     
     lazy var selectedDarkView: UIView = {
@@ -79,7 +56,8 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     override func viewDidLoad() {
         super.viewDidLoad();
-         self.mainSetup();
+//         self.mainSetup();
+        self.setup();
         let filtersButton = UIBarButtonItem(title: "Filters", style: .plain, target: self, action: #selector(handleFiltersShow));
         self.navigationItem.rightBarButtonItem = filtersButton;
     }
@@ -91,21 +69,7 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
         self.navigationController?.pushViewController(filtersPage, animated: true);
     }
     
-    private func mainSetup(){
-        recommendedFilters = UIView();
-        recommendedFilters.backgroundColor = UIColor.black;
-        recommendedFilters.translatesAutoresizingMaskIntoConstraints = false;
-        self.view.addSubview(recommendedFilters);
-        recommendedFilters.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        recommendedFilters.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-        recommendedFilters.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-        recommendedFilters.heightAnchor.constraint(equalToConstant: 50).isActive = true;
-        
-//        getData()
-        self.continueSetup();
-    }
-    
-    private func continueSetup(){
+    private func setup(){
 //        getPics();//gets pics
         let flowLayout = UICollectionViewFlowLayout();
         recommendedList = UICollectionView(frame: .zero, collectionViewLayout: flowLayout);
@@ -119,18 +83,8 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
         self.view.addSubview(recommendedList)
         self.recommendedList.leftAnchor.constraint(equalTo:self.view.leftAnchor).isActive = true;
         self.recommendedList.bottomAnchor.constraint(equalTo:self.view.bottomAnchor).isActive = true;
-        self.recommendedList.topAnchor.constraint(equalTo: self.recommendedFilters.bottomAnchor).isActive = true;
+        self.recommendedList.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         self.recommendedList.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        
-        darkView = UIView();
-        darkView.translatesAutoresizingMaskIntoConstraints = false;
-        darkView.backgroundColor = UIColor.black;
-        darkView.alpha = 0;
-        self.view.addSubview(darkView);
-        darkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        darkView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        darkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-        darkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         
         self.view.addSubview(selectedDarkView);
         selectedDarkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
@@ -151,23 +105,6 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
         message.heightAnchor.constraint(equalToConstant: 25).isActive = true;
     }
     
-    //load restaurants
-    private func getData(){
-        self.continueSetup();
-    }
-    
-    //MARK: SetupFilters
-    
-    
-    override func viewDidAppear(_ animated: Bool) {
-//        totalSum = 0;
-//        pageNum = 1;
-        menuItemArray.removeAll();
-    }
-    
-}
-//MARK: CollectionView Functions
-extension RecomendedMainPage{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(self.restaurants!.count > 0){
@@ -179,7 +116,7 @@ extension RecomendedMainPage{
             cell.cellImage.image = restaurant.restaurantBuildingImage!;
             cell.setPrice(price: 3.99);
             cell.setDistance(dist: restaurant.restaurantDistance!);
-//            cell.seeMenu.addTarget(self, action: #selector(self.tappedCell), for: .touchUpInside);
+            //            cell.seeMenu.addTarget(self, action: #selector(self.tappedCell), for: .touchUpInside);
             cell.btnTapAction = {
                 self.tappedCell(index: indexPath);
             }
@@ -208,8 +145,34 @@ extension RecomendedMainPage{
         return footerView;
     }
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if(self.restaurants!.count > 0){
+            return self.restaurants!.count;
+        }else{
+            return 1;
+        }
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: self.view.frame.width, height: 105);
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        tappedCell(index: indexPath);
+    }
+    
     private func callBack(){
-//        print("footerPressed");
+        //        print("footerPressed");
         //load more, or the next view
     }
     
@@ -295,9 +258,6 @@ extension RecomendedMainPage{
                         let menu = MenuPage();
                         menu.hidesBottomBarWhenPushed = true;
                         
-                        //                        menu.restaurantDistance = selectedRestaurant.restaurantDistance!;
-                        //                        menu.restaurantName = selectedRestaurant.restaurantTitle!;
-                        
                         menu.menu = newMenu;
                         
                         menu.selectedRestaurant = selectedRestaurant;
@@ -321,68 +281,6 @@ extension RecomendedMainPage{
         let data = try? Data(contentsOf: url!);
         let image = UIImage(data: data!);
         return image!;
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if(self.restaurants!.count > 0){
-            return self.restaurants!.count;
-        }else{
-            return 1;
-        }
-//        return 0;
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.view.frame.width, height: 105);
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        tappedCell(index: indexPath);
-    }
-    
-    //MARK: RecommendedBottomView
-    private class RecommendedBottomView: UICollectionReusableView{
-        //ELEMENTS:
-        var loadMoreLabel: UIButton!;
-        var callBackBtn: (()->())?
-        
-        override init(frame: CGRect) {
-            super.init(frame: frame);
-            setup();
-        }
-        
-        private func setup(){
-            loadMoreLabel = UIButton(type: .system);
-            loadMoreLabel.translatesAutoresizingMaskIntoConstraints = false;
-            loadMoreLabel.setTitle("Load More", for: .normal);
-            loadMoreLabel.setTitleColor(UIColor.black, for: .normal);
-            loadMoreLabel.titleLabel?.font = UIFont.italicSystemFont(ofSize: 16);
-            loadMoreLabel.backgroundColor = UIColor.white;
-            self.addSubview(loadMoreLabel);
-            loadMoreLabel.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
-            loadMoreLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
-            loadMoreLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
-            loadMoreLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
-            loadMoreLabel.addTarget(self, action: #selector(self.clickButton), for: .touchUpInside);
-        }
-        
-        required init?(coder aDecoder: NSCoder) {
-            fatalError();
-        }
-        
-        @objc func clickButton(){
-            callBackBtn?()
-        }
     }
 }
 
