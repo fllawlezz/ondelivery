@@ -352,6 +352,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             navigationController?.pushViewController(reviewPage, animated: true);
         }
     }
+    
     @objc func darkViewTouhced(){
         minusSearchArray();
         self.collectionView?.reloadData();
@@ -427,10 +428,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }
     }
     
-}
-
-extension MenuPage{
-    
     //MARK: FoodsList
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         //Page Num is not 3
@@ -443,7 +440,6 @@ extension MenuPage{
             
             if(pageNum == 1){
                 //if hotFoods
-//                let food = hotFoodsArray[indexPath.item];
                 let foodArray = allFoodsArray[currentSection];
                 let food = foodArray[indexPath.item];
                 cell.setName(name: food.name!);
@@ -496,7 +492,7 @@ extension MenuPage{
             return cell;
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier2, for: indexPath) as! InfoCell;
-//            cell.setTitle(text: info[indexPath.item]);
+            //            cell.setTitle(text: info[indexPath.item]);
             if(indexPath.item == 0){
                 cell.setTitle(text: self.selectedRestaurant!.restaurantTelephone!);
                 cell.phoneImage.isHidden = false;
@@ -510,7 +506,7 @@ extension MenuPage{
                 cell.setTitle(text: "\(self.selectedRestaurant!.restaurantOpenHour!)-\(self.selectedRestaurant!.restaurantCloseHour!)");
                 cell.phoneImage.isHidden = true;
             }
-
+            
             return cell;
         }
     }
@@ -555,7 +551,6 @@ extension MenuPage{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if(pageNum == 1){
-//            return hotFoodsArray.count;
             let array = allFoodsArray[currentSection];
             return array.count;
         }else if(pageNum == 2){
@@ -575,7 +570,7 @@ extension MenuPage{
             return CGSize(width: self.view.frame.width, height: 40);
         }
     }
-
+    
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: reuseIdentifier3, for: indexPath) as! CollectionViewHeader;
@@ -594,41 +589,6 @@ extension MenuPage{
         return headerView;
     }
     
-}
-
-//MARK: CollectionViewHeader
-extension MenuPage{
-    private class CollectionViewHeader: UICollectionReusableView{
-        //just a UIlabel on the left side
-        var headerLabel: UILabel!;
-        
-        override init(frame: CGRect) {
-            super.init(frame: frame);
-            setup();
-        }
-        
-        private func setup(){
-            headerLabel = UILabel();
-            headerLabel.translatesAutoresizingMaskIntoConstraints = false;
-            headerLabel.text = "This is Text";
-            headerLabel.font = UIFont(name: "Montserrat-Regular", size: 14);
-            headerLabel.textAlignment = .left;
-            headerLabel.textColor = UIColor.black;
-            self.addSubview(headerLabel);
-            //need x,y,width,height
-            headerLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
-            headerLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
-            headerLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true;
-            headerLabel.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true;
-        }
-        
-        required init?(coder aDecoder: NSCoder) {
-            fatalError();
-        }
-        
-        func setTitle(string: String!){
-            self.headerLabel.text = string;
-        }
-    }
+    
 }
 
