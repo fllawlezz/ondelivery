@@ -11,14 +11,12 @@ import UIKit
 //MARK: MenuBottomBar
 class MenuBottomBar: UIView{
     
-    var menuController: MenuPage? {
-        didSet{
-            
-        }
-    }
+    var menuController: MenuPage?
+    
+    //Data Elements
     
     var itemNumber = 0;
-    var deliveryPrice: Double?
+    var deliveryPrice: Double = 0;
     var deliveryPriceFormat = 3.99;
     
     lazy var imageView: UIImageView = {
@@ -65,10 +63,8 @@ class MenuBottomBar: UIView{
     }()
     
     lazy var deliveryPriceLabel: UILabel = {
-        let formatePrice = String(format: "%.2f", finalDeliveryPrice);
         let deliveryPriceLabel = UILabel();
         deliveryPriceLabel.translatesAutoresizingMaskIntoConstraints = false;
-        deliveryPriceLabel.text = "Delivery Price: $\(formatePrice)";
         deliveryPriceLabel.textColor = UIColor.black;
         deliveryPriceLabel.font = UIFont(name: "Montserrat-Regular", size: 10);
         return deliveryPriceLabel;
@@ -147,7 +143,8 @@ class MenuBottomBar: UIView{
         border.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true;
         border.heightAnchor.constraint(equalToConstant: 1).isActive = true;
         //
-        
+        let formatePrice = String(format: "%.2f", self.deliveryPrice);
+        deliveryPriceLabel.text = "Delivery Price: $\(formatePrice)";
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -180,7 +177,7 @@ class MenuBottomBar: UIView{
     
     func setDeliveryPrice(price: Double){
         let newPrice = String(format: "%.2f", price);
-        finalDeliveryPrice = price;
+        deliveryPrice = price;
         self.deliveryPriceLabel.text = "Delivery Price: $\(newPrice)";
     }
     

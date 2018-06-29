@@ -10,12 +10,12 @@ import Foundation
 
 //MARK: Class Menu Items
 
-class MenuItem{
+class MenuItem: NSObject{
     var name:String!;
     var price: Double!;
     var quantity: Int!;
-    var mainCellIndex: Int!;
     var id: String!;
+    var mainCellIndex: Int!;
     
     init(name: String, price: Double, quantity: Int){
         self.name = name;
@@ -33,12 +33,10 @@ class MenuItem{
     
     func addQuantity(giveQuantity: Int){
         quantity = quantity + giveQuantity;
-        //        print("Q:\(quantity)")
     }
     
     func subtractQuantity(giveQuantity: Int){
         quantity = quantity - giveQuantity;
-        //        print("QS:\(quantity)")
     }
     
     func setIndex(index: Int){

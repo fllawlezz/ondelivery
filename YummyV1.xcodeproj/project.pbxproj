@@ -365,12 +365,12 @@
 			path = CustomViews;
 			sourceTree = "<group>";
 		};
-		CA1E3D9D20E63974008529C6 /* Headers */ = {
+		CA1E3D9D20E63974008529C6 /* HeaderCells */ = {
 			isa = PBXGroup;
 			children = (
 				CA1E3D9E20E63988008529C6 /* CollectionViewHeader.swift */,
 			);
-			path = Headers;
+			path = HeaderCells;
 			sourceTree = "<group>";
 		};
 		CA20E42D1FBAD9960002531E = {
@@ -504,8 +504,8 @@
 		CA9265B91FC5E23200A2F43A /* Menu */ = {
 			isa = PBXGroup;
 			children = (
-				CA1E3D9D20E63974008529C6 /* Headers */,
 				CA9265B61FC5E21200A2F43A /* MenuPage.swift */,
+				CA1E3D9D20E63974008529C6 /* HeaderCells */,
 				CA93234120E29DA800F40C63 /* MenuDataModels */,
 				CAD83F3E20D8EC9400566175 /* SideBarClasses */,
 				CAFB7631206B812100EEFD10 /* Cells */,

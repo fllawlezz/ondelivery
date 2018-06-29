@@ -11,11 +11,7 @@ import UIKit
 //MARK: PopUp menu
 class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
-    var menuPage: MenuPage? {
-        didSet{
-            
-        }
-    }
+    var menuPage: MenuPage?;
     
     //DATA Variables
     var totalPrice: Double?
@@ -92,13 +88,13 @@ class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UI
         
     }
     
-    func passBotBarReference(reference: MenuBottomBar){
-        botBarReference = reference;
-    }
+//    func passBotBarReference(reference: MenuBottomBar){
+//        botBarReference = reference;
+//    }
     
-    func passMenuListReference(reference: UICollectionView){
-        menuReference = reference;
-    }
+//    func passMenuListReference(reference: UICollectionView){
+//        menuReference = reference;
+//    }
     
     @objc func addItem(sender: UIButton){
         //when you press the add button, the menuItem updates, need to update the original menus

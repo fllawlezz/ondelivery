@@ -23,6 +23,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     var freeOrders: Int?
     
     var selectedRestaurant: Restaurant?;
+    var menuItemArray = [MenuItem]();
     
     //DATA ELEMENTS
     var menu: Menu?
@@ -38,11 +39,11 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     var reviewPage: ReviewPage!;
     var collectionView: UICollectionView!;
     var yAnchor: NSLayoutConstraint!;
+    private var allFoodsArray = [[Food]]();
+    //DATA Elements
+    var sectionsTItles: [SectionItem]?
     
-    //for hot foods
-    
-    
-    var testPrices = [2.99,3.25,5.87,10.20,7.88,4.66,2.57,3.88,7.99,10.88];
+    //UI elements
     
     lazy var navBar: MenuNavBar = {
         let navBar = MenuNavBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 40));
@@ -51,9 +52,9 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         return navBar;
     }()
     
-    lazy var bottomBar: MenuBottomBar = {
+    lazy var menuBottomBar: MenuBottomBar = {
         let bottomBar = MenuBottomBar();
-        bottomBar.deliveryPrice = self.deliveryPrice;
+        bottomBar.deliveryPrice = 0;
         bottomBar.backgroundColor = UIColor.white;
         bottomBar.checkoutButton.addTarget(self, action: #selector(self.checkOut), for: .touchUpInside);
         return bottomBar;
@@ -89,7 +90,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         return sideBarBackground;
     }()
     
-    lazy var box1: UIView = {
+    lazy var sectionsBox: UIView = {
         let box1 = UIView();
         box1.translatesAutoresizingMaskIntoConstraints = false;
         box1.backgroundColor = UIColor.black;
@@ -101,7 +102,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         if(sideBarOut){
             sideBarOut = false;
             UIView.animate(withDuration: 0.3) {
-                self.box1.alpha = 1;
+                self.sectionsBox.alpha = 1;
                 self.sideBarLeftAnchorConstraint?.constant = -1000;
                 self.sideBarBackground.alpha = 0;
                 self.view.layoutIfNeeded();
@@ -109,7 +110,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }else{
             sideBarOut = true;
             UIView.animate(withDuration: 0.3) {
-                self.box1.alpha = 0;
+                self.sectionsBox.alpha = 0;
                 self.sideBarLeftAnchorConstraint?.constant = 0;
                 self.sideBarBackground.alpha = 0.7;
                 self.view.layoutIfNeeded();
@@ -118,27 +119,101 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     }
     
     
-    private var allFoodsArray = [[Food]]()
-    private var hotFoodsArray = [Food]();
-    //DATA Elements
-    var sectionsTItles: [SectionItem]?
-    
-    
     override func viewDidLoad() {
         let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);
         navigationItem.backBarButtonItem = leftBackButton;
+        navigationItem.title = "\(selectedRestaurant!.restaurantTitle!)";
         
         calculateDeliveryFee();
         self.view.backgroundColor = UIColor.white;
         let inset = UIEdgeInsets(top: 40, left: 0, bottom: 60, right: 0);
         self.collectionView?.contentInset = inset;
         collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 40, left: 0, bottom: 60, right: 0);
-//        navigationItem.title = "\(restaurantName!)";//set the resturaunt title to this
-        navigationItem.title = "\(selectedRestaurant!.restaurantTitle!)";
         self.collectionView?.backgroundColor = UIColor.white;
+        
         setData();
         setup();
+        setupSidebar();
+        setupSectionsBox();
+    }
+    
+    fileprivate func setup(){
+        self.view.addSubview(navBar);
+        //set up the bottom bar
+        menuBottomBar.translatesAutoresizingMaskIntoConstraints = false;
+        self.view.addSubview(menuBottomBar);
+        menuBottomBar.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        menuBottomBar.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        menuBottomBar.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
+        menuBottomBar.heightAnchor.constraint(equalToConstant: 60).isActive = true;//60
         
+        menuBottomBar.setTotalSum(sum: totalPrice);
+        self.menuBottomBar.setItem(number: 0);
+        menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
+//        if(freeOrders != nil){
+//            if(freeOrders! > 0 && totalPrice <= 20){
+//                menuBottomBar.setFreeOrderDeliveryPrice();
+//            }else{
+//                menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
+//            }
+//        }else{
+//            freeOrders = 0;
+//            subPlan = "NONE";
+//        }
+        
+        //        tap gesture to show menu view for when the cart is clicked
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.showCart));
+        tapGesture.numberOfTapsRequired = 1;
+        menuBottomBar.imageView.isUserInteractionEnabled = true;
+        menuBottomBar.imageView.addGestureRecognizer(tapGesture);
+        
+        //collectionView initialization
+        let layout = UICollectionViewFlowLayout();
+        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 30);
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout);
+        collectionView.translatesAutoresizingMaskIntoConstraints = false;
+        collectionView.backgroundColor = UIColor.white;
+        collectionView.delegate = self;
+        collectionView.dataSource = self;
+        collectionView.register(MenuCell.self, forCellWithReuseIdentifier: self.reuseIdentifier);
+        self.collectionView?.register(InfoCell.self, forCellWithReuseIdentifier: reuseIdentifier2);
+        collectionView.register(CollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseIdentifier3);
+        self.view.addSubview(collectionView);
+        //need x,y,width,and height
+        collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        collectionView.topAnchor.constraint(equalTo: self.navBar.bottomAnchor).isActive = true;
+        collectionView.bottomAnchor.constraint(equalTo: self.menuBottomBar.topAnchor).isActive = true;
+        collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
+        
+        self.view.addSubview(darkView);
+        darkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        darkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
+        darkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        darkView.rightAnchor.constraint(equalTo:self.view.rightAnchor).isActive = true;
+        darkView.isUserInteractionEnabled = true;
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(self.darkViewTouhced));
+        darkView.addGestureRecognizer(gesture);
+        
+        
+        //popUpMenu
+        self.view.addSubview(popUpMenu);
+        //need x,y,width,height anchor
+        yAnchor = popUpMenu.topAnchor.constraint(equalTo: self.view.bottomAnchor);
+        popUpMenu.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        yAnchor.isActive = true;
+        popUpMenu.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
+        popUpMenu.heightAnchor.constraint(equalToConstant: 300).isActive = true;
+        
+        self.view.bringSubview(toFront: menuBottomBar);
+        
+        navBar.setCollectionViewReference(collectionView: collectionView);
+        
+        //give botbar reference to popUpMenu
+//        popUpMenu.passBotBarReference(reference: menuButtonBar);
+        
+    }
+    
+    fileprivate func setupSidebar(){
         self.view.addSubview(sideBarBackground);
         sideBarBackground.alpha = 0;
         sideBarBackground.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
@@ -159,43 +234,43 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         sideBar!.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         sideBar!.widthAnchor.constraint(equalToConstant: self.view.frame.width/2).isActive = true;
         sideBar!.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
-        
-        box1.isUserInteractionEnabled = true;
+    }
+    
+    fileprivate func setupSectionsBox(){
+        sectionsBox.isUserInteractionEnabled = true;
         let tapBox = UITapGestureRecognizer(target: self, action: #selector(sideBarAnimate));
-        box1.addGestureRecognizer(tapBox);
-        self.view.addSubview(box1);
-        box1.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        box1.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true;
-        box1.widthAnchor.constraint(equalToConstant: 30).isActive = true;
-        box1.heightAnchor.constraint(equalToConstant: 70).isActive = true;
-        
+        sectionsBox.addGestureRecognizer(tapBox);
+        self.view.addSubview(sectionsBox);
+        sectionsBox.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        sectionsBox.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true;
+        sectionsBox.widthAnchor.constraint(equalToConstant: 30).isActive = true;
+        sectionsBox.heightAnchor.constraint(equalToConstant: 70).isActive = true;
+    
         let imageView = UIImageView();
         imageView.translatesAutoresizingMaskIntoConstraints = false;
         imageView.image = #imageLiteral(resourceName: "backButtonWhite");
         imageView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi));
-        self.box1.addSubview(imageView);
-        imageView.leftAnchor.constraint(equalTo: box1.leftAnchor).isActive = true;
-        imageView.rightAnchor.constraint(equalTo: box1.rightAnchor).isActive = true;
+        self.sectionsBox.addSubview(imageView);
+        imageView.leftAnchor.constraint(equalTo: sectionsBox.leftAnchor).isActive = true;
+        imageView.rightAnchor.constraint(equalTo: sectionsBox.rightAnchor).isActive = true;
         imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true;
-        imageView.centerYAnchor.constraint(equalTo: self.box1.centerYAnchor).isActive = true;
+        imageView.centerYAnchor.constraint(equalTo: self.sectionsBox.centerYAnchor).isActive = true;
     }
     
     //MARK: addressDeliveryFee
     func calculateDeliveryFee(){
             let distance = selectedRestaurant!.restaurantDistance!;
-            if(distance < 2.0){
-                //price is 2.99
-                deliveryPrice += 2.99;
-            }else if(distance >= 2.0 && distance < 3.0){
-                //price is 3.99
+        
+            if(distance < 3.0){
                 deliveryPrice += 3.99;
-            }else if(distance >= 3.0 && distance < 4.0){
-                //price is 4.99
+            }else if(distance >= 3.0 && distance < 5.0){
                 deliveryPrice += 4.99;
-            }else if(distance >= 4.0 && distance < 5.0){
+            }else if(distance >= 5.0 && distance < 7.0){
                 deliveryPrice += 5.99;
-            }else if(distance >= 5.0){
+            }else if(distance >= 7.0 && distance < 8.0){
                 deliveryPrice += 6.99;
+            }else if(distance >= 8.0){
+                deliveryPrice += 7.99;
             }
         
         if(subPlan != nil){
@@ -219,8 +294,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     private func setData(){
         //names,prices, ids, and foodSections from menu into an array of array
         var count = 0;
-        //menu.menu has an an array of fooditems.
-        //loop through each and add to the listArray[foodItem.section-1]
         while(count<(menu?.numberOfSections!)!){
             let arrayAppend = [Food]()
             allFoodsArray.append(arrayAppend);
@@ -241,89 +314,9 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             let foodItem = Food(nameParam: name, priceParam: price, sectionParam: section, foodID: foodID, hOn: hotFood, pic: pic, description: description);
             
             allFoodsArray[section-1].append(foodItem);
-            
-            if(hotFood == "Y"){
-                hotFoodsArray.append(foodItem);
-            }
         }
     }
     
-    func setup(){
-        self.view.addSubview(navBar);
-
-        //set up the bottom bar
-        bottomBar.translatesAutoresizingMaskIntoConstraints = false;
-        self.view.addSubview(bottomBar);
-        bottomBar.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
-        bottomBar.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        bottomBar.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-        bottomBar.heightAnchor.constraint(equalToConstant: 60).isActive = true;//60
-        
-        bottomBar.setTotalSum(sum: totalPrice);
-        self.bottomBar.setItem(number: 0);
-//        freeOrders = 1;
-        if(freeOrders != nil){
-            if(freeOrders! > 0 && totalPrice <= 20){
-                bottomBar.setFreeOrderDeliveryPrice();
-            }else{
-                bottomBar.setDeliveryPrice(price: self.deliveryPrice);
-            }
-        }else{
-            freeOrders = 0;
-            subPlan = "NONE";
-        }
-
-//        tap gesture to show menu view for when the cart is clicked
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.showCart));
-        tapGesture.numberOfTapsRequired = 1;
-        bottomBar.imageView.isUserInteractionEnabled = true;
-        bottomBar.imageView.addGestureRecognizer(tapGesture);
-
-        //collectionView initialization
-        let layout = UICollectionViewFlowLayout();
-        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 30);
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout);
-        collectionView.translatesAutoresizingMaskIntoConstraints = false;
-        collectionView.backgroundColor = UIColor.white;
-        collectionView.delegate = self;
-        collectionView.dataSource = self;
-        collectionView.register(MenuCell.self, forCellWithReuseIdentifier: self.reuseIdentifier);
-        self.collectionView?.register(InfoCell.self, forCellWithReuseIdentifier: reuseIdentifier2);
-        collectionView.register(CollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseIdentifier3);
-        self.view.addSubview(collectionView);
-        //need x,y,width,and height
-        collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        collectionView.topAnchor.constraint(equalTo: self.navBar.bottomAnchor).isActive = true;
-        collectionView.bottomAnchor.constraint(equalTo: self.bottomBar.topAnchor).isActive = true;
-        collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-        
-        self.view.addSubview(darkView);
-        darkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        darkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-        darkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
-        darkView.rightAnchor.constraint(equalTo:self.view.rightAnchor).isActive = true;
-        darkView.isUserInteractionEnabled = true;
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(self.darkViewTouhced));
-        darkView.addGestureRecognizer(gesture);
-        
-        
-        //popUpMenu
-        self.view.addSubview(popUpMenu);
-        //need x,y,width,height anchor
-        yAnchor = popUpMenu.topAnchor.constraint(equalTo: self.view.bottomAnchor);
-        popUpMenu.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        yAnchor.isActive = true;
-        popUpMenu.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-        popUpMenu.heightAnchor.constraint(equalToConstant: 300).isActive = true;
-        
-        self.view.bringSubview(toFront: bottomBar);
-
-        navBar.setCollectionViewReference(collectionView: collectionView);
-
-        //give botbar reference to popUpMenu
-        popUpMenu.passBotBarReference(reference: bottomBar);
-        
-    }
     
     @objc func showCart(sender: UITapGestureRecognizer){
         if(menuItemArray.count == 0){
@@ -380,52 +373,51 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     //MARK: Button targets
     //MenuAddButton
     @objc private func addItem(indexPath: IndexPath, price: Double){
-        bottomBar.addItem();//adds one to bottomBar's number of items
-        totalPrice = totalPrice + price;
-        popUpMenu.totalPrice = self.totalPrice;
-        bottomBar.setTotalSum(sum: totalPrice);
+//        menuBottomBar.addItem();//adds one to bottomBar's number of items
+//        totalPrice = totalPrice + price;
+//        popUpMenu.totalPrice = self.totalPrice;
+//        menuBottomBar.setTotalSum(sum: totalPrice);
+//
+//        if(totalPrice > 20){
+//            //set bottom bar delivery price
+//            menuBottomBar.setDeliveryPrice(price: deliveryPrice);
+//        }else if(totalPrice <= 20 && freeOrders! > 0){
+//            menuBottomBar.setFreeOrderDeliveryPrice();
+//        }
         
-        if(totalPrice > 20){
-            //set bottom bar delivery price
-            bottomBar.setDeliveryPrice(price: deliveryPrice);
-        }else if(totalPrice <= 20 && freeOrders! > 0){
-            bottomBar.setFreeOrderDeliveryPrice();
-        }
-        
-        //array/cell manipulation
-        let index = IndexPath(item: indexPath.item, section: indexPath.section);//get indexPath from senderTag. Sender tag is a reference to the cell number
-        let cell = self.collectionView?.cellForItem(at: index) as! MenuCell;//gets cell reference
-//        print(index.section);
-        
-        //search through menuItemArray and then add one to the quantity
-        for item in menuItemArray{
-            if(item.name == cell.foodName.text!){
-                item.addQuantity(giveQuantity: 1);
-                return;
-            }
-        }
-        
-        //if item is not in menuItemArray, add a new menuItem
-        let menuItem = MenuItem(name: cell.foodName.text!, price: cell.price, quantity: 1);
-        menuItem.setID(id: cell.foodID);
-        menuItem.setIndex(index: indexPath.item);
-        menuItemArray.append(menuItem);
+//        //array/cell manipulation
+//        let index = IndexPath(item: indexPath.item, section: indexPath.section);//get indexPath from senderTag. Sender tag is a reference to the cell number
+//        let cell = self.collectionView?.cellForItem(at: index) as! MenuCell;//gets cell reference
+//
+//        //search through menuItemArray and then add one to the quantity
+//        for item in menuItemArray{
+//            if(item.name == cell.foodName.text!){
+//                item.addQuantity(giveQuantity: 1);
+//                return;
+//            }
+//        }
+//
+//        //if item is not in menuItemArray, add a new menuItem
+//        let menuItem = MenuItem(name: cell.foodName.text!, price: cell.price, quantity: 1);
+//        menuItem.setID(id: cell.foodID);
+//        menuItem.setIndex(index: indexPath.item);
+//        menuItemArray.append(menuItem);
         
     }
     
     //MENUSubtractButton
     @objc private func subItem(indexPath: IndexPath, price: Double){
-        bottomBar.subItem();
-        totalPrice = totalPrice - price;
-        popUpMenu.totalPrice = self.totalPrice;
-        bottomBar.setTotalSum(sum: totalPrice);
-        
-        if(totalPrice > 20){
-            //set bottom bar delivery price
-            bottomBar.setDeliveryPrice(price: deliveryPrice);
-        }else if(totalPrice <= 20 && freeOrders! > 0){
-            bottomBar.setFreeOrderDeliveryPrice();
-        }
+//        menuBottomBar.subItem();
+//        totalPrice = totalPrice - price;
+//        popUpMenu.totalPrice = self.totalPrice;
+//        menuBottomBar.setTotalSum(sum: totalPrice);
+//
+//        if(totalPrice > 20){
+//            //set bottom bar delivery price
+//            menuBottomBar.setDeliveryPrice(price: deliveryPrice);
+//        }else if(totalPrice <= 20 && freeOrders! > 0){
+//            menuBottomBar.setFreeOrderDeliveryPrice();
+//        }
     }
     
     //MARK: FoodsList
@@ -434,8 +426,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         if(pageNum != 3){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MenuCell;
             //model CELL: shown = false, hidden
-            cell.shown = false;//set shown = to false.
-            cell.hide();//hide the minus and the label
+            cell.buttonShown = false;//set shown = to false.
+//            cell.hideButton();//hide the minus and the label
             cell.setQuantity(quantity: 0);//reset the quantity to zero
             
             if(pageNum == 1){
@@ -483,8 +475,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             for item in menuItemArray{//for every item in the menuItemArray
                 if(item.name == cell.foodName.text!){//if the names are the same
                     if(item.quantity != 0){
-                        cell.shown = true;//shown = true to notify that the cell minus and plus are unhidden
-                        cell.unHide();//make sure to unhide the minus and the quantity indicator
+                        cell.buttonShown = true;//shown = true to notify that the cell minus and plus are unhidden
+//                        cell.unhideAddButton();//make sure to unhide the minus and the quantity indicator
                         cell.setQuantity(quantity: item.quantity);//set the quantity to the actual menu Item quantity
                     }
                 }
@@ -492,7 +484,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             return cell;
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier2, for: indexPath) as! InfoCell;
-            //            cell.setTitle(text: info[indexPath.item]);
             if(indexPath.item == 0){
                 cell.setTitle(text: self.selectedRestaurant!.restaurantTelephone!);
                 cell.phoneImage.isHidden = false;
