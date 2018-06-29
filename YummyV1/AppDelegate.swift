@@ -8,7 +8,15 @@
 
 import UIKit
 import CoreData
+import Stripe
 
+//MARK:Global Variables
+var UIScreenHeight: CGFloat!;
+var standard:UserDefaults!;
+var context: NSManagedObjectContext!;
+var defaults: UserDefaults!;
+
+@available(iOS 10.0, *)
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -17,9 +25,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        STPPaymentConfiguration.shared().publishableKey = "pk_live_XKSfeNDd57Ru7lPZkTEIPLSb";
+        STPPaymentConfiguration.shared().companyName = "OnDelivery";
+        
+        UIScreenHeight = UIScreen.main.bounds.height;
+        standard = UserDefaults.standard;//initialize userdefaults on startup
+        UIApplication.shared.statusBarStyle = .lightContent;
+        
+        UITabBar.appearance().tintColor = UIColor.black;
+        UITabBar.appearance().backgroundColor = UIColor.white;
+        context = persistentContainer.viewContext;
+        window = UIWindow(frame: UIScreen.main.bounds);
+        window?.makeKeyAndVisible();
+        
+        defaults = UserDefaults.standard;
+        
+//        window?.rootViewController = StartingNavigationPage();
+        
+        //MARK: Previous Login Check
+        if(defaults.object(forKey: "startup") != nil){
+            if(defaults.object(forKey: "firstName") != nil){
+//                populateDefaults(defaults: defaults!);
+                let firstName = defaults.object(forKey: "firstName") as! String;
+                let lastName = defaults.object(forKey: "lastName") as! String;
+                let userID = defaults.object(forKey: "userID") as! String;
+                let email = defaults.object(forKey: "email") as! String;
+                let telephone = defaults.object(forKey: "telephone") as! String;
+                let subscriptionPlan = defaults.object(forKey: "subscriptionPlan") as! String;
+                let freeOrders = defaults.object(forKey: "freeOrders") as! String;
+                
+                user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
+            }
+            window?.rootViewController = SplashPage();
+        }else{
+            window?.rootViewController = StartingNavigationPage();
+        }
+        
         return true
     }
-
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
