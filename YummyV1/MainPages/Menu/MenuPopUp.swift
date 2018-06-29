@@ -88,69 +88,21 @@ class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UI
         
     }
     
-//    func passBotBarReference(reference: MenuBottomBar){
-//        botBarReference = reference;
-//    }
-    
-//    func passMenuListReference(reference: UICollectionView){
-//        menuReference = reference;
-//    }
-    
-    @objc func addItem(sender: UIButton){
-        //when you press the add button, the menuItem updates, need to update the original menus
-        let index = sender.tag;
-        let item = menuItemArray[index];
-        let indexPath = IndexPath(item: index, section: 0);
-        let cell = collectionView.cellForItem(at: indexPath) as! PopUpMenuCell;
-        
-        item.quantity = item.quantity + 1;
-        cell.quantity.text = String(item.quantity);
-        
-        totalPrice! = totalPrice!+item.price;
-        botBarReference.setTotalSum(sum: totalPrice!);
-        menuPage?.totalPrice = totalPrice!;
-        
-        var number = botBarReference.getNumber();
-        number = number + 1;
-        botBarReference.setItem(number: number);
-    }
-    
-    @objc func subItem(sender: UIButton){
-        let index = sender.tag;
-        let item = menuItemArray[index];
-        let indexPath = IndexPath(item: index, section: 0);
-        let cell = collectionView.cellForItem(at: indexPath) as! PopUpMenuCell;
-        
-        if(item.quantity > 0){
-            item.quantity = item.quantity - 1;
-            cell.quantity.text = String(item.quantity);
-            self.totalPrice! = self.totalPrice!-item.price;
-            self.menuPage?.totalPrice = self.totalPrice!;
-            botBarReference.setTotalSum(sum: self.totalPrice!);
-            var number = botBarReference.getNumber();
-            number = number - 1;
-            botBarReference.setItem(number: number);
-        }
-        
-    }
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PopUpMenuCell;
-        if(indexPath.item == menuItemArray.count-1){
+        cell.menuPopup = self;
+        if(indexPath.item == menuPage!.menuItemArray.count-1){
             cell.border.isHidden = true;
         }else{
             cell.border.isHidden = false;
         }
         
         //set up the names
-        let menuItem = menuItemArray[indexPath.item];//get the first menuItem
+        let menuItem = menuPage!.menuItemArray[indexPath.item];//get the first menuItem
         cell.setName(name: menuItem.name);
         cell.setQuantity(quantity: menuItem.quantity);
         cell.addButton.tag = indexPath.item;
         cell.minusButton.tag = indexPath.item;
-        
-        cell.addButton.addTarget(self, action: #selector(self.addItem), for: .touchUpInside);
-        cell.minusButton.addTarget(self, action: #selector(self.subItem), for: .touchUpInside);
         return cell;
     }
     
@@ -159,11 +111,11 @@ class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UI
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return menuItemArray.count;
+        return menuPage!.menuItemArray.count;
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.frame.size.width, height: 60);
+        return CGSize(width: self.frame.width, height: 60);
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

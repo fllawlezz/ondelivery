@@ -19,8 +19,8 @@ var finalDeliveryPrice = 0.00;
 
 class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate{
     
-    var subPlan: String?
-    var freeOrders: Int?
+    var subPlan: String = "NONE";
+    var freeOrders: Int = 1;
     
     var selectedRestaurant: Restaurant?;
     var menuItemArray = [MenuItem]();
@@ -29,8 +29,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     var menu: Menu?
     var currentSection = 0;//which section of the menu
     
-    var deliveryPrice: Double = 0;
-    var totalPrice: Double = 0;
+    var deliveryPrice: Double = 0.0;
+    var totalPrice: Double = 0.0;
     
     let reuseIdentifier = "one";
     let reuseIdentifier2 = "two";
@@ -133,8 +133,14 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         
         setData();
         setup();
-        setupSidebar();
-        setupSectionsBox();
+    }
+    
+    fileprivate func setBottomBarDeliveryPrice(){
+        if(freeOrders > 0 && totalPrice <= 20){
+            menuBottomBar.setFreeOrderDeliveryPrice();
+        }else{
+            menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
+        }
     }
     
     fileprivate func setup(){
@@ -149,17 +155,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         
         menuBottomBar.setTotalSum(sum: totalPrice);
         self.menuBottomBar.setItem(number: 0);
-        menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
-//        if(freeOrders != nil){
-//            if(freeOrders! > 0 && totalPrice <= 20){
-//                menuBottomBar.setFreeOrderDeliveryPrice();
-//            }else{
-//                menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
-//            }
-//        }else{
-//            freeOrders = 0;
-//            subPlan = "NONE";
-//        }
+        
+        setBottomBarDeliveryPrice();
         
         //        tap gesture to show menu view for when the cart is clicked
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.showCart));
@@ -194,6 +191,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.darkViewTouhced));
         darkView.addGestureRecognizer(gesture);
         
+        setupSidebar();
+        setupSectionsBox();
         
         //popUpMenu
         self.view.addSubview(popUpMenu);
@@ -274,8 +273,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             }
         
         if(subPlan != nil){
-            if(subPlan! != "NONE"){
-                switch(subPlan!){
+            if(subPlan != "NONE"){
+                switch(subPlan){
                 case "Standard":
                     deliveryPrice = deliveryPrice - (deliveryPrice*0.2);
                     break;
@@ -426,8 +425,9 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         if(pageNum != 3){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MenuCell;
             //model CELL: shown = false, hidden
+            cell.menuPage = self;
             cell.buttonShown = false;//set shown = to false.
-//            cell.hideButton();//hide the minus and the label
+            cell.hideButton();//hide the minus and the label
             cell.setQuantity(quantity: 0);//reset the quantity to zero
             
             if(pageNum == 1){
@@ -439,6 +439,10 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 cell.setFoodID(id: food.id!);
                 cell.foodImage.image = food.image!;
                 cell.setDescription(description: food.descript!);
+                cell.cellSection = indexPath.section;
+                cell.cellIndex = indexPath.section;
+                //if food is selected then set orders and
+                
             }else if(pageNum == 2){
                 //do that
                 var count = 0;//count to run through array
@@ -452,31 +456,33 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                         cell.setFoodID(id: food.id!);
                         cell.foodImage.image = food.image!;
                         cell.setDescription(description: food.descript!);
+                        cell.cellSection = indexPath.section;
+                        cell.cellIndex = indexPath.section;
                     }
                     count+=1;
                 }
             }
             
             //sets up targest and tags for button actions
-            cell.minusButton.tag = indexPath.item;//tag for minusButton
-            cell.btnTapAction = {
-                let price = cell.price;
-                self.addItem(indexPath: indexPath, price: price);
-            }
-            
-            cell.btnMinusAction = {
-                let price = cell.price;
-                self.subItem(indexPath: indexPath, price: price);
-                
-            }
+//            cell.minusButton.tag = indexPath.item;//tag for minusButton
+//            cell.btnTapAction = {
+//                let price = cell.price;
+//                self.addItem(indexPath: indexPath, price: price);
+//            }
+//
+//            cell.btnMinusAction = {
+//                let price = cell.price;
+//                self.subItem(indexPath: indexPath, price: price);
+//
+//            }
             
             //MARK: Hide/unhide minus button and update quantity
             //check if the menu item is in the menuItem array
-            for item in menuItemArray{//for every item in the menuItemArray
+            for item in self.menuItemArray{//for every item in the menuItemArray
                 if(item.name == cell.foodName.text!){//if the names are the same
                     if(item.quantity != 0){
                         cell.buttonShown = true;//shown = true to notify that the cell minus and plus are unhidden
-//                        cell.unhideAddButton();//make sure to unhide the minus and the quantity indicator
+                        cell.unhideAddButton();//make sure to unhide the minus and the quantity indicator
                         cell.setQuantity(quantity: item.quantity);//set the quantity to the actual menu Item quantity
                     }
                 }

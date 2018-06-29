@@ -81,6 +81,8 @@ class MenuCell: UICollectionViewCell{
     
     var buttonShown = false;
     var foodID: String!;
+    var cellSection: Int?;
+    var cellIndex: Int?;
     var price = 102.99;
     private var totalNumberOfFood = 0;
     var menuPage: MenuPage?
@@ -172,6 +174,7 @@ class MenuCell: UICollectionViewCell{
         border.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true;
         border.heightAnchor.constraint(equalToConstant: 0.5).isActive = true;
         
+//        hideButton();
     }
     
     func setImage(name: String){
@@ -216,6 +219,7 @@ class MenuCell: UICollectionViewCell{
         let freeOrders = menuPage?.freeOrders;
         orderTotalSum = orderTotalSum! + price;
         
+        self.menuPage?.totalPrice = orderTotalSum!;
         menuBottomBar?.addItem();
         menuBottomBar?.setTotalSum(sum: orderTotalSum!);
         popUpMenu?.totalPrice = orderTotalSum;
@@ -226,43 +230,39 @@ class MenuCell: UICollectionViewCell{
             menuBottomBar?.setFreeOrderDeliveryPrice();
         }
         
-        var menuItemArray = menuPage?.menuItemArray;
+//        var menuItemArray = menuPage?.menuItemArray;
         
-        for food in menuItemArray!{
+        for food in menuPage!.menuItemArray{
             if(food.name == foodName.text!){
                 food.addQuantity(giveQuantity: 1);
                 return;
             }
         }
         let menuItem = MenuItem(name: foodName.text!, price: price, quantity: 1);
-        menuItemArray?.append(menuItem);
+        menuItem.mainCellIndex = self.cellIndex;
+        menuItem.cellSection = self.cellSection;
+        menuPage!.menuItemArray.append(menuItem);
+        
+        menuPage?.popUpMenu.collectionView.reloadData();
     }
     
-    fileprivate func unhideAddButton(){
+    func unhideAddButton(){
         self.minusButton.isHidden = false;
         self.numberOfItems.isHidden = false;
     }
     
     @objc fileprivate func subtractItem(){//on subtract button click
         totalNumberOfFood -= 1;//subtract one from items
+        self.numberOfItems.text = String(totalNumberOfFood);
         
         if(buttonShown == true && totalNumberOfFood == 0){
             buttonShown = false;
             hideButton();
-            minusSearchArray();
         }
-        self.numberOfItems.text = String(totalNumberOfFood);
-        for item in menuItemArray{
-            if(item.name == self.foodName.text!){
-                item.subtractQuantity(giveQuantity: 1);
-                return;
-            }
-        }
-        
         handleMenuSubtractItem();
     }
     
-    fileprivate func hideButton(){
+    func hideButton(){
         self.minusButton.isHidden = true;
         self.numberOfItems.isHidden = true;
     }
@@ -273,11 +273,11 @@ class MenuCell: UICollectionViewCell{
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
         let freeOrders = menuPage?.freeOrders;
-        orderTotalSum = orderTotalSum! + price;
+        orderTotalSum = orderTotalSum! - price;
         
+        self.menuPage?.totalPrice = orderTotalSum!;
         
         menuBottomBar?.subItem();
-        orderTotalSum = orderTotalSum! - price;
         popUpMenu?.totalPrice = orderTotalSum!;
         menuBottomBar?.setTotalSum(sum: orderTotalSum!);
         
@@ -287,6 +287,8 @@ class MenuCell: UICollectionViewCell{
         }else if(orderTotalSum! <= 20 && freeOrders! > 0){
             menuBottomBar?.setFreeOrderDeliveryPrice();
         }
+        
+        minusSearchArray();
     }
     
     //MARK: PRivate array functions
@@ -298,27 +300,15 @@ class MenuCell: UICollectionViewCell{
             let food = menuItemArray![count];
             if(food.name == self.foodName.text!){
                 food.subtractQuantity(giveQuantity: 1);
-            }
-            if(food.quantity == 0){
-                menuItemArray?.remove(at: count);
-                hideButton();
+                if(food.quantity == 0){
+                    menuPage?.menuItemArray.remove(at: count);
+                    menuPage?.popUpMenu.collectionView.reloadData();
+                    hideButton();
+                }
             }
             count += 1;
         }
-        
-//        for item in menuItemArray!{
-//            if(item.name == self.foodName.text!){
-//                item.subtractQuantity(giveQuantity: 1);
-//                if(item.quantity == 0){
-//                    let index = menuItemArray!.index(where: { (item) -> Bool in
-//                        item.name == self.foodName.text;
-//                    })
-//                    menuItemArray!.remove(at: index!);//remove the item at the menuArray
-//                    return;
-//                }
-//                break;
-//            }
-//        }
+//        print(menuItemArray?.count);
     }
     
     func itemNumber() -> Int{
