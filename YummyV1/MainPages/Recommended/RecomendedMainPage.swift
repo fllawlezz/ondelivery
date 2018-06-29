@@ -79,8 +79,14 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
     override func viewDidLoad() {
         super.viewDidLoad();
          self.mainSetup();
-        let filtersButton = UIBarButtonItem(title: "Filters", style: .plain, target: nil, action: nil);
+        let filtersButton = UIBarButtonItem(title: "Filters", style: .plain, target: self, action: #selector(handleFiltersShow));
         self.navigationItem.rightBarButtonItem = filtersButton;
+    }
+    
+    @objc func handleFiltersShow(){
+        let filtersPage = FiltersPage();
+        filtersPage.hidesBottomBarWhenPushed = true;
+        self.navigationController?.pushViewController(filtersPage, animated: true);
     }
     
     private func mainSetup(){

@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let email = defaults.object(forKey: "email") as! String;
                 let telephone = defaults.object(forKey: "telephone") as! String;
                 let subscriptionPlan = defaults.object(forKey: "subscriptionPlan") as! String;
-                let freeOrders = defaults.object(forKey: "freeOrders") as! String;
+                let freeOrders = defaults.object(forKey: "freeOrders") as! Int;
                 
                 user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
             }
