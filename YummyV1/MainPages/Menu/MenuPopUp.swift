@@ -101,8 +101,6 @@ class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UI
         let menuItem = menuPage!.menuItemArray[indexPath.item];//get the first menuItem
         cell.setName(name: menuItem.name);
         cell.setQuantity(quantity: menuItem.quantity);
-        cell.addButton.tag = indexPath.item;
-        cell.minusButton.tag = indexPath.item;
         return cell;
     }
     

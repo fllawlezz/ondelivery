@@ -308,7 +308,7 @@ class MenuCell: UICollectionViewCell{
             }
             count += 1;
         }
-//        print(menuItemArray?.count);
+//        
     }
     
     func itemNumber() -> Int{

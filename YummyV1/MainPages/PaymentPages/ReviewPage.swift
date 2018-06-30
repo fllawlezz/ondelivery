@@ -107,7 +107,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         if(freeOrders! > 0 && totalPrice! <= 20){
             orderTotal = totalPrice!;
         }else{
-                orderTotal = totalPrice! + deliveryPrice!;
+            orderTotal = totalPrice! + deliveryPrice!;
         }
         
         taxPrice = totalPrice! * 0.0725;
