@@ -463,19 +463,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 }
             }
             
-            //sets up targest and tags for button actions
-//            cell.minusButton.tag = indexPath.item;//tag for minusButton
-//            cell.btnTapAction = {
-//                let price = cell.price;
-//                self.addItem(indexPath: indexPath, price: price);
-//            }
-//
-//            cell.btnMinusAction = {
-//                let price = cell.price;
-//                self.subItem(indexPath: indexPath, price: price);
-//
-//            }
-            
             //MARK: Hide/unhide minus button and update quantity
             //check if the menu item is in the menuItem array
             for item in self.menuItemArray{//for every item in the menuItemArray

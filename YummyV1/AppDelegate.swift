@@ -42,24 +42,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 //        window?.rootViewController = StartingNavigationPage();
         
+        window?.rootViewController = SpecialOptionsPage();
+        
         //MARK: Previous Login Check
-        if(defaults.object(forKey: "startup") != nil){
-            if(defaults.object(forKey: "firstName") != nil){
-//                populateDefaults(defaults: defaults!);
-                let firstName = defaults.object(forKey: "firstName") as! String;
-                let lastName = defaults.object(forKey: "lastName") as! String;
-                let userID = defaults.object(forKey: "userID") as! String;
-                let email = defaults.object(forKey: "email") as! String;
-                let telephone = defaults.object(forKey: "telephone") as! String;
-                let subscriptionPlan = defaults.object(forKey: "subscriptionPlan") as! String;
-                let freeOrders = defaults.object(forKey: "freeOrders") as! Int;
-                
-                user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
-            }
-            window?.rootViewController = SplashPage();
-        }else{
-            window?.rootViewController = StartingNavigationPage();
-        }
+//        if(defaults.object(forKey: "startup") != nil){
+//            if(defaults.object(forKey: "firstName") != nil){
+////                populateDefaults(defaults: defaults!);
+//                let firstName = defaults.object(forKey: "firstName") as! String;
+//                let lastName = defaults.object(forKey: "lastName") as! String;
+//                let userID = defaults.object(forKey: "userID") as! String;
+//                let email = defaults.object(forKey: "email") as! String;
+//                let telephone = defaults.object(forKey: "telephone") as! String;
+//                let subscriptionPlan = defaults.object(forKey: "subscriptionPlan") as! String;
+//                let freeOrders = defaults.object(forKey: "freeOrders") as! Int;
+//
+//                user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
+//            }
+//            window?.rootViewController = SplashPage();
+//        }else{
+//            window?.rootViewController = StartingNavigationPage();
+//        }
         
         return true
     }
