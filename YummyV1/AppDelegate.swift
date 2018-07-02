@@ -41,8 +41,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         defaults = UserDefaults.standard;
         
 //        window?.rootViewController = StartingNavigationPage();
-        
-        window?.rootViewController = SpecialOptionsPage();
+        let navigationController = UINavigationController(rootViewController: SpecialOptionsPage());
+        navigationController.navigationBar.isTranslucent = false;
+        window?.rootViewController = navigationController;
         
         //MARK: Previous Login Check
 //        if(defaults.object(forKey: "startup") != nil){
