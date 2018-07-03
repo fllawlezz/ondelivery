@@ -97,6 +97,7 @@ class SpecialInstructionsPage: UIViewController, UITextViewDelegate{
         let instructions = self.specialInstructionsField.text;
         if(instructions!.count > 0 && instructions != "Special Instructions..."){
             self.specialOptionsPage?.specialOrderField.text = instructions!;
+            self.specialOptionsPage?.specialInstructions = instructions;
             self.navigationController?.popViewController(animated: true);
         }
     }

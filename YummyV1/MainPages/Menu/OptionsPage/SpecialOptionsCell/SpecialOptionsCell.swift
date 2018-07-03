@@ -12,6 +12,7 @@ class SpecialOptionsCell: UICollectionViewCell{
     //Data Variables
     var foodName: String?
     var foodPrice: Double?
+    var cellSelected: Bool = false;
     
     fileprivate var foodNameLabel: NormalUILabel = {
         let foodName = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratRegular(fontSize: 14), textAlign: .left);
@@ -69,11 +70,13 @@ class SpecialOptionsCell: UICollectionViewCell{
     func unhideCheckmark(){
         self.foodNameLabel.textColor = UIColor(red: 49/255, green: 175/255, blue: 145/255, alpha: 1);
         self.checkmarkView.isHidden = false;
+        self.cellSelected = true;
     }
     
     func hideCheckmark(){
         self.foodNameLabel.textColor = UIColor.black;
         self.checkmarkView.isHidden = true;
+        self.cellSelected = false;
     }
     
     func setPrice(price: Double){

@@ -12,7 +12,7 @@ import UIKit
 class SpecialOptionsHeader: UICollectionReusableView{
     
     var specialOptionTitle: NormalUILabel = {
-        let specialOptionTitle = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 14), textAlign: .left);
+        let specialOptionTitle = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 16), textAlign: .left);
         return specialOptionTitle;
     }()
     

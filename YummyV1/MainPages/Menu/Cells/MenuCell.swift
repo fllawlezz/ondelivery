@@ -336,8 +336,11 @@ class MenuCell: UICollectionViewCell{
 //                    let foodOptionSections = json["foodOptionSection"] as! NSArray;
                     let extraFoodNames = json["extraFoodNames"] as! NSArray;
                     let extraFoodPrices = json["extraFoodPrices"] as! NSArray;
+                    let sectionNames = json["sectionNames"] as! NSArray;
                     
                     DispatchQueue.main.async {
+                        let numberOfSections = Int(numSections)!
+                        
                         var count = 0;
                         var optionsBySection = [[SpecialOption]]();
                         while(count < extraFoodNames.count){
@@ -346,8 +349,6 @@ class MenuCell: UICollectionViewCell{
                             let foodNameOptions = extraFoodNames[count] as! NSArray;
                             let foodPriceOptions = extraFoodPrices[count] as! NSArray;
                             
-//                            print(foodNameOptions);
-//                            print(foodPriceOptions);
                             
                             var count2 = 0;
                             while(count2<foodNameOptions.count){
@@ -370,12 +371,18 @@ class MenuCell: UICollectionViewCell{
                             }
                             count+=1;
                         }
+                        var sectionNameArray = [String]()
+                        for sectionName in sectionNames{
+                            let sectionName = sectionName as! String
+                            sectionNameArray.append(sectionName);
+                        }
                         
-                        let numberOfSections = Int(numSections)!
                         let specialOptions = SpecialOptionsPage();
                         specialOptions.mainFoodName = self.foodName.text!;
                         specialOptions.numberOfSections = numberOfSections;
                         specialOptions.specialOptions = optionsBySection;
+                        specialOptions.sectionHeaders = sectionNameArray;
+                        specialOptions.menuPage = self.menuPage;
                         self.menuPage?.navigationController?.pushViewController(specialOptions, animated: true);
                         
                     }

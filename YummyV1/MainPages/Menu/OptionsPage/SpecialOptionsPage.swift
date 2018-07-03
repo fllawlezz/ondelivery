@@ -50,17 +50,18 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     var specialOptions: [[SpecialOption]]!;
     var numberOfSections: Int!;
     var mainFoodName: String?;
-    var specialOptionsHeaderTitles = ["Select your side:","Select your first Entree:","Select your second entree:"];
+    var specialInstructions: String?;
+    var sectionHeaders: [String]!
+    var menuPage: MenuPage?
+    var selectedOptionsArray = [SpecialOption]();
     
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white;
-//        setupSpecialSections();
         foodTitleSetup();
         collectionViewSetup();
         setUpButton();
         setupTextView();
         
-//        print(specialOptions!);
         
     }
     
@@ -115,44 +116,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         specialOrderField.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10).isActive = true;
     }
     
-    fileprivate func setupSpecialSections(){
-        var count = 0;
-        while(count < numberOfSections){
-            let options = [SpecialOption]();
-            specialOptions.append(options);
-            count += 1;
-        }
-        
-        let option = SpecialOption();
-        var optionSection1 = specialOptions[0];
-        option.specialOptionName = "Orange Chicken";
-        option.specialOptionID = 0;
-        option.specialOptionPrice = 0.0;
-        option.specialOptionSection = 1;
-        optionSection1.append(option);
-        specialOptions[0] = optionSection1;
-        
-        let option2 = SpecialOption();
-        option2.specialOptionName = "Mongolian Beef";
-        option2.specialOptionID = 0;
-        option2.specialOptionPrice = 1.0;
-        option2.specialOptionSection = 1;
-        optionSection1.append(option2);
-        specialOptions[0] = optionSection1;
-        
-        let option3 = SpecialOption();
-        var optionSection2 = specialOptions[1];
-        option3.specialOptionName = "Teriyaki Chicken";
-        option3.specialOptionID = 1;
-        option3.specialOptionPrice = 5.00;
-        option3.specialOptionSection = 2;
-        optionSection2.append(option3);
-        specialOptions[1] = optionSection2;
-        
-    }
-    
     func textViewDidBeginEditing(_ textView: UITextView) {
-//        print("go to next page");
         self.specialOrderField.resignFirstResponder();
         
         let specialInstructions = SpecialInstructionsPage();
@@ -178,7 +142,16 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! SpecialOptionsCell
-        cell.unhideCheckmark();
+        //add the option to the menu
+        if(cell.cellSelected){
+            //remove from selectedOptionsArray
+            cell.hideCheckmark();
+        }else{
+            //unselect all others cause there can only be one
+            //
+            //add to selectedOptionsArray
+            cell.unhideCheckmark()
+        }
     }
     
     
@@ -209,7 +182,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseTwo, for: indexPath) as! SpecialOptionsHeader;
-        header.setTitle(title: specialOptionsHeaderTitles[indexPath.section]);
+        header.setTitle(title: sectionHeaders[indexPath.section]);
         return header;
     }
     
