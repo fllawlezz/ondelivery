@@ -309,8 +309,9 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             let hotFood = menuItem.foodIsHot!;
             let pic = menuItem.foodImage!;
             let description = menuItem.foodDescription!;
+            let options = menuItem.options!;
             
-            let foodItem = Food(nameParam: name, priceParam: price, sectionParam: section, foodID: foodID, hOn: hotFood, pic: pic, description: description);
+            let foodItem = Food(nameParam: name, priceParam: price, sectionParam: section, foodID: foodID, hOn: hotFood, pic: pic, description: description, options: options);
             
             allFoodsArray[section-1].append(foodItem);
         }
@@ -372,51 +373,11 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     //MARK: Button targets
     //MenuAddButton
     @objc private func addItem(indexPath: IndexPath, price: Double){
-//        menuBottomBar.addItem();//adds one to bottomBar's number of items
-//        totalPrice = totalPrice + price;
-//        popUpMenu.totalPrice = self.totalPrice;
-//        menuBottomBar.setTotalSum(sum: totalPrice);
-//
-//        if(totalPrice > 20){
-//            //set bottom bar delivery price
-//            menuBottomBar.setDeliveryPrice(price: deliveryPrice);
-//        }else if(totalPrice <= 20 && freeOrders! > 0){
-//            menuBottomBar.setFreeOrderDeliveryPrice();
-//        }
-        
-//        //array/cell manipulation
-//        let index = IndexPath(item: indexPath.item, section: indexPath.section);//get indexPath from senderTag. Sender tag is a reference to the cell number
-//        let cell = self.collectionView?.cellForItem(at: index) as! MenuCell;//gets cell reference
-//
-//        //search through menuItemArray and then add one to the quantity
-//        for item in menuItemArray{
-//            if(item.name == cell.foodName.text!){
-//                item.addQuantity(giveQuantity: 1);
-//                return;
-//            }
-//        }
-//
-//        //if item is not in menuItemArray, add a new menuItem
-//        let menuItem = MenuItem(name: cell.foodName.text!, price: cell.price, quantity: 1);
-//        menuItem.setID(id: cell.foodID);
-//        menuItem.setIndex(index: indexPath.item);
-//        menuItemArray.append(menuItem);
         
     }
     
     //MENUSubtractButton
     @objc private func subItem(indexPath: IndexPath, price: Double){
-//        menuBottomBar.subItem();
-//        totalPrice = totalPrice - price;
-//        popUpMenu.totalPrice = self.totalPrice;
-//        menuBottomBar.setTotalSum(sum: totalPrice);
-//
-//        if(totalPrice > 20){
-//            //set bottom bar delivery price
-//            menuBottomBar.setDeliveryPrice(price: deliveryPrice);
-//        }else if(totalPrice <= 20 && freeOrders! > 0){
-//            menuBottomBar.setFreeOrderDeliveryPrice();
-//        }
     }
     
     //MARK: FoodsList
@@ -441,6 +402,12 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 cell.setDescription(description: food.descript!);
                 cell.cellSection = indexPath.section;
                 cell.cellIndex = indexPath.section;
+                if(food.options == "Y"){
+                    cell.options = true;
+                }
+//                if(food.options == "Y"){
+//                    cell.hideAddButton();
+//                }
                 //if food is selected then set orders and
                 
             }else if(pageNum == 2){

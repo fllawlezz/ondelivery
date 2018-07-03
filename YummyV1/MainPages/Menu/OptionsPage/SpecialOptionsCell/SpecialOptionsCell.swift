@@ -78,8 +78,12 @@ class SpecialOptionsCell: UICollectionViewCell{
     
     func setPrice(price: Double){
         self.foodPrice = price;
-        let format = String(format:"%.2f",price);
-        self.foodPriceLabel.text = "+$\(format)"
+        if(price > 0){
+            let format = String(format:"%.2f",price);
+            self.foodPriceLabel.text = "+$\(format)"
+        }else{
+            self.foodPriceLabel.text = "";
+        }
     }
     
 }

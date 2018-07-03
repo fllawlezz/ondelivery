@@ -37,6 +37,7 @@ class SpecialInstructionsPage: UIViewController, UITextViewDelegate{
     }()
     
     override func viewDidLoad() {
+        self.navigationController?.setNavigationBarHidden(false, animated: true);
         self.view.backgroundColor = UIColor.white;
         setupTitle();
         setupTextView();

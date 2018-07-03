@@ -17,5 +17,6 @@ class MenuDataItem{
     var foodIsHot: String?
     var foodDescription: String?
     var foodImage: UIImage?
+    var options: String?;
     
 }

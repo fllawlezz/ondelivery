@@ -20,10 +20,6 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         return addButton;
     }()
     
-//    var specialInstructionsButton: NormalUIButton = {
-//       let specialInstructionsButton = NormalUIButton(backgroundColor: UIColor.veryLightGray, title: <#T##String#>, font: <#T##UIFont#>, fontColor: <#T##UIColor#>)
-//    }()
-    
     var specialOrderField: UITextView = {
         let specialOrderField = UITextView();
         specialOrderField.translatesAutoresizingMaskIntoConstraints = false;
@@ -51,17 +47,20 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     //Data
     let reuseOne = "SpecialOptionsCell";
     let reuseTwo = "SpecialOptionsHeader";
-    var specialOptions = [[SpecialOption]]();
-    var specialOptionsSections = 2;
-    var specialOptionsHeaderTitles = ["Select your first Entree:","Select your second entree:"];
+    var specialOptions: [[SpecialOption]]!;
+    var numberOfSections: Int!;
+    var mainFoodName: String?;
+    var specialOptionsHeaderTitles = ["Select your side:","Select your first Entree:","Select your second entree:"];
     
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white;
-        setupSpecialSections();
+//        setupSpecialSections();
         foodTitleSetup();
         collectionViewSetup();
         setUpButton();
         setupTextView();
+        
+//        print(specialOptions!);
         
     }
     
@@ -78,7 +77,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         borderView.topAnchor.constraint(equalTo: self.foodTitleLabel.bottomAnchor, constant: 5).isActive = true;
         borderView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true;
         
-        foodTitleLabel.text = "Food Name Goes right here";
+        foodTitleLabel.text = mainFoodName!;
         
     }
     
@@ -118,7 +117,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     fileprivate func setupSpecialSections(){
         var count = 0;
-        while(count < specialOptionsSections){
+        while(count < numberOfSections){
             let options = [SpecialOption]();
             specialOptions.append(options);
             count += 1;
@@ -166,11 +165,14 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! SpecialOptionsCell;
         let option = specialOptions[indexPath.section];
         let specialOption = option[indexPath.item];
+        
+        cell.setPrice(price: 0);
+        
         cell.setTitle(title: specialOption.specialOptionName);
         if(specialOption.specialOptionPrice > 0){
             cell.setPrice(price: specialOption.specialOptionPrice);
         }
-//        cell.hideCheckmark();
+        cell.hideCheckmark();
         return cell;
     }
     
@@ -181,8 +183,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-//        return 1;
-        return specialOptionsSections;
+        return numberOfSections;
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

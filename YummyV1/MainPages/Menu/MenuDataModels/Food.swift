@@ -17,8 +17,9 @@ class Food{
     var hotOrNot: String!;
     var image: UIImage!;
     var descript: String!;
+    var options: String!;
     
-    init(nameParam: String!, priceParam: Double!, sectionParam: Int!, foodID: String!, hOn: String!, pic: UIImage!, description: String!) {
+    init(nameParam: String!, priceParam: Double!, sectionParam: Int!, foodID: String!, hOn: String!, pic: UIImage!, description: String!, options: String) {
         name = nameParam;
         price = priceParam;
         section = sectionParam;
@@ -26,5 +27,6 @@ class Food{
         hotOrNot = hOn;
         image = pic;
         descript = description;
+        self.options = options;
     }
 }

@@ -538,6 +538,7 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
                     let foodPicURLs = json["pics"] as! NSArray;
                     let hotFoods = json["hotFood"] as! NSArray;
                     let descript = json["description"] as! NSArray;
+                    let options = json["options"] as! NSArray;
                     
                     let sectionAsInt = Int(section[0] as! String);
                     
@@ -579,6 +580,9 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
                         newMenuDataItem.foodIsHot = hotFoods[count] as? String;
                         newMenuDataItem.foodDescription = descript[count] as? String;
                         
+                        let options = options[count] as? String;
+                        newMenuDataItem.options = options;
+                        
                         newMenu.menu.append(newMenuDataItem);
                         count+=1;
                     }
@@ -586,9 +590,6 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
                     DispatchQueue.main.async {
                         let menu = MenuPage();
                         menu.hidesBottomBarWhenPushed = true;
-                        
-                        //                        menu.restaurantDistance = selectedRestaurant.restaurantDistance!;
-                        //                        menu.restaurantName = selectedRestaurant.restaurantTitle!;
                         
                         menu.menu = newMenu;
                         
