@@ -18,7 +18,7 @@ class MenuCell: UICollectionViewCell{
         foodImage.image = UIImage(named: "shrimpRice");
         return foodImage;
     }()
-    var foodName: UILabel = {
+    var foodNameLabel: UILabel = {
         let foodName = UILabel();
         foodName.translatesAutoresizingMaskIntoConstraints = false;
         foodName.text = "The name of the food goes here";
@@ -26,7 +26,7 @@ class MenuCell: UICollectionViewCell{
         foodName.minimumScaleFactor = 12;
         return foodName;
     }()
-    var foodDescription: UILabel = {
+    var foodDescriptionLabel: UILabel = {
         let foodDescription = UILabel();
         foodDescription.translatesAutoresizingMaskIntoConstraints = false;
         foodDescription.text = "This is the description of the food";
@@ -36,7 +36,7 @@ class MenuCell: UICollectionViewCell{
         return foodDescription;
     }()
     
-    var foodPrice: UILabel = {
+    var foodPriceLabel: UILabel = {
         let foodPrice = UILabel();
         foodPrice.translatesAutoresizingMaskIntoConstraints = false;
         foodPrice.font = UIFont.systemFont(ofSize: 16);
@@ -76,14 +76,15 @@ class MenuCell: UICollectionViewCell{
         numberOfItems.font = UIFont.systemFont(ofSize: 18);
         return numberOfItems;
     }()
-    var btnTapAction : (()->())?
-    var btnMinusAction: (()->())?
     
     var buttonShown = false;
+    
+    var foodName: String?
+    var foodDescription: String?
     var foodID: String!;
-    var cellSection: Int?;
-    var cellIndex: Int?;
-    var price = 102.99;
+    
+    
+    var foodPrice = 102.99;
     var totalNumberOfFood = 0;
     var menuPage: MenuPage?
     var options = false;
@@ -112,35 +113,34 @@ class MenuCell: UICollectionViewCell{
         foodImage.widthAnchor.constraint(equalToConstant: 70).isActive = true;
         foodImage.heightAnchor.constraint(equalToConstant: 60).isActive = true;
         
-        self.addSubview(foodName);
-        foodName.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
-        foodName.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true;
-        foodName.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
-        foodName.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+        self.addSubview(foodNameLabel);
+        foodNameLabel.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
+        foodNameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true;
+        foodNameLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        foodNameLabel.heightAnchor.constraint(equalToConstant: 25).isActive = true;
         
-        self.addSubview(foodPrice);
+        self.addSubview(foodPriceLabel);
         //need x,y,width,height
-        foodPrice.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
-        foodPrice.topAnchor.constraint(equalTo: foodName.bottomAnchor, constant: 0).isActive = true;
-        foodPrice.widthAnchor.constraint(equalToConstant: 80).isActive = true;
-        foodPrice.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+        foodPriceLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
+        foodPriceLabel.topAnchor.constraint(equalTo: foodNameLabel.bottomAnchor, constant: 0).isActive = true;
+        foodPriceLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true;
+        foodPriceLabel.heightAnchor.constraint(equalToConstant: 25).isActive = true;
         
-        let formatString = String(format: "%.2f",price);
-        foodPrice.text = "$"+formatString;
+        let formatString = String(format: "%.2f",foodPrice);
+        foodPriceLabel.text = "$"+formatString;
         
-        self.addSubview(foodDescription);
-        foodDescription.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
-        foodDescription.topAnchor.constraint(equalTo: foodName.bottomAnchor, constant: 5).isActive = true;
-        foodDescription.rightAnchor.constraint(equalTo: foodPrice.leftAnchor).isActive = true;
-        foodDescription.heightAnchor.constraint(equalToConstant: 25);
+        self.addSubview(foodDescriptionLabel);
+        foodDescriptionLabel.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
+        foodDescriptionLabel.topAnchor.constraint(equalTo: foodNameLabel.bottomAnchor, constant: 5).isActive = true;
+        foodDescriptionLabel.rightAnchor.constraint(equalTo: foodPriceLabel.leftAnchor).isActive = true;
+        foodDescriptionLabel.heightAnchor.constraint(equalToConstant: 25);
         
         self.addSubview(addButton);
         //need x,y,width,height
         addButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
-        addButton.topAnchor.constraint(equalTo: foodPrice.bottomAnchor).isActive = true;
+        addButton.topAnchor.constraint(equalTo: foodPriceLabel.bottomAnchor).isActive = true;
         addButton.widthAnchor.constraint(equalToConstant: 35).isActive = true;
         addButton.heightAnchor.constraint(equalToConstant: 35).isActive = true;
-//        addButton.addTarget(self, action: #selector(self.btnTapped), for: .touchUpInside);
         
         self.addSubview(numberOfItems);
         numberOfItems.rightAnchor.constraint(equalTo: addButton.leftAnchor, constant: -5).isActive = true;
@@ -155,7 +155,6 @@ class MenuCell: UICollectionViewCell{
         minusButton.centerYAnchor.constraint(equalTo: numberOfItems.centerYAnchor).isActive = true;
         minusButton.widthAnchor.constraint(equalToConstant: 35).isActive = true;
         minusButton.heightAnchor.constraint(equalToConstant: 35).isActive = true;
-//        minusButton.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside);
         
         let border = UIView();
         border.translatesAutoresizingMaskIntoConstraints = false;
@@ -172,17 +171,19 @@ class MenuCell: UICollectionViewCell{
     }
     
     func setPrice(charge: Double){
-        price = charge;
-        let format = String(format:"%.2f",price);
-        foodPrice.text = String("$\(format)")
+        foodPrice = charge;
+        let format = String(format:"%.2f",foodPrice);
+        foodPriceLabel.text = String("$\(format)")
     }
     
     func setName(name: String){
-        foodName.text = name;
+        self.foodName = name;
+        foodNameLabel.text = name;
     }
     
     func setDescription(description: String){
-        foodDescription.text = description
+        self.foodDescription = description;
+        foodDescriptionLabel.text = description
     }
     
     func setQuantity(quantity: Int){
@@ -207,14 +208,36 @@ class MenuCell: UICollectionViewCell{
     }
     
     fileprivate func handleMenuPageAddItem(){
+        for food in menuPage!.menuItemArray{
+            if(food.name == self.foodName!){
+                food.addQuantity(giveQuantity: 1);
+                food.addPrice(price: self.foodPrice);
+                
+                let foodItem = FoodItem(foodName: self.foodName!, foodPrice: self.foodPrice, hasOptions: false);
+                food.foodItems.append(foodItem);
+                
+                return;
+            }
+        }
+        
+        let orderItem = MainItem(name: self.foodName!, price: self.foodPrice, quantity: 1);
+        let foodItem = FoodItem(foodName: self.foodName!, foodPrice: self.foodPrice, hasOptions: false);
+        orderItem.foodItems.append(foodItem);
+        menuPage!.menuItemArray.append(orderItem);
+        
+        addFoodUpdateUI(foodPrice: foodItem.foodPrice!);
+    }
+    
+    fileprivate func addFoodUpdateUI(foodPrice: Double){
         let menuBottomBar = menuPage?.menuBottomBar;
         let popUpMenu = menuPage?.popUpMenu;
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
         let freeOrders = menuPage?.freeOrders;
-        orderTotalSum = orderTotalSum! + price;
+        orderTotalSum = orderTotalSum! + foodPrice;
         
         self.menuPage?.totalPrice = orderTotalSum!;
+        
         menuBottomBar?.addItem();
         menuBottomBar?.setTotalSum(sum: orderTotalSum!);
         popUpMenu?.totalPrice = orderTotalSum;
@@ -224,18 +247,6 @@ class MenuCell: UICollectionViewCell{
         }else if(orderTotalSum! <= 20 && freeOrders! > 0){
             menuBottomBar?.setFreeOrderDeliveryPrice();
         }
-        
-        for food in menuPage!.menuItemArray{
-            if(food.name == foodName.text!){
-                food.addQuantity(giveQuantity: 1);
-                return;
-            }
-        }
-        
-        let menuItem = MenuItem(name: foodName.text!, price: price, quantity: 1);
-        menuItem.mainCellIndex = self.cellIndex;
-        menuItem.cellSection = self.cellSection;
-        menuPage!.menuItemArray.append(menuItem);
         
         menuPage?.popUpMenu.collectionView.reloadData();
     }
@@ -262,38 +273,27 @@ class MenuCell: UICollectionViewCell{
     }
     
     fileprivate func handleMenuSubtractItem(){
-        let menuBottomBar = menuPage?.menuBottomBar;
-        let popUpMenu = menuPage?.popUpMenu;
-        var orderTotalSum = menuPage?.totalPrice;
-        let deliveryPrice = menuPage?.deliveryPrice;
-        let freeOrders = menuPage?.freeOrders;
-        orderTotalSum = orderTotalSum! - price;
-        
-        self.menuPage?.totalPrice = orderTotalSum!;
-        
-        menuBottomBar?.subItem();
-        popUpMenu?.totalPrice = orderTotalSum!;
-        menuBottomBar?.setTotalSum(sum: orderTotalSum!);
-        
-        if(orderTotalSum! > 20){
-            //set bottom bar delivery price
-            menuBottomBar?.setDeliveryPrice(price: deliveryPrice!);
-        }else if(orderTotalSum! <= 20 && freeOrders! > 0){
-            menuBottomBar?.setFreeOrderDeliveryPrice();
-        }
+        /*
+         1. subtract food price from the MainItem totals
+         2. remove lastFood from MainItem.foodItems
+         3. update the rest of the UI
+     */
         
         minusSearchArray();
     }
     
-    //MARK: PRivate array functions
+    //MARK: Private array functions
     fileprivate func minusSearchArray(){
         //search through array to find the name
         var menuItemArray = menuPage?.menuItemArray;
         var count = 0;
         while(count<menuItemArray!.count){
             let food = menuItemArray![count];
-            if(food.name == self.foodName.text!){
+            if(food.name == self.foodName!){
+                let subtractedFood = food.foodItems.removeLast();
                 food.subtractQuantity(giveQuantity: 1);
+                food.subtractPrice(price: subtractedFood.foodPrice!);
+                subtractFoodUpdateUI(foodPrice: subtractedFood.foodPrice!);
                 if(food.quantity == 0){
                     menuPage?.menuItemArray.remove(at: count);
                     menuPage?.popUpMenu.collectionView.reloadData();
@@ -302,7 +302,28 @@ class MenuCell: UICollectionViewCell{
             }
             count += 1;
         }
-//        
+    }
+    
+    fileprivate func subtractFoodUpdateUI(foodPrice: Double){
+        let menuBottomBar = menuPage?.menuBottomBar;
+        let popUpMenu = menuPage?.popUpMenu;
+        var orderTotalSum = menuPage?.totalPrice;
+        let deliveryPrice = menuPage?.deliveryPrice;
+        let freeOrders = menuPage?.freeOrders;
+        orderTotalSum = orderTotalSum! - foodPrice;
+    
+        self.menuPage?.totalPrice = orderTotalSum!;
+    
+        menuBottomBar?.subItem();
+        popUpMenu?.totalPrice = orderTotalSum!;
+        menuBottomBar?.setTotalSum(sum: orderTotalSum!);
+    
+        if(orderTotalSum! > 20){
+        //set bottom bar delivery price
+            menuBottomBar?.setDeliveryPrice(price: deliveryPrice!);
+        }else if(orderTotalSum! <= 20 && freeOrders! > 0){
+            menuBottomBar?.setFreeOrderDeliveryPrice();
+        }
     }
     
     func itemNumber() -> Int{
@@ -365,8 +386,8 @@ class MenuCell: UICollectionViewCell{
                         let foodIDInt =  Int(self.foodID!);
                         
                         let specialOptions = SpecialOptionsPage();
-                        specialOptions.mainFoodName = self.foodName.text!;
-                        specialOptions.mainFoodPrice = self.price;
+                        specialOptions.mainFoodName = self.foodNameLabel.text!;
+                        specialOptions.mainFoodPrice = self.foodPrice;
                         specialOptions.mainFoodID = foodIDInt;
                         specialOptions.numberOfSections = numberOfSections;
                         specialOptions.specialOptions = optionsBySection;

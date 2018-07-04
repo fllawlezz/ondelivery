@@ -58,6 +58,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     var menuCell: MenuCell?
 //    var selectedOptionsArray = [SpecialOption]();
     var selectedIndexPaths = [IndexPath]();
+    var selectedOptions = [SpecialOption]();
     
     var orderItemTotal = 0.00;
     
@@ -217,11 +218,64 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         return header;
     }
     
+    func handleItemExists(){
+        let mainItemArray = menuPage!.menuItemArray;//reference
+        for mainItem in mainItemArray{
+            if(self.mainFoodName == mainItem.name){
+                calculateFoodPrice();
+                let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
+                for option in self.selectedOptions{
+                    let appendedOption = SpecialOption();
+                    appendedOption.specialOptionName = option.specialOptionName;
+                    appendedOption.specialOptionPrice = option.specialOptionPrice;
+                    appendedOption.specialOptionID = option.specialOptionID;
+                    
+                    foodItem.options.append(appendedOption);
+                }
+                
+                mainItem.foodItems.append(foodItem);
+                mainItem.addPrice(price: orderItemTotal);
+                mainItem.addQuantity(giveQuantity: 1);
+                updateMenuCell();
+                handleMenuAddItem();
+                self.menuPage?.navigationController?.popViewController(animated: true);
+            }
+        }
+    }
+    
     @objc func handleAddFood(){
-        let orderItem = MenuItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
-        var selectedOptions = [SpecialOption]();
+        handleItemExists();
+        
+        let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
+        calculateFoodPrice();
+        let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
+        for option in self.selectedOptions{
+            let appendedOption = SpecialOption();
+            appendedOption.specialOptionName = option.specialOptionName;
+            appendedOption.specialOptionPrice = option.specialOptionPrice;
+            appendedOption.specialOptionID = option.specialOptionID;
+            
+            foodItem.options.append(appendedOption);
+        }
+        orderItem.foodItems.append(foodItem);
+        self.menuPage?.menuItemArray.append(orderItem);
+        
+        updateMenuCell();
+        handleMenuAddItem();
+        
+        self.menuPage?.navigationController?.popViewController(animated: true);
+    }
+    
+    fileprivate func updateMenuCell(){
+        let quantity = self.menuCell!.totalNumberOfFood + 1;
+        self.menuCell!.setQuantity(quantity: quantity);
+        self.menuCell!.buttonShown = true;
+        self.menuCell?.unhideAddButton();
+    }
+    
+    fileprivate func calculateFoodPrice(){
+        orderItemTotal += self.mainFoodPrice!;
         var count = 0;
-        print(selectedIndexPaths.count);
         while(count < selectedIndexPaths.count){
             let currentIndexPath = selectedIndexPaths[count];
             let currentSection = self.specialOptions[currentIndexPath.section];
@@ -232,21 +286,6 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
             selectedOptions.append(selectedOption);
             count+=1;
         }
-        
-        orderItemTotal += self.mainFoodPrice!;
-        print(orderItemTotal);
-        
-        orderItem.options = selectedOptions;
-        
-        //calculate totals
-        self.menuPage?.menuItemArray.append(orderItem);
-        let quantity = self.menuCell!.totalNumberOfFood + 1;
-        print(quantity);
-        self.menuCell!.setQuantity(quantity: quantity);
-        self.menuCell!.buttonShown = true;
-        self.menuCell?.unhideAddButton();
-        handleMenuAddItem();
-        self.menuPage?.navigationController?.popViewController(animated: true);
     }
     
     private func handleMenuAddItem(){
@@ -255,8 +294,8 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
         let freeOrders = menuPage?.freeOrders;
-        orderTotalSum = orderTotalSum! + self.orderItemTotal;
         
+        orderTotalSum = orderTotalSum! + self.orderItemTotal;
         self.menuPage?.totalPrice = orderTotalSum!;
         
         menuBottomBar?.addItem();

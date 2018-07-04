@@ -10,18 +10,16 @@ import Foundation
 
 //MARK: Class Menu Items
 
-class MenuItem: NSObject{
+class MainItem: NSObject{
     var name:String!;
-    var price: Double!;
+    var itemTotals: Double!;
     var quantity: Int!;
     var id: String!;
-    var mainCellIndex: Int!;
-    var cellSection: Int!;
-    var options:[SpecialOption]?;
+    var foodItems:[FoodItem]!;
     
     init(name: String, price: Double, quantity: Int){
         self.name = name;
-        self.price = price;
+        self.itemTotals = price;
         self.quantity = quantity;
     }
     
@@ -30,7 +28,15 @@ class MenuItem: NSObject{
     }
     
     func setPrice(givePrice: Double){
-        price = givePrice;
+        itemTotals = givePrice;
+    }
+    
+    func addPrice(price: Double){
+        itemTotals = itemTotals+price;
+    }
+    
+    func subtractPrice(price: Double){
+        itemTotals = itemTotals-price;
     }
     
     func addQuantity(giveQuantity: Int){
@@ -41,9 +47,7 @@ class MenuItem: NSObject{
         quantity = quantity - giveQuantity;
     }
     
-    func setIndex(index: Int){
-        mainCellIndex = index;
-    }
+
     
     func setID(id: String!){
         self.id = id;

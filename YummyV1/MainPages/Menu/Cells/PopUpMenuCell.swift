@@ -130,20 +130,31 @@ class PopUpMenuCell: UICollectionViewCell{
         var count = 0;
         var menuItemArray = menuPopup?.menuPage?.menuItemArray;
         while(count < menuItemArray!.count){
-            let foodItem = menuItemArray![count];
-            if(foodItem.name == self.foodName.text!){
-                foodItem.addQuantity(giveQuantity: 1);
-                
-                var orderTotal = menuPopup?.menuPage?.totalPrice;
-                orderTotal = orderTotal! + foodItem.price;
-                menuPopup?.menuPage?.totalPrice = orderTotal!;
-                bottomBar?.setTotalSum(sum: orderTotal!);
-                
-                var bottomBarItemTotal = bottomBar?.getNumber();//number of items
-                bottomBarItemTotal = bottomBarItemTotal! + 1;
-                bottomBar?.setItem(number: bottomBarItemTotal!);
-                
-                return;
+            let mainItem = menuItemArray![count];
+            if(mainItem.name == self.foodName.text!){
+                let foodItem = mainItem.foodItems[0];
+                if(foodItem.hasOptions!){
+                    //go to the optionsPage
+                    let specialOptionsPage = SpecialOptionsPage();
+                    self.menuPopup?.menuPage?.navigationController?.pushViewController(specialOptionsPage, animated: true);
+                }else{
+                    let newFoodItem = FoodItem(foodName: foodItem.foodName!, foodPrice: foodItem.foodPrice!, hasOptions: false);
+                    
+                    mainItem.addQuantity(giveQuantity: 1);
+                    mainItem.addPrice(price: foodItem.foodPrice!);
+                    
+                    var orderTotal = menuPopup?.menuPage?.totalPrice;
+                    orderTotal = orderTotal! + newFoodItem.foodPrice!;
+                    menuPopup?.menuPage?.totalPrice = orderTotal!;
+                    bottomBar?.setTotalSum(sum: orderTotal!);
+                    
+                    var bottomBarItemTotal = bottomBar?.getNumber();//number of items
+                    bottomBarItemTotal = bottomBarItemTotal! + 1;
+                    bottomBar?.setItem(number: bottomBarItemTotal!);
+                    
+                    
+                    return;
+                }
             }
             count+=1;
         }
@@ -158,13 +169,15 @@ class PopUpMenuCell: UICollectionViewCell{
             var count = 0;
             var menuItemArray = menuPopup?.menuPage?.menuItemArray;
             while(count < menuItemArray!.count){
-                let foodItem = menuItemArray![count];
-                if(foodItem.name == self.foodName.text!){
-                    foodItem.subtractQuantity(giveQuantity: 1);
+                let mainFoodItem = menuItemArray![count];
+                if(mainFoodItem.name == self.foodName.text!){
+                    let foodItem = mainFoodItem.foodItems.removeLast();
+                    mainFoodItem.subtractQuantity(giveQuantity: 1);
                     
                     var orderTotal = menuPopup?.menuPage?.totalPrice;
-                    orderTotal = orderTotal! - foodItem.price;
+                    orderTotal = orderTotal! - foodItem.foodPrice!;
                     menuPopup?.menuPage?.totalPrice = orderTotal!;
+                    
                     bottomBar?.setTotalSum(sum: orderTotal!);
                     
                     var bottomBarItemTotal = bottomBar?.getNumber();//number of items

@@ -82,7 +82,7 @@ class MenuPopUp: UIView, UICollectionViewDelegate,UICollectionViewDataSource, UI
         collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;//height
         collectionView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;//width
         
-        if(menuItemArray.count == 0){
+        if(menuPage?.menuItemArray.count == 0){
             collectionView.isHidden = true;
         }
         

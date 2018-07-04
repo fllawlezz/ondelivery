@@ -12,7 +12,7 @@ import CallKit
 
 //global for the total
 //var totalSum = 0.00;
-var menuItemArray = [MenuItem]();//saves the menu items that are added when added into an array
+//var menuItemArray = [MenuItem]();//saves the menu items that are added when added into an array
 
 var pageNum = 1;// page num is for the navigation bar
 var finalDeliveryPrice = 0.00;
@@ -23,7 +23,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     var freeOrders: Int = 1;
     
     var selectedRestaurant: Restaurant?;
-    var menuItemArray = [MenuItem]();
+    var menuItemArray = [MainItem]();
     
     //DATA ELEMENTS
     var menu: Menu?
@@ -400,8 +400,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 cell.setFoodID(id: food.id!);
                 cell.foodImage.image = food.image!;
                 cell.setDescription(description: food.descript!);
-                cell.cellSection = indexPath.section;
-                cell.cellIndex = indexPath.section;
                 if(food.options == "Y"){
                     cell.options = true;
                 }
@@ -420,8 +418,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                         cell.setFoodID(id: food.id!);
                         cell.foodImage.image = food.image!;
                         cell.setDescription(description: food.descript!);
-                        cell.cellSection = indexPath.section;
-                        cell.cellIndex = indexPath.section;
                     }
                     count+=1;
                 }
@@ -429,7 +425,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             
             //MARK: Hide/unhide minus button and update quantity
             for item in self.menuItemArray{//for every item in the menuItemArray
-                if(item.name == cell.foodName.text!){//if the names are the same
+                if(item.name == cell.foodNameLabel.text!){//if the names are the same
                     if(item.quantity != 0){
                         cell.buttonShown = true;//shown = true to notify that the cell minus and plus are unhidden
                         cell.unhideAddButton();//make sure to unhide the minus and the quantity indicator
