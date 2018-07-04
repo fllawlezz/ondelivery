@@ -50,10 +50,16 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     var specialOptions: [[SpecialOption]]!;
     var numberOfSections: Int!;
     var mainFoodName: String?;
+    var mainFoodPrice: Double?;
+    var mainFoodID: Int?;
     var specialInstructions: String?;
     var sectionHeaders: [String]!
     var menuPage: MenuPage?
-    var selectedOptionsArray = [SpecialOption]();
+    var menuCell: MenuCell?
+//    var selectedOptionsArray = [SpecialOption]();
+    var selectedIndexPaths = [IndexPath]();
+    
+    var orderItemTotal = 0.00;
     
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white;
@@ -61,8 +67,6 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         collectionViewSetup();
         setUpButton();
         setupTextView();
-        
-        
     }
     
     fileprivate func foodTitleSetup(){
@@ -104,6 +108,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         addButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -20).isActive = true;
         addButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -10).isActive = true;
         addButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        addButton.addTarget(self, action: #selector(self.handleAddFood), for: .touchUpInside);
     }
     
     fileprivate func setupTextView(){
@@ -137,20 +142,46 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
             cell.setPrice(price: specialOption.specialOptionPrice);
         }
         cell.hideCheckmark();
+        
+        for selectedIndexPath in self.selectedIndexPaths{
+            if(selectedIndexPath == indexPath){
+                cell.unhideCheckmark();
+            }
+        }
         return cell;
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! SpecialOptionsCell
         //add the option to the menu
-        if(cell.cellSelected){
-            //remove from selectedOptionsArray
-            cell.hideCheckmark();
-        }else{
-            //unselect all others cause there can only be one
-            //
-            //add to selectedOptionsArray
-            cell.unhideCheckmark()
+        hideAllCheckMarks(section: indexPath.section);
+        self.selectedIndexPaths.append(indexPath);
+        cell.unhideCheckmark();
+    }
+    
+    fileprivate func hideAllCheckMarks(section: Int){
+        var count = 0;
+        
+        let numItemsInSection = specialOptions![section].count;
+        while(count < numItemsInSection){
+            let indexPath = IndexPath(item: count, section: section);
+            if let cell = collectionView.cellForItem(at: indexPath) as? SpecialOptionsCell{
+                 cell.hideCheckmark();
+            }
+            count += 1;
+        }
+        removeIndexPath(section: section);
+    }
+    
+    func removeIndexPath(section: Int){
+        var count = 0;
+        while(count<self.selectedIndexPaths.count){
+            let selectedIndex = self.selectedIndexPaths[count];
+            if(selectedIndex.section == section){
+                self.selectedIndexPaths.remove(at: count);
+                return;
+            }
+            count+=1;
         }
     }
     
@@ -184,6 +215,61 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseTwo, for: indexPath) as! SpecialOptionsHeader;
         header.setTitle(title: sectionHeaders[indexPath.section]);
         return header;
+    }
+    
+    @objc func handleAddFood(){
+        let orderItem = MenuItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
+        var selectedOptions = [SpecialOption]();
+        var count = 0;
+        print(selectedIndexPaths.count);
+        while(count < selectedIndexPaths.count){
+            let currentIndexPath = selectedIndexPaths[count];
+            let currentSection = self.specialOptions[currentIndexPath.section];
+            let selectedOption = currentSection[currentIndexPath.item];//selected option
+            
+            orderItemTotal = orderItemTotal+selectedOption.specialOptionPrice;
+            
+            selectedOptions.append(selectedOption);
+            count+=1;
+        }
+        
+        orderItemTotal += self.mainFoodPrice!;
+        print(orderItemTotal);
+        
+        orderItem.options = selectedOptions;
+        
+        //calculate totals
+        self.menuPage?.menuItemArray.append(orderItem);
+        let quantity = self.menuCell!.totalNumberOfFood + 1;
+        print(quantity);
+        self.menuCell!.setQuantity(quantity: quantity);
+        self.menuCell!.buttonShown = true;
+        self.menuCell?.unhideAddButton();
+        handleMenuAddItem();
+        self.menuPage?.navigationController?.popViewController(animated: true);
+    }
+    
+    private func handleMenuAddItem(){
+        let menuBottomBar = menuPage?.menuBottomBar;
+        let popUpMenu = menuPage?.popUpMenu;
+        var orderTotalSum = menuPage?.totalPrice;
+        let deliveryPrice = menuPage?.deliveryPrice;
+        let freeOrders = menuPage?.freeOrders;
+        orderTotalSum = orderTotalSum! + self.orderItemTotal;
+        
+        self.menuPage?.totalPrice = orderTotalSum!;
+        
+        menuBottomBar?.addItem();
+        menuBottomBar?.setTotalSum(sum: orderTotalSum!);
+        popUpMenu?.totalPrice = orderTotalSum;
+        
+        if(orderTotalSum! > 20.0){
+            menuBottomBar?.setDeliveryPrice(price: deliveryPrice!);
+        }else if(orderTotalSum! <= 20 && freeOrders! > 0){
+            menuBottomBar?.setFreeOrderDeliveryPrice();
+        }
+        
+        menuPage?.popUpMenu.collectionView.reloadData();
     }
     
 }

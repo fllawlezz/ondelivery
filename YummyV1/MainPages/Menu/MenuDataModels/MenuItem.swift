@@ -17,6 +17,7 @@ class MenuItem: NSObject{
     var id: String!;
     var mainCellIndex: Int!;
     var cellSection: Int!;
+    var options:[SpecialOption]?;
     
     init(name: String, price: Double, quantity: Int){
         self.name = name;

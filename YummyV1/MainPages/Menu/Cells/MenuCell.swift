@@ -84,7 +84,7 @@ class MenuCell: UICollectionViewCell{
     var cellSection: Int?;
     var cellIndex: Int?;
     var price = 102.99;
-    private var totalNumberOfFood = 0;
+    var totalNumberOfFood = 0;
     var menuPage: MenuPage?
     var options = false;
     
@@ -165,17 +165,7 @@ class MenuCell: UICollectionViewCell{
         border.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
         border.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true;
         border.heightAnchor.constraint(equalToConstant: 0.5).isActive = true;
-        
-//        if(options){
-//            hideButton();
-//            addButton.isHidden = true;
-//        }
-//        hideButton();
     }
-    
-//    func hideAddButton(){
-//         addButton.isHidden = true;
-//    }
     
     func setImage(name: String){
         foodImage.image = UIImage(named: name);
@@ -202,10 +192,7 @@ class MenuCell: UICollectionViewCell{
     
     @objc func addItem(){
         if(options){
-            
             self.handleLoadOptions();
-//            let optionsCell = SpecialOptionsPage();
-//            self.menuPage?.navigationController?.pushViewController(optionsCell, animated: true);
         }else{
             if(buttonShown == false){
                 buttonShown = true;
@@ -238,14 +225,13 @@ class MenuCell: UICollectionViewCell{
             menuBottomBar?.setFreeOrderDeliveryPrice();
         }
         
-//        var menuItemArray = menuPage?.menuItemArray;
-        
         for food in menuPage!.menuItemArray{
             if(food.name == foodName.text!){
                 food.addQuantity(giveQuantity: 1);
                 return;
             }
         }
+        
         let menuItem = MenuItem(name: foodName.text!, price: price, quantity: 1);
         menuItem.mainCellIndex = self.cellIndex;
         menuItem.cellSection = self.cellSection;
@@ -326,7 +312,6 @@ class MenuCell: UICollectionViewCell{
     fileprivate func handleLoadOptions(){
         let conn = Conn();
         let postBody = "FoodID=\(self.foodID!)"
-        print(postBody);
         conn.connect(fileName: "LoadOptions.php", postString: postBody) { (result) in
             if(urlData != nil){
                 do{
@@ -336,6 +321,7 @@ class MenuCell: UICollectionViewCell{
 //                    let foodOptionSections = json["foodOptionSection"] as! NSArray;
                     let extraFoodNames = json["extraFoodNames"] as! NSArray;
                     let extraFoodPrices = json["extraFoodPrices"] as! NSArray;
+                    let extraFoodIDs = json["extraFoodIDs"] as! NSArray;
                     let sectionNames = json["sectionNames"] as! NSArray;
                     
                     DispatchQueue.main.async {
@@ -348,16 +334,19 @@ class MenuCell: UICollectionViewCell{
                             
                             let foodNameOptions = extraFoodNames[count] as! NSArray;
                             let foodPriceOptions = extraFoodPrices[count] as! NSArray;
-                            
+                            let extraFoodIDs = extraFoodIDs[count] as! NSArray;
                             
                             var count2 = 0;
                             while(count2<foodNameOptions.count){
                                 let currentFoodNameOption = foodNameOptions[count2] as? String;
                                 let currentFoodPriceOption = foodPriceOptions[count2] as? String;
+                                let currentFoodID = extraFoodIDs[count2] as? String;
+                                let currentFoodIDInt = Int(currentFoodID!);
                                 
                                 let option = SpecialOption();
                                 option.specialOptionName = currentFoodNameOption!;
                                 option.specialOptionPrice = Double(currentFoodPriceOption!);
+                                option.specialOptionID = currentFoodIDInt;
                                 
                                 sectionOfFoods.append(option);
                                 
@@ -365,10 +354,6 @@ class MenuCell: UICollectionViewCell{
                             }
                             count2 = 0;
                             optionsBySection.append(sectionOfFoods);
-//                            print(optionsBySection);
-                            for item in sectionOfFoods{
-                                print(item.specialOptionName!);
-                            }
                             count+=1;
                         }
                         var sectionNameArray = [String]()
@@ -377,11 +362,16 @@ class MenuCell: UICollectionViewCell{
                             sectionNameArray.append(sectionName);
                         }
                         
+                        let foodIDInt =  Int(self.foodID!);
+                        
                         let specialOptions = SpecialOptionsPage();
                         specialOptions.mainFoodName = self.foodName.text!;
+                        specialOptions.mainFoodPrice = self.price;
+                        specialOptions.mainFoodID = foodIDInt;
                         specialOptions.numberOfSections = numberOfSections;
                         specialOptions.specialOptions = optionsBySection;
                         specialOptions.sectionHeaders = sectionNameArray;
+                        specialOptions.menuCell = self;
                         specialOptions.menuPage = self.menuPage;
                         self.menuPage?.navigationController?.pushViewController(specialOptions, animated: true);
                         

@@ -405,9 +405,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 if(food.options == "Y"){
                     cell.options = true;
                 }
-//                if(food.options == "Y"){
-//                    cell.hideAddButton();
-//                }
                 //if food is selected then set orders and
                 
             }else if(pageNum == 2){
@@ -431,7 +428,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             }
             
             //MARK: Hide/unhide minus button and update quantity
-            //check if the menu item is in the menuItem array
             for item in self.menuItemArray{//for every item in the menuItemArray
                 if(item.name == cell.foodName.text!){//if the names are the same
                     if(item.quantity != 0){
