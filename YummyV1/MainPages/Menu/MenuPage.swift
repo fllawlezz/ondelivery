@@ -23,7 +23,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     var freeOrders: Int = 1;
     
     var selectedRestaurant: Restaurant?;
-    var menuItemArray = [MainItem]();
+    var menuItemArray = [MainItem]()
     
     //DATA ELEMENTS
     var menu: Menu?

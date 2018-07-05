@@ -15,7 +15,9 @@ class MainItem: NSObject{
     var itemTotals: Double!;
     var quantity: Int!;
     var id: String!;
-    var foodItems:[FoodItem]!;
+    var hasOptions = false;
+    var itemPrice: Double!;
+    var foodItems = [FoodItem]();
     
     init(name: String, price: Double, quantity: Int){
         self.name = name;

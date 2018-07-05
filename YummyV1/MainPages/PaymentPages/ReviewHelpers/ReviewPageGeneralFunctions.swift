@@ -269,11 +269,11 @@ extension ReviewPage{
     //MARK: GetInfo
     func getCollectionViewInfo(){
         //extract all data from MenuitemArray
-        for item in menuItemArray{
-            names.append(item.name);
-            prices.append(item.price);
-            quantity.append(item.quantity);
-            id.append(item.id);
-        }
+//        for item in menuItemArray{
+//            names.append(item.name);
+//            prices.append(item.price);
+//            quantity.append(item.quantity);
+//            id.append(item.id);
+//        }
     }
 }

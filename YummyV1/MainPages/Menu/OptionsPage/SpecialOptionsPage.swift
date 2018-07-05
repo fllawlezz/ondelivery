@@ -56,10 +56,9 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     var sectionHeaders: [String]!
     var menuPage: MenuPage?
     var menuCell: MenuCell?
-//    var selectedOptionsArray = [SpecialOption]();
     var selectedIndexPaths = [IndexPath]();
     var selectedOptions = [SpecialOption]();
-    
+    var itemExists = false;
     var orderItemTotal = 0.00;
     
     override func viewDidLoad() {
@@ -218,10 +217,45 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         return header;
     }
     
+
+    
+    @objc func handleAddFood(){
+        handleItemExists();
+        if(!itemExists){
+            let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
+            orderItem.id = String(self.mainFoodID!);
+            orderItem.itemPrice = self.mainFoodPrice!;
+            orderItem.hasOptions = true;
+            calculateFoodPrice();
+            let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
+            for option in self.selectedOptions{
+                let appendedOption = SpecialOption();
+                appendedOption.specialOptionName = option.specialOptionName;
+                appendedOption.specialOptionPrice = option.specialOptionPrice;
+                appendedOption.specialOptionID = option.specialOptionID;
+                
+                foodItem.options.append(appendedOption);
+            }
+            orderItem.foodItems.append(foodItem);
+            self.menuPage?.menuItemArray.append(orderItem);
+            
+            if(menuCell != nil){
+                updateMenuCell();
+            }else{
+                self.menuPage?.collectionView.reloadData();
+            }
+            
+            handleMenuAddItem();
+            
+            self.menuPage?.navigationController?.popViewController(animated: true);
+        }
+    }
+    
     func handleItemExists(){
         let mainItemArray = menuPage!.menuItemArray;//reference
         for mainItem in mainItemArray{
             if(self.mainFoodName == mainItem.name){
+                self.itemExists = true;
                 calculateFoodPrice();
                 let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
                 for option in self.selectedOptions{
@@ -236,40 +270,21 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
                 mainItem.foodItems.append(foodItem);
                 mainItem.addPrice(price: orderItemTotal);
                 mainItem.addQuantity(giveQuantity: 1);
-                updateMenuCell();
+                if(menuCell != nil){
+                    updateMenuCell();
+                }else{
+                    self.menuPage?.collectionView.reloadData();
+                }
                 handleMenuAddItem();
                 self.menuPage?.navigationController?.popViewController(animated: true);
             }
         }
     }
     
-    @objc func handleAddFood(){
-        handleItemExists();
-        
-        let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
-        calculateFoodPrice();
-        let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
-        for option in self.selectedOptions{
-            let appendedOption = SpecialOption();
-            appendedOption.specialOptionName = option.specialOptionName;
-            appendedOption.specialOptionPrice = option.specialOptionPrice;
-            appendedOption.specialOptionID = option.specialOptionID;
-            
-            foodItem.options.append(appendedOption);
-        }
-        orderItem.foodItems.append(foodItem);
-        self.menuPage?.menuItemArray.append(orderItem);
-        
-        updateMenuCell();
-        handleMenuAddItem();
-        
-        self.menuPage?.navigationController?.popViewController(animated: true);
-    }
-    
     fileprivate func updateMenuCell(){
-        let quantity = self.menuCell!.totalNumberOfFood + 1;
-        self.menuCell!.setQuantity(quantity: quantity);
-        self.menuCell!.buttonShown = true;
+        let quantity = (self.menuCell?.totalNumberOfFood)! + 1;
+        self.menuCell?.setQuantity(quantity: quantity);
+        self.menuCell?.buttonShown = true;
         self.menuCell?.unhideAddButton();
     }
     
@@ -307,6 +322,10 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         }else if(orderTotalSum! <= 20 && freeOrders! > 0){
             menuBottomBar?.setFreeOrderDeliveryPrice();
         }
+        
+//        popUpMenu?.numberOfItems += 1;
+//                popUpMenu?.quantity.text = String(popUpMenu.numberOfItems!);
+
         
         menuPage?.popUpMenu.collectionView.reloadData();
     }

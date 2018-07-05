@@ -202,6 +202,7 @@ class MenuCell: UICollectionViewCell{
             
             totalNumberOfFood += 1;
             self.numberOfItems.text = String(totalNumberOfFood);
+            print(totalNumberOfFood);
             //manipulate menuPage
             handleMenuPageAddItem();
         }
@@ -215,12 +216,14 @@ class MenuCell: UICollectionViewCell{
                 
                 let foodItem = FoodItem(foodName: self.foodName!, foodPrice: self.foodPrice, hasOptions: false);
                 food.foodItems.append(foodItem);
-                
+                addFoodUpdateUI(foodPrice: foodItem.foodPrice!);
                 return;
             }
         }
         
         let orderItem = MainItem(name: self.foodName!, price: self.foodPrice, quantity: 1);
+        orderItem.id = self.foodID!;
+        orderItem.itemPrice = self.foodPrice;
         let foodItem = FoodItem(foodName: self.foodName!, foodPrice: self.foodPrice, hasOptions: false);
         orderItem.foodItems.append(foodItem);
         menuPage!.menuItemArray.append(orderItem);
@@ -294,6 +297,7 @@ class MenuCell: UICollectionViewCell{
                 food.subtractQuantity(giveQuantity: 1);
                 food.subtractPrice(price: subtractedFood.foodPrice!);
                 subtractFoodUpdateUI(foodPrice: subtractedFood.foodPrice!);
+                
                 if(food.quantity == 0){
                     menuPage?.menuItemArray.remove(at: count);
                     menuPage?.popUpMenu.collectionView.reloadData();
@@ -333,6 +337,7 @@ class MenuCell: UICollectionViewCell{
     fileprivate func handleLoadOptions(){
         let conn = Conn();
         let postBody = "FoodID=\(self.foodID!)"
+        print(postBody);
         conn.connect(fileName: "LoadOptions.php", postString: postBody) { (result) in
             if(urlData != nil){
                 do{
@@ -347,6 +352,7 @@ class MenuCell: UICollectionViewCell{
                     
                     DispatchQueue.main.async {
                         let numberOfSections = Int(numSections)!
+                        print(numberOfSections);
                         
                         var count = 0;
                         var optionsBySection = [[SpecialOption]]();
@@ -377,6 +383,8 @@ class MenuCell: UICollectionViewCell{
                             optionsBySection.append(sectionOfFoods);
                             count+=1;
                         }
+                        print(optionsBySection.count);
+                        
                         var sectionNameArray = [String]()
                         for sectionName in sectionNames{
                             let sectionName = sectionName as! String
