@@ -344,7 +344,6 @@ class MenuCell: UICollectionViewCell{
                     let json = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
 //                    print(json);
                     let numSections = json["numberOfSections"] as! String;
-//                    let foodOptionSections = json["foodOptionSection"] as! NSArray;
                     let extraFoodNames = json["extraFoodNames"] as! NSArray;
                     let extraFoodPrices = json["extraFoodPrices"] as! NSArray;
                     let extraFoodIDs = json["extraFoodIDs"] as! NSArray;
@@ -383,7 +382,6 @@ class MenuCell: UICollectionViewCell{
                             optionsBySection.append(sectionOfFoods);
                             count+=1;
                         }
-                        print(optionsBySection.count);
                         
                         var sectionNameArray = [String]()
                         for sectionName in sectionNames{

@@ -15,7 +15,6 @@ import CallKit
 //var menuItemArray = [MenuItem]();//saves the menu items that are added when added into an array
 
 var pageNum = 1;// page num is for the navigation bar
-var finalDeliveryPrice = 0.00;
 
 class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate{
     
@@ -207,9 +206,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         
         navBar.setCollectionViewReference(collectionView: collectionView);
         
-        //give botbar reference to popUpMenu
-//        popUpMenu.passBotBarReference(reference: menuButtonBar);
-        
     }
     
     fileprivate func setupSidebar(){
@@ -368,16 +364,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 menuItemArray.remove(at: index!);//remove the item at the menuArray
             }
         }
-    }
-    
-    //MARK: Button targets
-    //MenuAddButton
-    @objc private func addItem(indexPath: IndexPath, price: Double){
-        
-    }
-    
-    //MENUSubtractButton
-    @objc private func subItem(indexPath: IndexPath, price: Double){
     }
     
     //MARK: FoodsList

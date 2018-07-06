@@ -178,7 +178,7 @@ class PopUpMenuCell: UICollectionViewCell{
             while(count < menuItemArray!.count){
                 let mainFoodItem = menuItemArray![count];
                 if(mainFoodItem.name == self.foodNameLabel.text!){
-                    print("mainFoodItemCount:\(mainFoodItem.foodItems.count)");
+//                    print("mainFoodItemCount:\(mainFoodItem.foodItems.count)");
                     let foodItem = mainFoodItem.foodItems.removeLast();
                     mainFoodItem.subtractQuantity(giveQuantity: 1);
                     mainFoodItem.subtractPrice(price: foodItem.foodPrice!);

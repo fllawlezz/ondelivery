@@ -220,34 +220,36 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
 
     
     @objc func handleAddFood(){
-        handleItemExists();
-        if(!itemExists){
-            let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
-            orderItem.id = String(self.mainFoodID!);
-            orderItem.itemPrice = self.mainFoodPrice!;
-            orderItem.hasOptions = true;
-            calculateFoodPrice();
-            let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
-            for option in self.selectedOptions{
-                let appendedOption = SpecialOption();
-                appendedOption.specialOptionName = option.specialOptionName;
-                appendedOption.specialOptionPrice = option.specialOptionPrice;
-                appendedOption.specialOptionID = option.specialOptionID;
+        if(selectedIndexPaths.count == numberOfSections){
+            handleItemExists();
+            if(!itemExists){
+                let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
+                orderItem.id = String(self.mainFoodID!);
+                orderItem.itemPrice = self.mainFoodPrice!;
+                orderItem.hasOptions = true;
+                calculateFoodPrice();
+                let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
+                for option in self.selectedOptions{
+                    let appendedOption = SpecialOption();
+                    appendedOption.specialOptionName = option.specialOptionName;
+                    appendedOption.specialOptionPrice = option.specialOptionPrice;
+                    appendedOption.specialOptionID = option.specialOptionID;
+                    
+                    foodItem.options.append(appendedOption);
+                }
+                orderItem.foodItems.append(foodItem);
+                self.menuPage?.menuItemArray.append(orderItem);
                 
-                foodItem.options.append(appendedOption);
+                if(menuCell != nil){
+                    updateMenuCell();
+                }else{
+                    self.menuPage?.collectionView.reloadData();
+                }
+                
+                handleMenuAddItem();
+                
+                self.menuPage?.navigationController?.popViewController(animated: true);
             }
-            orderItem.foodItems.append(foodItem);
-            self.menuPage?.menuItemArray.append(orderItem);
-            
-            if(menuCell != nil){
-                updateMenuCell();
-            }else{
-                self.menuPage?.collectionView.reloadData();
-            }
-            
-            handleMenuAddItem();
-            
-            self.menuPage?.navigationController?.popViewController(animated: true);
         }
     }
     
