@@ -16,15 +16,88 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
     var userID: String?
     
     //MARK: UI Elements
-    var titleMessage: UILabel!;
-    var addressField: TextFieldPadded!;
-    var zipcodeField: TextFieldPadded!;
-    var cityField: TextFieldPadded!;
-    var stateField: TextFieldPadded!;
+    var titleMessage: UILabel = {
+        let titleMessage = UILabel();
+        titleMessage.translatesAutoresizingMaskIntoConstraints = false;
+        titleMessage.text = "Enter Address: ";
+        titleMessage.textColor = UIColor.black;
+        titleMessage.font = UIFont(name: "Montserrat-SemiBold", size: 16);
+        titleMessage.textAlignment = .center;
+        return titleMessage;
+    }()
+    var addressField: TextFieldPadded = {
+        let addressField = TextFieldPadded();
+        addressField.translatesAutoresizingMaskIntoConstraints = false;
+        addressField.placeholder = "333 3rd street...";
+        addressField.font = UIFont(name: "Montserrat-Regular", size: 14);
+        addressField.textColor = UIColor.black;
+        addressField.borderStyle = .roundedRect
+        addressField.autocorrectionType = .no;
+        addressField.spellCheckingType = .no;
+        addressField.returnKeyType = .next;
+        addressField.backgroundColor = UIColor.veryLightGray;
+        return addressField;
+    }()
+    var zipcodeField: TextFieldPadded = {
+        let zipcodeField = TextFieldPadded();
+        zipcodeField.translatesAutoresizingMaskIntoConstraints = false;
+        zipcodeField.placeholder = "Zipcode";
+        zipcodeField.font = UIFont(name: "Montserrat-Regular", size: 14);
+        zipcodeField.textColor = UIColor.black;
+        zipcodeField.backgroundColor = UIColor.veryLightGray;
+        zipcodeField.borderStyle = .roundedRect;
+        zipcodeField.autocorrectionType = .no;
+        zipcodeField.spellCheckingType = .no
+        zipcodeField.keyboardType = .numberPad;
+        return zipcodeField;
+    }()
+    var cityField: TextFieldPadded = {
+        let cityField = TextFieldPadded();
+        cityField.translatesAutoresizingMaskIntoConstraints = false;
+        cityField.placeholder = "City";
+        cityField.font = UIFont(name: "Montserrat-Regular", size: 14);
+        cityField.textColor = UIColor.black;
+        cityField.backgroundColor = UIColor.veryLightGray;
+        cityField.borderStyle = .roundedRect;
+        cityField.autocorrectionType = .no;
+        cityField.spellCheckingType = .no;
+        cityField.returnKeyType = .next;
+        return cityField;
+    }()
+    var stateField: TextFieldPadded = {
+        let stateField = TextFieldPadded();
+        stateField.translatesAutoresizingMaskIntoConstraints = false;
+        stateField.placeholder = "State";
+        stateField.textColor = UIColor.black;
+        stateField.backgroundColor = UIColor.veryLightGray;
+        stateField.borderStyle = .roundedRect;
+        stateField.font = UIFont(name: "Montserrat-Regular", size: 14);
+        stateField.textAlignment = .center;
+        return stateField;
+    }()
     var statePicker = UIPickerView();
     let stateList = StateList();
-    var addButton: UIButton!;
-    var errorLabel: UILabel!;
+    var addButton: UIButton = {
+        let addButton = UIButton(type: .system);
+        addButton.translatesAutoresizingMaskIntoConstraints = false;
+        addButton.setTitle("Add", for: .normal);
+        addButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 16);
+        addButton.setTitleColor(UIColor.black, for: .normal);
+        addButton.backgroundColor = UIColor.appYellow;
+        addButton.layer.borderColor = UIColor.lightGray.cgColor;
+        addButton.layer.borderWidth = 0.25;
+        addButton.layer.cornerRadius = 5;
+        return addButton;
+    }()
+    var errorLabel: UILabel = {
+        let errorLabel = UILabel();
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false;
+        errorLabel.font = UIFont.italicSystemFont(ofSize: 10);
+        errorLabel.textColor = UIColor.red;
+        errorLabel.textAlignment = .center;
+        errorLabel.text = "You already added that address";
+        return errorLabel;
+    }()
     var dispatchGroup = DispatchGroup();
     
     override func viewDidLoad() {
@@ -47,12 +120,6 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
     
     private func setup(){
         //titleMessage
-        titleMessage = UILabel();
-        titleMessage.translatesAutoresizingMaskIntoConstraints = false;
-        titleMessage.text = "Enter Address: ";
-        titleMessage.textColor = UIColor.black;
-        titleMessage.font = UIFont(name: "Montserrat-SemiBold", size: 16);
-        titleMessage.textAlignment = .center;
         self.view.addSubview(titleMessage);
         titleMessage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
         titleMessage.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 10).isActive = true;
@@ -60,17 +127,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         titleMessage.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         
         //address field
-        addressField = TextFieldPadded();
-        addressField.translatesAutoresizingMaskIntoConstraints = false;
-        addressField.placeholder = "333 3rd street...";
-        addressField.font = UIFont(name: "Montserrat-Regular", size: 14);
-        addressField.textColor = UIColor.black;
-        addressField.borderStyle = .roundedRect
-        addressField.autocorrectionType = .no;
-        addressField.spellCheckingType = .no;
-        addressField.returnKeyType = .next;
         addressField.delegate = self;
-        addressField.backgroundColor = UIColor.veryLightGray;
         self.view.addSubview(addressField);
         //need x,y,width,height;
         addressField.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
@@ -79,17 +136,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         addressField.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         
         //zipcode field
-        zipcodeField = TextFieldPadded();
         zipcodeField.delegate = self;
-        zipcodeField.translatesAutoresizingMaskIntoConstraints = false;
-        zipcodeField.placeholder = "Zipcode";
-        zipcodeField.font = UIFont(name: "Montserrat-Regular", size: 14);
-        zipcodeField.textColor = UIColor.black;
-        zipcodeField.backgroundColor = UIColor.veryLightGray;
-        zipcodeField.borderStyle = .roundedRect;
-        zipcodeField.autocorrectionType = .no;
-        zipcodeField.spellCheckingType = .no
-        zipcodeField.keyboardType = .numberPad;
         self.view.addSubview(zipcodeField);
         //need x,y,width,height
         zipcodeField.leftAnchor.constraint(equalTo: addressField.leftAnchor).isActive = true;
@@ -98,17 +145,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         zipcodeField.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         
         //city Field
-        cityField = TextFieldPadded();
         cityField.delegate = self;
-        cityField.translatesAutoresizingMaskIntoConstraints = false;
-        cityField.placeholder = "City";
-        cityField.font = UIFont(name: "Montserrat-Regular", size: 14);
-        cityField.textColor = UIColor.black;
-        cityField.backgroundColor = UIColor.veryLightGray;
-        cityField.borderStyle = .roundedRect;
-        cityField.autocorrectionType = .no;
-        cityField.spellCheckingType = .no;
-        cityField.returnKeyType = .next;
         self.view.addSubview(cityField);
         //need x,y,width,height
         cityField.rightAnchor.constraint(equalTo: self.addressField.rightAnchor).isActive = true;
@@ -117,15 +154,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         cityField.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         
         //stateField
-        stateField = TextFieldPadded();
         stateField.delegate = self;
-        stateField.translatesAutoresizingMaskIntoConstraints = false;
-        stateField.placeholder = "State";
-        stateField.textColor = UIColor.black;
-        stateField.backgroundColor = UIColor.veryLightGray;
-        stateField.borderStyle = .roundedRect;
-        stateField.font = UIFont(name: "Montserrat-Regular", size: 14);
-        stateField.textAlignment = .center;
         stateField.inputView = statePicker;
         self.view.addSubview(stateField);
         //need x,y,width,height
@@ -135,15 +164,6 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         stateField.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         
         //add button
-        addButton = UIButton(type: .system);
-        addButton.translatesAutoresizingMaskIntoConstraints = false;
-        addButton.setTitle("Add", for: .normal);
-        addButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 16);
-        addButton.setTitleColor(UIColor.black, for: .normal);
-        addButton.backgroundColor = UIColor.appYellow;
-        addButton.layer.borderColor = UIColor.lightGray.cgColor;
-        addButton.layer.borderWidth = 0.25;
-        addButton.layer.cornerRadius = 5;
         self.view.addSubview(addButton);
         //need x,y,width,height
         addButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
@@ -153,12 +173,6 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         addButton.addTarget(self, action: #selector(self.addAddress), for: .touchUpInside);
         
         //errorLabel
-        errorLabel = UILabel();
-        errorLabel.translatesAutoresizingMaskIntoConstraints = false;
-        errorLabel.font = UIFont.italicSystemFont(ofSize: 10);
-        errorLabel.textColor = UIColor.red;
-        errorLabel.textAlignment = .center;
-        errorLabel.text = "You already added that address";
         self.view.addSubview(errorLabel);
         errorLabel.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
         errorLabel.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -10).isActive = true;
@@ -210,14 +224,14 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                             }catch{
                                 print("error");
                             }
-                            
-                            if(addresses.count > 1){
-                                self.selectAddress?.addressList.reloadData();
-                            }else{
-//                                addresses.append(address);
-                                self.selectAddress?.mainAddress.text = self.addressField.text!;
-                                self.selectAddress?.addAddressButton.isHidden = false;
-                            }
+                            self.selectAddress?.addressList.reloadData();
+//                            if(addresses.count > 1){
+//                                self.selectAddress?.addressList.reloadData();
+//                            }else{
+////                                addresses.append(address);
+////                                self.selectAddress?.mainAddress.text = self.addressField.text!;
+////                                self.selectAddress?.addAddressButton.isHidden = false;
+//                            }
                             
                             //pop view controller
                             self.navigationController?.popViewController(animated: true);
@@ -234,20 +248,16 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                 address.setValue(self.zipcodeField.text!, forKey: "zipcode");
                 address.setValue(self.stateField.text!, forKey: "state");
                 address.setValue(addressID, forKey: "addressID");
-    //
-    //            do{
-    //                try context?.save();
-    //                addresses.append(address);
-    //            }catch{
-    //                print("error");
-    //            }
+                
                 addresses.append(address);
-                if(addresses.count > 1){
-                    self.selectAddress?.addressList.reloadData();
-                }else{
-                    self.selectAddress?.mainAddress.text = addressField.text!;
-                    self.selectAddress?.addAddressButton.isHidden = false;
-                }
+                
+                self.selectAddress?.addressList.reloadData();
+//                if(addresses.count > 1){
+//                    self.selectAddress?.addressList.reloadData();
+//                }else{
+//                    self.selectAddress?.mainAddress.text = addressField.text!;
+//                    self.selectAddress?.addAddressButton.isHidden = false;
+//                }
 //                addresses.append(address);
                 //pop view controller
                 self.navigationController?.popViewController(animated: true);

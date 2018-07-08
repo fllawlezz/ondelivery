@@ -11,14 +11,77 @@ import UIKit
 
 class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     
-    var deliveryDescription: UILabel!;
-    var backgroundView: UIView!;
-    var asapButton: UIButton!;
-    var laterButton: UIButton!;
-    var timeField: TextFieldPadded!;
+    var reviewPage: ReviewPage?{
+        didSet{
+            if(reviewPage!.deliveryTime == "ASAP"){
+                self.deliveryTime = reviewPage?.deliveryTime;
+                self.asapBool = true;
+            }else{
+                self.deliveryTime = reviewPage?.deliveryTime;
+                self.asapBool = false;
+            }
+        }
+    }
+    
+    var deliveryTime: String?
+    var deliveryDescription: UILabel = {
+        let deliveryDescription = UILabel();
+        deliveryDescription.translatesAutoresizingMaskIntoConstraints = false;
+        deliveryDescription.text = "What time do you want your delivery?";
+        deliveryDescription.font = UIFont.montserratRegular(fontSize: 15);
+        deliveryDescription.textColor = UIColor.black;
+        deliveryDescription.textAlignment = .center;
+        return deliveryDescription;
+    }()
+    var backgroundView: UIView = {
+        let backgroundView = UIView();
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false;
+        backgroundView.backgroundColor = UIColor.white;
+        return backgroundView;
+    }()
+    var asapButton: UIButton = {
+        let asapButton = UIButton(type: .system);
+        asapButton.translatesAutoresizingMaskIntoConstraints = false;
+        asapButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
+        asapButton.setTitle("ASAP", for: .normal);
+        asapButton.setTitleColor(UIColor.black, for: .normal);
+        asapButton.layer.borderWidth = 0.25;
+        asapButton.layer.borderColor = UIColor.black.cgColor;
+        asapButton.layer.cornerRadius = 5;
+        return asapButton;
+    }()
+    var laterButton: UIButton = {
+        let laterButton = UIButton(type: .system);
+        laterButton.translatesAutoresizingMaskIntoConstraints = false;
+        laterButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
+        laterButton.setTitle("Later", for: .normal);
+        laterButton.setTitleColor(UIColor.black, for: .normal);
+        laterButton.layer.borderWidth = 0.25;
+        laterButton.layer.borderColor = UIColor.black.cgColor;
+        laterButton.layer.cornerRadius = 5;
+        return laterButton;
+    }()
+    var timeField: TextFieldPadded = {
+        let timeField = TextFieldPadded();
+        timeField.translatesAutoresizingMaskIntoConstraints = false;
+        timeField.textColor = UIColor.gray;
+        timeField.backgroundColor = UIColor.veryLightGray;
+        timeField.borderStyle = .roundedRect;
+        timeField.textAlignment = .center;
+        timeField.font = UIFont.montserratRegular(fontSize: 15);
+        return timeField;
+    }()
     var asapBool: Bool = true;
     var timePicker = UIDatePicker();
-    var submitButton: UIButton!;
+    var submitButton: UIButton = {
+        let submitButton = UIButton(type: .system);
+        submitButton.translatesAutoresizingMaskIntoConstraints = false;
+        submitButton.backgroundColor = UIColor.black;
+        submitButton.setTitleColor(UIColor.white, for: .normal);
+        submitButton.setTitle("Submit", for: .normal);
+        submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 18);
+        return submitButton;
+    }()
     
     override func viewDidLoad() {
         self.navigationItem.title = "Delivery Time";
@@ -27,55 +90,59 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         
         self.view.backgroundColor = UIColor.white;
         
-        if(deliveryTimeUserText != "ASAP"){
-            asapBool = false;
-        }else{
-            asapBool = true;
-        }
-        
         setup();
         datePickerSetup();
     }
     
     private func setup(){
-        deliveryDescription = UILabel();
-        deliveryDescription.translatesAutoresizingMaskIntoConstraints = false;
-        deliveryDescription.text = "What time do you want your delivery?";
-        deliveryDescription.font = UIFont(name: "Copperplate", size: 15);
-        deliveryDescription.textColor = UIColor.black;
-        deliveryDescription.textAlignment = .center;
-        self.view.addSubview(deliveryDescription);
-        //need x,y,width,height
-        deliveryDescription.leftAnchor.constraint(equalTo: self.view.leftAnchor,constant: 5).isActive = true;
-        deliveryDescription.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true;
-        deliveryDescription.heightAnchor.constraint(equalToConstant: 30).isActive = true;
-        deliveryDescription.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true;
+        setupDeliveryDescription();
+        setupBackgroundView();
+        setupAsapButton();
         
-        backgroundView = UIView();
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false;
-        backgroundView.backgroundColor = UIColor.white;
+        //laterButton
+        setupLaterButton();
+        
+        //timeFiedl
+        setupTimeField();
+        
+//        if(asapBool){
+//            timeField.isUserInteractionEnabled = false;
+//        }else{
+//            timeField.textColor = UIColor.black;
+////            timeField.text = deliveryTimeUserText;
+//            timeField.isUserInteractionEnabled = true;
+//            timeField.becomeFirstResponder();
+//        }
+        
+        //submit button
+        setupSubmitButton();
+        
+    }
+    
+    fileprivate func setupBackgroundView(){
         self.view.addSubview(backgroundView);
         //x,y,width,height
         backgroundView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
         backgroundView.topAnchor.constraint(equalTo: self.deliveryDescription.bottomAnchor, constant: 10).isActive = true;
         backgroundView.widthAnchor.constraint(equalToConstant: 220).isActive = true;
         backgroundView.heightAnchor.constraint(equalToConstant: 80).isActive = true;
-        
-        //asapButton
-        asapButton = UIButton(type: .system);
-        asapButton.translatesAutoresizingMaskIntoConstraints = false;
-        asapButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
-        asapButton.setTitle("ASAP", for: .normal);
-        asapButton.setTitleColor(UIColor.black, for: .normal);
+    }
+    
+    fileprivate func setupDeliveryDescription(){
+        self.view.addSubview(deliveryDescription);
+        //need x,y,width,height
+        deliveryDescription.leftAnchor.constraint(equalTo: self.view.leftAnchor,constant: 5).isActive = true;
+        deliveryDescription.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true;
+        deliveryDescription.heightAnchor.constraint(equalToConstant: 30).isActive = true;
+        deliveryDescription.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true;
+    }
+    
+    fileprivate func setupAsapButton(){
         if(asapBool){
             asapButton.backgroundColor = UIColor.appYellowDark;
         }else{
             asapButton.backgroundColor = UIColor.appYellow;
         }
-        
-        asapButton.layer.borderWidth = 0.25;
-        asapButton.layer.borderColor = UIColor.black.cgColor;
-        asapButton.layer.cornerRadius = 5;
         self.backgroundView.addSubview(asapButton);
         //need x,y,width,height
         asapButton.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 5).isActive = true;
@@ -83,21 +150,14 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         asapButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
         asapButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
         asapButton.addTarget(self, action: #selector(self.asapPressed), for: .touchUpInside);
-        
-        //laterButton
-        laterButton = UIButton(type: .system);
-        laterButton.translatesAutoresizingMaskIntoConstraints = false;
-        laterButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
-        laterButton.setTitle("Later", for: .normal);
-        laterButton.setTitleColor(UIColor.black, for: .normal);
+    }
+    
+    fileprivate func setupLaterButton(){
         if(asapBool){
             laterButton.backgroundColor = UIColor.appYellow;
         }else{
             laterButton.backgroundColor = UIColor.appYellowDark;
         }
-        laterButton.layer.borderWidth = 0.25;
-        laterButton.layer.borderColor = UIColor.black.cgColor;
-        laterButton.layer.cornerRadius = 5;
         
         self.backgroundView.addSubview(laterButton);
         //need x,y,width,height
@@ -106,38 +166,29 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         laterButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
         laterButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
         laterButton.addTarget(self, action: #selector(self.laterPressed), for: .touchUpInside);
-        
-        //timeFiedl
-        timeField = TextFieldPadded();
-        timeField.translatesAutoresizingMaskIntoConstraints = false;
+    }
+    
+    fileprivate func setupTimeField(){
         timeField.delegate = self;
         timeField.inputView = timePicker;
-        timeField.textColor = UIColor.gray;
-        timeField.backgroundColor = UIColor.veryLightGray;
-        timeField.borderStyle = .roundedRect;
-        timeField.textAlignment = .center;
-        timeField.font = UIFont(name: "Copperplate", size: 16);
         self.view.addSubview(timeField);
         timeField.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
         timeField.topAnchor.constraint(equalTo: backgroundView.bottomAnchor, constant: 20).isActive = true;
         timeField.widthAnchor.constraint(equalToConstant: 200).isActive = true;
         timeField.heightAnchor.constraint(equalToConstant: 40).isActive = true;
+        
         if(asapBool){
             timeField.isUserInteractionEnabled = false;
         }else{
             timeField.textColor = UIColor.black;
-            timeField.text = deliveryTimeUserText;
+            timeField.text = self.deliveryTime;
             timeField.isUserInteractionEnabled = true;
             timeField.becomeFirstResponder();
         }
-        
-        //submit button
-        submitButton = UIButton(type: .system);
-        submitButton.translatesAutoresizingMaskIntoConstraints = false;
-        submitButton.backgroundColor = UIColor.black;
-        submitButton.setTitleColor(UIColor.white, for: .normal);
-        submitButton.setTitle("Submit", for: .normal);
-        submitButton.titleLabel?.font = UIFont(name: "Copperplate", size: 25);
+
+    }
+    
+    fileprivate func setupSubmitButton(){
         self.view.addSubview(submitButton);
         //need x,y,width,height
         submitButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
@@ -145,9 +196,7 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         submitButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         submitButton.heightAnchor.constraint(equalToConstant: 80).isActive = true;
         submitButton.addTarget(self, action: #selector(self.submit), for: .touchUpInside);
-        
     }
-    
     
     private func datePickerSetup(){
         let time = Date();
@@ -158,6 +207,7 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         timePicker.datePickerMode = UIDatePickerMode.time;
         let string = timeFormatter.string(from: time);
         timeField.text = string;
+        self.deliveryTime = string;
         timePicker.addTarget(self, action: #selector(self.timeChanged), for: .valueChanged);
         
     }
@@ -190,15 +240,17 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         formatter.dateFormat = "h:mm a";
         let string = formatter.string(from: time);
         self.timeField.text = string;
+        self.deliveryTime = string;
     }
     
     @objc private func submit(){
         if(!asapBool){
-            deliveryTimeUserText = self.timeField.text;
+            self.deliveryTime = self.timeField.text;
+            self.navigationController?.popViewController(animated: true);
         }else{
-            deliveryTimeUserText = "ASAP";
+            self.deliveryTime = "ASAP";
+            self.navigationController?.popViewController(animated: true);
         }
-        self.navigationController?.popViewController(animated: true);
     }
     
     //MARK: TouchesBegan

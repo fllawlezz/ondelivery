@@ -14,7 +14,6 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
     
     var customTabBar: CustomTabBarController?
     
-//    var addresses: [UserAddress]?
     var addresses:[NSManagedObject]?
     var cards: [PaymentCard]?
     
@@ -182,9 +181,6 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
             }catch{
                 print("Error");
             }
-            
-            addressIDText = nil;
-            addressUserText = nil;
             
             if let orderPage = self.customTabBar?.orderPage{
                 orderPage.pastOrders?.removeAll();

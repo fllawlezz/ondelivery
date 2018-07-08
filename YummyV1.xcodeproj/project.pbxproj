@@ -31,7 +31,7 @@
 		CA099C5E20119AF40012412F /* AddPaymentPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA099C5D20119AF40012412F /* AddPaymentPage.swift */; };
 		CA14FD651FEDBF670004E7CD /* SelectAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14FD641FEDBF670004E7CD /* SelectAddress.swift */; };
 		CA14FD671FF0A7560004E7CD /* DeliveryTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14FD661FF0A7560004E7CD /* DeliveryTime.swift */; };
-		CA14FD691FF0A76B0004E7CD /* SelectPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14FD681FF0A76B0004E7CD /* SelectPayment.swift */; };
+		CA14FD691FF0A76B0004E7CD /* SelectPaymentPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14FD681FF0A76B0004E7CD /* SelectPaymentPage.swift */; };
 		CA14FD6C1FF1129C0004E7CD /* NewAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14FD6B1FF1129C0004E7CD /* NewAddress.swift */; };
 		CA1A3AB92083D24F00473D37 /* ProfileLoginFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1A3AB82083D24F00473D37 /* ProfileLoginFunctions.swift */; };
 		CA1E3D8020E5E5D6008529C6 /* FiltersPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1E3D7F20E5E5D6008529C6 /* FiltersPage.swift */; };
@@ -110,6 +110,12 @@
 		CAF1EC5820EEDF2200B80B59 /* ReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC5720EEDF2200B80B59 /* ReviewCell.swift */; };
 		CAF1EC5A20EEDF5100B80B59 /* OptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC5920EEDF5100B80B59 /* OptionsCell.swift */; };
 		CAF1EC5C20EEE0AD00B80B59 /* ReviewPayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC5B20EEE0AD00B80B59 /* ReviewPayButton.swift */; };
+		CAF1EC5F20F0454700B80B59 /* AddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC5E20F0454700B80B59 /* AddressCell.swift */; };
+		CAF1EC6120F0457200B80B59 /* OneAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC6020F0457200B80B59 /* OneAddressCell.swift */; };
+		CAF1EC6320F0478D00B80B59 /* GlobalVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC6220F0478D00B80B59 /* GlobalVariables.swift */; };
+		CAF1EC6620F0640600B80B59 /* CreditCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC6520F0640600B80B59 /* CreditCardCell.swift */; };
+		CAF1EC6A20F1791B00B80B59 /* UserInfoTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC6920F1791B00B80B59 /* UserInfoTableView.swift */; };
+		CAF1EC6D20F17A7B00B80B59 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF1EC6C20F17A7B00B80B59 /* Customer.swift */; };
 		CAF86F0B1FBE82DA008ADD1E /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF86F0A1FBE82DA008ADD1E /* CustomTabBarController.swift */; };
 		CAF86F131FBE9928008ADD1E /* RecomendedMainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF86F121FBE9928008ADD1E /* RecomendedMainPage.swift */; };
 		CAFB762C2068ED4700EEFD10 /* SubscriptionChargePage2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFB762B2068ED4700EEFD10 /* SubscriptionChargePage2.swift */; };
@@ -163,7 +169,7 @@
 		CA099C5D20119AF40012412F /* AddPaymentPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPaymentPage.swift; sourceTree = "<group>"; };
 		CA14FD641FEDBF670004E7CD /* SelectAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAddress.swift; sourceTree = "<group>"; };
 		CA14FD661FF0A7560004E7CD /* DeliveryTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliveryTime.swift; sourceTree = "<group>"; };
-		CA14FD681FF0A76B0004E7CD /* SelectPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPayment.swift; sourceTree = "<group>"; };
+		CA14FD681FF0A76B0004E7CD /* SelectPaymentPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPaymentPage.swift; sourceTree = "<group>"; };
 		CA14FD6B1FF1129C0004E7CD /* NewAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAddress.swift; sourceTree = "<group>"; };
 		CA1A3AB82083D24F00473D37 /* ProfileLoginFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLoginFunctions.swift; sourceTree = "<group>"; };
 		CA1E3D7F20E5E5D6008529C6 /* FiltersPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersPage.swift; sourceTree = "<group>"; };
@@ -246,6 +252,12 @@
 		CAF1EC5720EEDF2200B80B59 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
 		CAF1EC5920EEDF5100B80B59 /* OptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsCell.swift; sourceTree = "<group>"; };
 		CAF1EC5B20EEE0AD00B80B59 /* ReviewPayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPayButton.swift; sourceTree = "<group>"; };
+		CAF1EC5E20F0454700B80B59 /* AddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressCell.swift; sourceTree = "<group>"; };
+		CAF1EC6020F0457200B80B59 /* OneAddressCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneAddressCell.swift; sourceTree = "<group>"; };
+		CAF1EC6220F0478D00B80B59 /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
+		CAF1EC6520F0640600B80B59 /* CreditCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditCardCell.swift; sourceTree = "<group>"; };
+		CAF1EC6920F1791B00B80B59 /* UserInfoTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTableView.swift; sourceTree = "<group>"; };
+		CAF1EC6C20F17A7B00B80B59 /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		CAF86F0A1FBE82DA008ADD1E /* CustomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		CAF86F121FBE9928008ADD1E /* RecomendedMainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecomendedMainPage.swift; sourceTree = "<group>"; };
 		CAFB762B2068ED4700EEFD10 /* SubscriptionChargePage2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionChargePage2.swift; sourceTree = "<group>"; };
@@ -311,7 +323,8 @@
 		CA099C5C20119AE10012412F /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				CA14FD681FF0A76B0004E7CD /* SelectPayment.swift */,
+				CAF1EC6420F063F800B80B59 /* Cells */,
+				CA14FD681FF0A76B0004E7CD /* SelectPaymentPage.swift */,
 				CA099C5D20119AF40012412F /* AddPaymentPage.swift */,
 			);
 			path = Payments;
@@ -321,8 +334,6 @@
 			isa = PBXGroup;
 			children = (
 				CAF1EC5520EEDA4500B80B59 /* DeliveryTime */,
-				CA099C5C20119AE10012412F /* Payments */,
-				CA14FD6A1FF1128D0004E7CD /* Address */,
 			);
 			path = ReviewSubPages;
 			sourceTree = "<group>";
@@ -330,6 +341,7 @@
 		CA14FD6A1FF1128D0004E7CD /* Address */ = {
 			isa = PBXGroup;
 			children = (
+				CAF1EC5D20F0453700B80B59 /* AddressCell */,
 				CA14FD6B1FF1129C0004E7CD /* NewAddress.swift */,
 				CA14FD641FEDBF670004E7CD /* SelectAddress.swift */,
 				CA099C5A2011924A0012412F /* StateList.swift */,
@@ -542,9 +554,11 @@
 		CA931C361FBCFECF00E9FF61 /* MainPages */ = {
 			isa = PBXGroup;
 			children = (
+				CA099C5C20119AE10012412F /* Payments */,
+				CA14FD6A1FF1128D0004E7CD /* Address */,
 				CAB7C4FB208689CD00FF0CD9 /* StartPage */,
 				CA5A7A11205F3E25003B024F /* SubScription */,
-				CA99892B1FEA5E8100DF6B21 /* PaymentPages */,
+				CA99892B1FEA5E8100DF6B21 /* ReviewPage */,
 				CAE509E41FDB5A5B008EF4CC /* TrackingPage */,
 				CA9265B91FC5E23200A2F43A /* Menu */,
 				CAE724191FC408B600AA01C0 /* Profile */,
@@ -553,6 +567,7 @@
 				CAF86F141FBEA1C2008ADD1E /* HomePages */,
 				CAF86F0A1FBE82DA008ADD1E /* CustomTabBarController.swift */,
 				CA1F2892202D49AF00A7BF37 /* SplashPage.swift */,
+				CAF1EC6220F0478D00B80B59 /* GlobalVariables.swift */,
 			);
 			path = MainPages;
 			sourceTree = "<group>";
@@ -591,16 +606,18 @@
 			path = SpecialOptionsCell;
 			sourceTree = "<group>";
 		};
-		CA99892B1FEA5E8100DF6B21 /* PaymentPages */ = {
+		CA99892B1FEA5E8100DF6B21 /* ReviewPage */ = {
 			isa = PBXGroup;
 			children = (
+				CAF1EC6B20F17A6600B80B59 /* ReviewPageDataModels */,
+				CAF1EC6820F178FD00B80B59 /* ReviewPageClasses */,
 				CAF1EC5620EEDF1600B80B59 /* Cells */,
 				CA14FD631FEDBF540004E7CD /* ReviewSubPages */,
 				CA99892E1FECA3C700DF6B21 /* ReviewPage.swift */,
 				CAE4772520593402002164FF /* ReviewHelpers */,
 				CAF1EC5B20EEE0AD00B80B59 /* ReviewPayButton.swift */,
 			);
-			path = PaymentPages;
+			path = ReviewPage;
 			sourceTree = "<group>";
 		};
 		CA9A1F6920E9DD94003FEC13 /* SpecialOptionsModel */ = {
@@ -723,6 +740,39 @@
 				CAF1EC5920EEDF5100B80B59 /* OptionsCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		CAF1EC5D20F0453700B80B59 /* AddressCell */ = {
+			isa = PBXGroup;
+			children = (
+				CAF1EC5E20F0454700B80B59 /* AddressCell.swift */,
+				CAF1EC6020F0457200B80B59 /* OneAddressCell.swift */,
+			);
+			path = AddressCell;
+			sourceTree = "<group>";
+		};
+		CAF1EC6420F063F800B80B59 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CAF1EC6520F0640600B80B59 /* CreditCardCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CAF1EC6820F178FD00B80B59 /* ReviewPageClasses */ = {
+			isa = PBXGroup;
+			children = (
+				CAF1EC6920F1791B00B80B59 /* UserInfoTableView.swift */,
+			);
+			path = ReviewPageClasses;
+			sourceTree = "<group>";
+		};
+		CAF1EC6B20F17A6600B80B59 /* ReviewPageDataModels */ = {
+			isa = PBXGroup;
+			children = (
+				CAF1EC6C20F17A7B00B80B59 /* Customer.swift */,
+			);
+			path = ReviewPageDataModels;
 			sourceTree = "<group>";
 		};
 		CAF36214203259F100FC6649 /* Fonts */ = {
@@ -1011,6 +1061,7 @@
 				CA4F28981FD09AF2009C23DF /* Colors.swift in Sources */,
 				CA931C3C1FBD019700E9FF61 /* HomePage.swift in Sources */,
 				CA93D6DA20E9543100BB83C8 /* SpecialOptionsPage.swift in Sources */,
+				CAF1EC6A20F1791B00B80B59 /* UserInfoTableView.swift in Sources */,
 				CA1E3D9F20E63988008529C6 /* CollectionViewHeader.swift in Sources */,
 				CA14FD651FEDBF670004E7CD /* SelectAddress.swift in Sources */,
 				CAE724181FC3F78000AA01C0 /* OrderPage.swift in Sources */,
@@ -1026,7 +1077,7 @@
 				CAFB7639206B819E00EEFD10 /* MenuNavBar.swift in Sources */,
 				CA5A7A0E205BDA51003B024F /* PrivacyView.swift in Sources */,
 				CADE0F4020B74AF400621700 /* MenuDataModel.swift in Sources */,
-				CA14FD691FF0A76B0004E7CD /* SelectPayment.swift in Sources */,
+				CA14FD691FF0A76B0004E7CD /* SelectPaymentPage.swift in Sources */,
 				CA99892F1FECA3C700DF6B21 /* ReviewPage.swift in Sources */,
 				CAFB7630206B80EB00EEFD10 /* MenuPopUp.swift in Sources */,
 				CA1F2893202D49AF00A7BF37 /* SplashPage.swift in Sources */,
@@ -1040,9 +1091,12 @@
 				CAE4772B205935D2002164FF /* ReviewPageGeneralFunctions.swift in Sources */,
 				CAFF98F2201AD4990088A3EC /* EmailPage.swift in Sources */,
 				CAD83F4720D9899600566175 /* OrderModel.swift in Sources */,
+				CAF1EC6320F0478D00B80B59 /* GlobalVariables.swift in Sources */,
+				CAF1EC6620F0640600B80B59 /* CreditCardCell.swift in Sources */,
 				CA9A1F6D20EAA5D3003FEC13 /* SpecialOptionsHeader.swift in Sources */,
 				CAE7241B1FC52E7C00AA01C0 /* ProfilePage.swift in Sources */,
 				CA1E3D8B20E60D74008529C6 /* PriceCollectionViewCell.swift in Sources */,
+				CAF1EC6D20F17A7B00B80B59 /* Customer.swift in Sources */,
 				CA311377206EB735002DD79A /* SubscriptionPopUp.swift in Sources */,
 				CA099C5B2011924A0012412F /* StateList.swift in Sources */,
 				CA1E3D9120E62B08008529C6 /* NoResetaurantsCell.swift in Sources */,
@@ -1053,6 +1107,7 @@
 				CAD83F4B20D9B12E00566175 /* AddressModel.swift in Sources */,
 				CA36AD15200021AE00A981A8 /* TelephonePage.swift in Sources */,
 				CAD83F4920D9AB0400566175 /* CardModel.swift in Sources */,
+				CAF1EC5F20F0454700B80B59 /* AddressCell.swift in Sources */,
 				CA1E3D8820E60CA9008529C6 /* FiltersSectionTwoCell.swift in Sources */,
 				CA36AD131FFF222500A981A8 /* RenamePage.swift in Sources */,
 				CA93234520E29DD400F40C63 /* SectionItem.swift in Sources */,
@@ -1097,6 +1152,7 @@
 				CAB7C4FD20868A1500FF0CD9 /* StartingNavigationPage.swift in Sources */,
 				CAFB7642206DC94800EEFD10 /* ProfileSubscriptionPage.swift in Sources */,
 				CA435BF2207EDF1500A8A2D2 /* ProfileLoginSignUpCell.swift in Sources */,
+				CAF1EC6120F0457200B80B59 /* OneAddressCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

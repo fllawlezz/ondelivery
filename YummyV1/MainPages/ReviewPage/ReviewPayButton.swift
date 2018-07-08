@@ -13,17 +13,19 @@ import CoreData
 class ReviewPayButton: UIButton{
     var reviewPage: ReviewPage?{
         didSet{
-            self.userID = reviewPage?.userID!;
-            self.customerPhone = reviewPage?.customerPhone;
-            self.customerName = reviewPage?.customerName;
-            self.mainItems = reviewPage?.mainItems;
+            self.customer = reviewPage?.customer;
         }
     }
     
-    var userID: String?
-    var customerPhone: String!;
-    var customerName: String!
-    var customerEmail: String?;
+
+    var restaurant: Restaurant?
+    
+    var customer: Customer?
+    
+    var deliveryTime: String?;
+    var userAddress: UserAddress?;
+    var paymentCard: Card?;
+    
     var orderTotalSum: Double!;
     var numberOfFreeOrders: Int?;
     var mainItems:[MainItem]?;
@@ -97,64 +99,70 @@ class ReviewPayButton: UIButton{
         return optionIDs;
     }
     
+    fileprivate func setDate()->String{
+        let time = Date();
+        let timeFormatter = DateFormatter();
+        timeFormatter.dateFormat = "MM/dd/yyy hh:mm a";
+        timeFormatter.amSymbol = "AM";
+        timeFormatter.pmSymbol = "PM";
+        let date = timeFormatter.string(from: time);
+        return date;
+    }
+    
+    fileprivate func handleCreateToken()->STPToken{
+        //create stripe Token, send to server, save to core data, alert view
+        //MARK: Create Token
+        let cardParams = STPCardParams();
+        cardParams.number = self.paymentCard?.cardNum!;
+        let expirationArray = self.paymentCard?.expiration!.components(separatedBy: "/");
+        
+        cardParams.expMonth = UInt((expirationArray![0] as NSString).integerValue);
+        cardParams.expYear = UInt((expirationArray![1] as NSString).integerValue);
+        cardParams.cvc = self.paymentCard?.cvc!;
+        
+        var realToken:STPToken?
+        
+        STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
+            guard let token = token, error == nil else {
+                // Present error to user...
+                fatalError();
+            }
+            realToken = token;
+
+        }
+        return realToken!;
+    }
     
     @objc func nextPush(){
         getOrderDetails();
         
-        if(userID == nil && customerPhone == "none" && customerName == "none"){
+        if(user?.userID == nil && customer!.customerPhone! == "none" && customer!.customerName! == "none"){
             let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
             self.reviewPage?.present(alert, animated: true, completion: nil);
         }else{
-            if(paymentUserText == "none" || addressUserText == nil || deliveryTimeUserText == nil){
+            if(paymentCard == nil || self.userAddress == nil || self.deliveryTime == nil){
                 let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
                 alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
                 self.reviewPage?.present(alert, animated: true, completion: nil);
             }else{
-                if(userID == nil){
-                    userID = "1";
-                    addressIDText = "1";
-                    
-                }
-                
-                if(self.customerEmail == nil){
-                    customerEmail = "ondeliveryllc@gmail.com";
-                }
-                //create stripe Token, send to server, save to core data, alert view
-                //MARK: Create Token
-                let cardParams = STPCardParams();
-                cardParams.number = paymentFullCard!;
-                cardParams.expMonth = UInt((cardExpMonth! as NSString).integerValue);
-                cardParams.expYear = UInt((cardExpYear! as NSString).integerValue);
-                cardParams.cvc = cardCvc!;
-                
-                
-                STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
-                    guard let token = token, error == nil else {
-                        // Present error to user...
-                        return
+                if(user == nil){
+                    if(customer?.customerEmail == nil){
+                        customer?.customerEmail = "ondeliveryLLC@gmail.com";
                     }
-                    print(token);
+                    user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
                     
-                    let conn = Conn();
-                    let postString = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customerEmail!)";
-                    print(postString);
-                    conn.connect(fileName: "stripeOrder.php", postString: postString, completion: { (result) in
-                    })
                 }
+                
+                let token = handleCreateToken();
                 
                 if(self.numberOfFreeOrders! > 0 && self.orderTotalSum! <= 20.0){
                     self.numberOfFreeOrders = numberOfFreeOrders! - 1;
                 }
+                let date = setDate();
+                let infoArray = [user?.userID!, date, self.userAddress!.addressID!, self.deliveryTime!, self.customer!.customerPhone!, self.customer!.customerName!, self.userAddress?.address!];
+                let json:[String: Any] = ["userInfo":infoArray,"totalSum":(orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":numberOfFreeOrders!,"token":token];
                 
-                let time = Date();
-                let timeFormatter = DateFormatter();
-                timeFormatter.dateFormat = "MM/dd/yyy hh:mm a";
-                timeFormatter.amSymbol = "AM";
-                timeFormatter.pmSymbol = "PM";
-                let string = timeFormatter.string(from: time);
-                let infoArray = [self.userID!, string, addressIDText!, deliveryTimeUserText!, self.customerPhone!, self.customerName!, addressUserText!];//delivery can be "ASAP" or another time
-                let json:[String: Any] = ["userInfo":infoArray,"totalSum":(orderTotalSum),"foodNames":self.names, "foodPrices":self.prices, "foodQuantity":self.quantity, "foodIDs":self.id, "restID":self.restaurantID, "freeOrders":numberOfFreeOrders!];
                 let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
                 
                 let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
@@ -167,27 +175,27 @@ class ReviewPayButton: UIButton{
                         let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
                         DispatchQueue.main.async {
                             //save order in core data
-                            if(self.userID != "1"){
+                            if(user?.userID! != "1"){
                                 let appDelegate = UIApplication.shared.delegate as! AppDelegate;
                                 let context = appDelegate.persistentContainer.viewContext;
                                 let entity = NSEntityDescription.entity(forEntityName: "Order", in: context)!;
                                 let order = NSManagedObject(entity: entity, insertInto: context);
                                 //restaurant, price, orderID,image,date
                                 
-                                order.setValue(self.restaurantName, forKey: "restaurantName");
-                                order.setValue(self.orderTotal, forKey: "price");
+                                order.setValue(self.restaurant!.restaurantTitle!, forKey: "restaurantName");
+                                order.setValue(self.orderTotalSum, forKey: "price");
                                 order.setValue(re, forKey: "orderID");
-                                order.setValue(string, forKey: "date");
-                                order.setValue(self.restaurantID, forKey: "restaurantID");
+                                order.setValue(date, forKey: "date");
+                                order.setValue(self.restaurant!.restaurantID!, forKey: "restaurantID");
                                 
-                                let imageData = (UIImagePNGRepresentation(self.restaurantPic) as Data?);
+                                let imageData = (UIImagePNGRepresentation(self.restaurant!.restaurantBuildingImage!) as Data?);
                                 order.setValue(imageData, forKey: "image");
                                 
                                 //convert arrays to data
-                                let dataFoodNames = NSKeyedArchiver.archivedData(withRootObject: self.names);
-                                let dataFoodPrices = NSKeyedArchiver.archivedData(withRootObject: self.prices);
-                                let dataFoodQuantity = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
-                                let dataFoodIDs = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
+//                                let  = NSKeyedArchiver.archivedData(withRootObject: self.names);
+//                                let dataFoodPrices = NSKeyedArchiver.archivedData(withRootObject: self.prices);
+//                                let dataFoodQuantity = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
+//                                let dataFoodIDs = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
                                 
                                 do{
                                     try context.save();
@@ -195,23 +203,13 @@ class ReviewPayButton: UIButton{
                                 }catch{
                                     print("error");
                                 }
-                                
-                                order.setValue(dataFoodNames, forKey: "foodNames");
-                                order.setValue(dataFoodPrices, forKey: "foodPrices");
-                                order.setValue(dataFoodQuantity, forKey: "foodQuantity");
-                                order.setValue(dataFoodIDs, forKey: "foodIDs");
-                                
-                                saveSubscription(defaults: defaults!, subscriptionPlan: self.subPlan!, freeOrders: self.freeOrders!);
                             }
                             
-                            if(self.userID == "1"){
-                                self.userID = nil;
-                                addresses.removeAll();
-                                cCards.removeAll();
+                            if(user?.userID! == "1"){
+                                user = nil;
+//                                addresses.removeAll();
+//                                cCards.removeAll();
                             }
-                            
-                            addressUserText = nil;
-                            addressIDText = nil;
                             
                             let alert = UIAlertController(title: "Order Placed", message: "Your order has been placed!", preferredStyle: UIAlertControllerStyle.alert);
                             alert.addAction(UIAlertAction(title: "Ok!", style: UIAlertActionStyle.default, handler: { (result) in

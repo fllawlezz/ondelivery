@@ -9,17 +9,6 @@
 import Foundation
 import CoreData
 import UIKit
-var urlData: Data!;
-
-//MARK: Global Elements
-var addresses = [NSManagedObject]();//address list to populate
-var orders = [NSManagedObject]();//order list to populate page
-var cCards = [NSManagedObject]();//cards list to populate cards
-var userLongtiude: String!;
-var userLatitude: String!;
-var userCurrentCity: String!;
-
-var user: User?
 
 //MARK: Filters variables
 

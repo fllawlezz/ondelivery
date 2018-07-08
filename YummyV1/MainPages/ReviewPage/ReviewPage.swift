@@ -10,58 +10,7 @@ import Foundation
 import UIKit
 import CoreData
 
-//MARK: Variables for Payment Cycle
-var addressUserText: String!;
-var addressIDText: String!;
-var deliveryTimeUserText: String!;
-var paymentUserText: String!;//last 4 digits of the card
-var paymentFullCard: String!;
-
-var cardExpMonth: String!;
-var cardExpYear: String!;
-var cardCvc: String!;
-
-class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource{
-    
-    var menuItemArray:[MainItem]?
-    
-    //DATA ELEMENTS
-    var deliveryPrice: Double?;
-    var taxPrice: Double = 0;
-    var totalPrice: Double?;
-    
-    var selectedRestaurant: Restaurant?
-    var mainItems:[MainItem]?
-    
-    //RestaurantElements
-    var restaurantName: String!;
-    var restaurantAddress: String!;
-    var restaurantTelephone: String!;
-    var restaurantPic: UIImage!;
-    var restaurantID: String!;
-    
-    var subPlan: String?
-    var freeOrders: Int?
-    
-    var orderTotal: Double = 0.0;
-    let reuse = "one";
-    let reuse2 = "two";
-    
-    var userID: String?
-    var email: String?
-    
-    //names of foods
-    var names = [String]()
-    //prices
-    var prices = [Double]()
-    //quantity
-    var quantity = [Int]()
-    //id
-    var id = [String]();
-    
-    //MARK: TableView arrays
-    let tableTitles = ["Address","Delivery Time","Payment","Name","Telephone","Email"];
-    let tableImages = ["home","clock","creditCard","profile","phone","email"];
+class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     var restName: UILabel = {
         let restName = UILabel();
@@ -121,7 +70,10 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         return sum;
     }()
     
-    var tableView: UITableView!;
+    var tableView: UserInfoTableView = {
+        let tableView = UserInfoTableView(frame: .zero, style: .plain);
+        return tableView;
+    }()
     var newNavController: UINavigationController!;
     
     lazy var taxTotal: UILabel = {
@@ -141,24 +93,53 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     }()
     var taxPriceFormat: String!;
     
-    var customerName: String!;
-    var customerPhone: String!;
-    var customerEmail: String!;
+    var customer = Customer();
+    
+    var menuItemArray:[MainItem]?
+    
+    //DATA ELEMENTS
+    var deliveryPrice: Double?;
+    var taxPrice: Double = 0;
+    var totalPrice: Double?;
+    var orderTotal: Double = 0.0;
+    
+    var selectedRestaurant: Restaurant?
+    var mainItems:[MainItem]?
+    
+    var subPlan: String?
+    var freeOrders: Int?
+    
+    var userAddress: UserAddress?;
+    var deliveryTime: String?;
+    
+    var lastCardDigits: String?;
+    var paymentCard: Card?;
+    
+    let reuse = "one";
+    let reuse2 = "two";
     
     override func viewDidLoad() {
-        customerName = "none";
-        customerPhone = "none";
-        customerEmail = "none";
-        
-        //setup data
-        if(defaults.string(forKey: "firstName") != nil && addresses.count > 0){
-            addressUserText = addresses[0].value(forKey: "address") as! String;
-            addressIDText = addresses[0].value(forKey: "addressID") as! String;
-        }
-        deliveryTimeUserText = "ASAP";
-        paymentUserText = "none";
+        setUpGeneralInformation();
         calculateTotals();
         setup();
+    }
+    
+    private func setUpGeneralInformation(){
+        customer.customerName = "none";
+        customer.customerPhone = "none";
+        customer.customerEmail = "none";
+        
+        //setup data
+        if(user != nil){
+            let newUserAddress = UserAddress();
+            newUserAddress.address = addresses[0].value(forKey: "address") as? String;
+            newUserAddress.addressID = addresses[0].value(forKey: "addressID") as? String;
+            self.userAddress = newUserAddress;
+        }else{
+            
+        }
+        
+        self.deliveryTime = "ASAP";
     }
     
     private func calculateTotals(){
@@ -188,7 +169,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     }
     
     fileprivate func setUpRestAddress(){
-        restAddress.text = "\(self.restaurantAddress!)"
+        restAddress.text = "\(self.selectedRestaurant!.restaurantAddress!)"
         self.view.addSubview(restAddress);
         //need x,y,width,height
         restAddress.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
@@ -243,7 +224,6 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         let border = setupFirstBorder();
         setupNextButton();
         let border2 = setupBorder2();
-        getCollectionViewInfo();
         
         //collectionView
         let layout = UICollectionViewFlowLayout();
@@ -267,22 +247,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         taxTotal.heightAnchor.constraint(equalToConstant: 25).isActive = true;
         
         setupTotalsView();
-        getTableInfo();
-        
-        //userInfo
-        tableView = UITableView();
-        tableView.translatesAutoresizingMaskIntoConstraints = false;
-        tableView.register(OptionsCell.self, forCellReuseIdentifier: reuse2);
-        tableView.backgroundColor = UIColor.white;
-        tableView.delegate = self;
-        tableView.dataSource = self;
-        tableView.alwaysBounceVertical = false;
-        self.view.addSubview(tableView);
-        //need x,y,width,height
-        tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        tableView.bottomAnchor.constraint(equalTo: border2.topAnchor).isActive = true;
-        tableView.topAnchor.constraint(equalTo: self.totalChargesView.bottomAnchor).isActive = true;
+        setupTableView(border2: border2);
         
     }
     func setupTotalsView(){
@@ -335,6 +300,24 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         total.leftAnchor.constraint(equalTo: deliveryFee.rightAnchor).isActive = true;
         total.rightAnchor.constraint(equalTo: self.sum.leftAnchor).isActive = true;
         total.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+    }
+    
+    fileprivate func setupTableView(border2: UIView){
+        getTableInfo();
+        
+        tableView.customer = self.customer;
+        tableView.paymentCard = paymentCard;
+        tableView.userAddress = self.userAddress;
+        tableView.deliveryTime = self.deliveryTime;
+        tableView.reviewPage = self;
+        
+        //userInfo
+        self.view.addSubview(tableView);
+        //need x,y,width,height
+        tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+        tableView.bottomAnchor.constraint(equalTo: border2.topAnchor).isActive = true;
+        tableView.topAnchor.constraint(equalTo: self.totalChargesView.bottomAnchor).isActive = true;
     }
 }
 
