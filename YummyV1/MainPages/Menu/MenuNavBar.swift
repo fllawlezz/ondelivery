@@ -70,16 +70,18 @@ class MenuNavBar: UIView, UICollectionViewDelegate,UICollectionViewDataSource,UI
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let newX = CGFloat(indexPath.item) * self.frame.width/3;
+        moveLine(item: indexPath.item);
+    }
+    
+    func moveLine(item: Int){
+        let newX = CGFloat(item) * self.frame.width/3;
         self.lineLeftAnchor.constant = newX;
-        //        self.collectionViewReference.isHidden = false;
         if(newX == 0){
             pageNum = 1;
         }else if(newX == (self.frame.width/3)){
             pageNum = 2;
         }else if(newX == (self.frame.width/3)*2){
             pageNum = 3;
-            //            self.collectionViewReference.isHidden = true;
         }
         //if pageNum = 1;
         UIView.animate(withDuration: 0.3) {

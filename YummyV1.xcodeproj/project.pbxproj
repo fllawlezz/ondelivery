@@ -100,8 +100,6 @@
 		CAD83F4B20D9B12E00566175 /* AddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD83F4A20D9B12E00566175 /* AddressModel.swift */; };
 		CADE0F3E20B6306D00621700 /* RestaurantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADE0F3D20B6306D00621700 /* RestaurantModel.swift */; };
 		CADE0F4020B74AF400621700 /* MenuDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADE0F3F20B74AF400621700 /* MenuDataModel.swift */; };
-		CAE477292059353F002164FF /* ReviewPageSetupFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE477282059353F002164FF /* ReviewPageSetupFunctions.swift */; };
-		CAE4772B205935D2002164FF /* ReviewPageGeneralFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE4772A205935D2002164FF /* ReviewPageGeneralFunctions.swift */; };
 		CAE509E81FDB5B70008EF4CC /* TrackingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE509E71FDB5B70008EF4CC /* TrackingPage.swift */; };
 		CAE724181FC3F78000AA01C0 /* OrderPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE724171FC3F78000AA01C0 /* OrderPage.swift */; };
 		CAE7241B1FC52E7C00AA01C0 /* ProfilePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE7241A1FC52E7C00AA01C0 /* ProfilePage.swift */; };
@@ -242,8 +240,6 @@
 		CAD83F4A20D9B12E00566175 /* AddressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressModel.swift; sourceTree = "<group>"; };
 		CADE0F3D20B6306D00621700 /* RestaurantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantModel.swift; sourceTree = "<group>"; };
 		CADE0F3F20B74AF400621700 /* MenuDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDataModel.swift; sourceTree = "<group>"; };
-		CAE477282059353F002164FF /* ReviewPageSetupFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPageSetupFunctions.swift; sourceTree = "<group>"; };
-		CAE4772A205935D2002164FF /* ReviewPageGeneralFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPageGeneralFunctions.swift; sourceTree = "<group>"; };
 		CAE509E71FDB5B70008EF4CC /* TrackingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingPage.swift; sourceTree = "<group>"; };
 		CAE724171FC3F78000AA01C0 /* OrderPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderPage.swift; sourceTree = "<group>"; };
 		CAE7241A1FC52E7C00AA01C0 /* ProfilePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePage.swift; sourceTree = "<group>"; };
@@ -614,8 +610,6 @@
 				CAF1EC5620EEDF1600B80B59 /* Cells */,
 				CA14FD631FEDBF540004E7CD /* ReviewSubPages */,
 				CA99892E1FECA3C700DF6B21 /* ReviewPage.swift */,
-				CAE4772520593402002164FF /* ReviewHelpers */,
-				CAF1EC5B20EEE0AD00B80B59 /* ReviewPayButton.swift */,
 			);
 			path = ReviewPage;
 			sourceTree = "<group>";
@@ -678,15 +672,6 @@
 				CADE0F3D20B6306D00621700 /* RestaurantModel.swift */,
 			);
 			path = RestaurantDataModel;
-			sourceTree = "<group>";
-		};
-		CAE4772520593402002164FF /* ReviewHelpers */ = {
-			isa = PBXGroup;
-			children = (
-				CAE477282059353F002164FF /* ReviewPageSetupFunctions.swift */,
-				CAE4772A205935D2002164FF /* ReviewPageGeneralFunctions.swift */,
-			);
-			path = ReviewHelpers;
 			sourceTree = "<group>";
 		};
 		CAE509E41FDB5A5B008EF4CC /* TrackingPage */ = {
@@ -762,6 +747,7 @@
 		CAF1EC6820F178FD00B80B59 /* ReviewPageClasses */ = {
 			isa = PBXGroup;
 			children = (
+				CAF1EC5B20EEE0AD00B80B59 /* ReviewPayButton.swift */,
 				CAF1EC6920F1791B00B80B59 /* UserInfoTableView.swift */,
 			);
 			path = ReviewPageClasses;
@@ -1088,7 +1074,6 @@
 				CA20E4421FBAD9960002531E /* YummyV1.xcdatamodeld in Sources */,
 				CAD83F4020D8ECA300566175 /* MenuSideBar.swift in Sources */,
 				CAEC8D3B20E2A0A6002F7D7A /* ForgotPasswordPage1.swift in Sources */,
-				CAE4772B205935D2002164FF /* ReviewPageGeneralFunctions.swift in Sources */,
 				CAFF98F2201AD4990088A3EC /* EmailPage.swift in Sources */,
 				CAD83F4720D9899600566175 /* OrderModel.swift in Sources */,
 				CAF1EC6320F0478D00B80B59 /* GlobalVariables.swift in Sources */,
@@ -1134,7 +1119,6 @@
 				CA93D6DC20E954C500BB83C8 /* NormalUILabel.swift in Sources */,
 				CA54E44F20E2B00000A6B251 /* UserModel.swift in Sources */,
 				CAA6A00B20203D4700D47DDF /* AddressPage.swift in Sources */,
-				CAE477292059353F002164FF /* ReviewPageSetupFunctions.swift in Sources */,
 				CA14FD6C1FF1129C0004E7CD /* NewAddress.swift in Sources */,
 				CABDF9F320ED55900015D0BF /* FoodItem.swift in Sources */,
 				CA1E3D9C20E62C40008529C6 /* RatingsView.swift in Sources */,

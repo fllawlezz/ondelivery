@@ -12,4 +12,7 @@ class Customer: NSObject{
     var customerName: String?
     var customerPhone: String?
     var customerEmail: String?
+    var customerSubPlan: String?
+    var customerID: String?
+    var customerFreeOrders: Int?
 }

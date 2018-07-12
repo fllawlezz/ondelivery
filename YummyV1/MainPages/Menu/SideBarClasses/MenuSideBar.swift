@@ -116,6 +116,7 @@ class MenuSideBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource,
         let sectionNumber = section.sectionNumber!;
         //mainPage reload table with sectionTitles
         pageNum = 1;
+        self.menuPage?.navBar.moveLine(item: 0);
         self.menuPage?.currentSection = sectionNumber-1;
         self.menuPage?.collectionView.reloadData();
         self.menuPage?.sideBarAnimate();

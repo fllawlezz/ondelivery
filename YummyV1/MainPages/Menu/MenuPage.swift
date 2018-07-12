@@ -18,14 +18,12 @@ var pageNum = 1;// page num is for the navigation bar
 
 class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate{
     
-    var subPlan: String = "NONE";
-    var freeOrders: Int = 1;
-    
     var selectedRestaurant: Restaurant?;
     var menuItemArray = [MainItem]()
     
     //DATA ELEMENTS
     var menu: Menu?
+    var customer = Customer();
     var currentSection = 0;//which section of the menu
     
     var deliveryPrice: Double = 0.0;
@@ -123,6 +121,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         navigationItem.backBarButtonItem = leftBackButton;
         navigationItem.title = "\(selectedRestaurant!.restaurantTitle!)";
         
+        setupCustomer();
         calculateDeliveryFee();
         self.view.backgroundColor = UIColor.white;
         let inset = UIEdgeInsets(top: 40, left: 0, bottom: 60, right: 0);
@@ -134,8 +133,26 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         setup();
     }
     
+    fileprivate func setupCustomer(){
+        if(user == nil){
+            customer.customerName = "none";
+            customer.customerPhone = "none";
+            customer.customerEmail = "none";
+            customer.customerID = "1";
+            customer.customerSubPlan = "NONE";
+            customer.customerFreeOrders = 0;
+        }else{
+            customer.customerName = user!.firstName!;
+            customer.customerEmail = user!.email!;
+            customer.customerPhone = user!.telephone!;
+            customer.customerID = user!.userID!;
+            customer.customerSubPlan = user!.subscriptionPlan!;
+            customer.customerFreeOrders = user!.freeOrders!;
+        }
+    }
+    
     fileprivate func setBottomBarDeliveryPrice(){
-        if(freeOrders > 0 && totalPrice <= 20){
+        if(customer.customerFreeOrders! > 0 && totalPrice <= 20){
             menuBottomBar.setFreeOrderDeliveryPrice();
         }else{
             menuBottomBar.setDeliveryPrice(price: self.deliveryPrice);
@@ -262,15 +279,14 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 deliveryPrice += 4.99;
             }else if(distance >= 5.0 && distance < 7.0){
                 deliveryPrice += 5.99;
-            }else if(distance >= 7.0 && distance < 8.0){
+            }else if(distance >= 7.0 && distance < 10.0){
                 deliveryPrice += 6.99;
             }else if(distance >= 8.0){
                 deliveryPrice += 7.99;
             }
         
-        if(subPlan != nil){
-            if(subPlan != "NONE"){
-                switch(subPlan){
+            if(customer.customerSubPlan! != "NONE"){
+                switch(customer.customerSubPlan!){
                 case "Standard":
                     deliveryPrice = deliveryPrice - (deliveryPrice*0.2);
                     break;
@@ -283,7 +299,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 default: break;
                 }
             }
-        }
     }
     
     private func setData(){
@@ -333,7 +348,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             let reviewPage = ReviewPage();
             reviewPage.deliveryPrice = self.deliveryPrice;
             reviewPage.totalPrice = self.totalPrice;
-            
+            reviewPage.mainItems = self.menuItemArray;
+            reviewPage.customer = self.customer;
             reviewPage.selectedRestaurant = self.selectedRestaurant!;
             
             let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);

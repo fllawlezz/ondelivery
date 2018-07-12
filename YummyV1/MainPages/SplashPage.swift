@@ -216,7 +216,7 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
                         
                         orderPage?.pastOrders = self.pastOrders;
                         
-                        print(self.userCards.count);
+//                        print(self.userCards.count);
                         profilePage?.cards = self.userCards;
                         profilePage?.addresses = self.addresses;
                         

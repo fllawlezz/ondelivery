@@ -11,17 +11,7 @@ import UIKit
 
 class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     
-    var reviewPage: ReviewPage?{
-        didSet{
-            if(reviewPage!.deliveryTime == "ASAP"){
-                self.deliveryTime = reviewPage?.deliveryTime;
-                self.asapBool = true;
-            }else{
-                self.deliveryTime = reviewPage?.deliveryTime;
-                self.asapBool = false;
-            }
-        }
-    }
+    var reviewPage: ReviewPage?
     
     var deliveryTime: String?
     var deliveryDescription: UILabel = {
@@ -42,18 +32,17 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     var asapButton: UIButton = {
         let asapButton = UIButton(type: .system);
         asapButton.translatesAutoresizingMaskIntoConstraints = false;
-        asapButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
+        asapButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 16)
         asapButton.setTitle("ASAP", for: .normal);
         asapButton.setTitleColor(UIColor.black, for: .normal);
         asapButton.layer.borderWidth = 0.25;
-        asapButton.layer.borderColor = UIColor.black.cgColor;
         asapButton.layer.cornerRadius = 5;
         return asapButton;
     }()
     var laterButton: UIButton = {
         let laterButton = UIButton(type: .system);
         laterButton.translatesAutoresizingMaskIntoConstraints = false;
-        laterButton.titleLabel?.font = UIFont(name: "Copperplate", size: 14);
+        laterButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 16);
         laterButton.setTitle("Later", for: .normal);
         laterButton.setTitleColor(UIColor.black, for: .normal);
         laterButton.layer.borderWidth = 0.25;
@@ -76,8 +65,8 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     var submitButton: UIButton = {
         let submitButton = UIButton(type: .system);
         submitButton.translatesAutoresizingMaskIntoConstraints = false;
-        submitButton.backgroundColor = UIColor.black;
-        submitButton.setTitleColor(UIColor.white, for: .normal);
+        submitButton.backgroundColor = UIColor.appYellow;
+        submitButton.setTitleColor(UIColor.black, for: .normal);
         submitButton.setTitle("Submit", for: .normal);
         submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 18);
         return submitButton;
@@ -104,15 +93,6 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         
         //timeFiedl
         setupTimeField();
-        
-//        if(asapBool){
-//            timeField.isUserInteractionEnabled = false;
-//        }else{
-//            timeField.textColor = UIColor.black;
-////            timeField.text = deliveryTimeUserText;
-//            timeField.isUserInteractionEnabled = true;
-//            timeField.becomeFirstResponder();
-//        }
         
         //submit button
         setupSubmitButton();
@@ -246,9 +226,13 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     @objc private func submit(){
         if(!asapBool){
             self.deliveryTime = self.timeField.text;
+            self.reviewPage?.deliveryTime = self.deliveryTime;
+            self.reviewPage?.tableView.handleReloadTable();
             self.navigationController?.popViewController(animated: true);
         }else{
             self.deliveryTime = "ASAP";
+            self.reviewPage?.deliveryTime = self.deliveryTime;
+            self.reviewPage?.tableView.handleReloadTable();
             self.navigationController?.popViewController(animated: true);
         }
     }

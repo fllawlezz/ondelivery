@@ -310,7 +310,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         let popUpMenu = menuPage?.popUpMenu;
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
-        let freeOrders = menuPage?.freeOrders;
+        let freeOrders = menuPage?.customer.customerFreeOrders!;
         
         orderTotalSum = orderTotalSum! + self.orderItemTotal;
         self.menuPage?.totalPrice = orderTotalSum!;

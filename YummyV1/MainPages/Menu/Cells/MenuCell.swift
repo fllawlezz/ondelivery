@@ -236,7 +236,7 @@ class MenuCell: UICollectionViewCell{
         let popUpMenu = menuPage?.popUpMenu;
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
-        let freeOrders = menuPage?.freeOrders;
+        let freeOrders = menuPage?.customer.customerFreeOrders;
         orderTotalSum = orderTotalSum! + foodPrice;
         
         self.menuPage?.totalPrice = orderTotalSum!;
@@ -313,7 +313,7 @@ class MenuCell: UICollectionViewCell{
         let popUpMenu = menuPage?.popUpMenu;
         var orderTotalSum = menuPage?.totalPrice;
         let deliveryPrice = menuPage?.deliveryPrice;
-        let freeOrders = menuPage?.freeOrders;
+        let freeOrders = menuPage?.customer.customerFreeOrders!;
         orderTotalSum = orderTotalSum! - foodPrice;
     
         self.menuPage?.totalPrice = orderTotalSum!;

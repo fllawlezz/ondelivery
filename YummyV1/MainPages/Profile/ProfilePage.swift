@@ -188,6 +188,9 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
             }
             
 //            addresses.removeAll();
+//            cCards.removeAll();
+            
+//            addresses.removeAll();
 //            orders.removeAll();
 //            cCards.removeAll();
             

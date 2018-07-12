@@ -32,6 +32,8 @@ extension ProfileLogin{
                     let restaurantAdvertisedFoodPics = json["advertisePics"] as! NSArray;
                     let restaurantDistances = json["distance"] as! NSArray;
                     
+                    print(restaurantNames.count);
+                    
                     var count = 0;
                     while(count < restaurantNames.count){
                         let newRestaurant = Restaurant();
@@ -95,8 +97,8 @@ extension ProfileLogin{
                             
                             orderPage?.pastOrders = self.pastOrders;
                             
-                            print("user address:\(self.userAddresses.count)")
-                            print("user address:\(self.userAddresses[0].value(forKey: "address") as! String)")
+//                            print("user address:\(self.userAddresses.count)")
+//                            print("user address:\(self.userAddresses[0].value(forKey: "address") as! String)")
                             
                             profilePage?.addresses = self.userAddresses;
                             profilePage?.cards = self.cards;

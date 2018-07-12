@@ -40,11 +40,18 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     var cardFull = [String]();
     
     override func viewDidLoad() {
+        setupNavBar();
+        getData();
+        setup();
+    }
+    
+    fileprivate func setupNavBar(){
         self.navigationItem.title = "Select Credit Card";
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
         self.view.backgroundColor = UIColor.white;
-        getData();
-        setup();
+        
+        let addCardButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(handleAddPaymentMethod));
+        self.navigationItem.rightBarButtonItem = addCardButton;
     }
     
     private func getData(){
@@ -72,28 +79,11 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
         creditCardTable.topAnchor.constraint(equalTo: self.view.topAnchor,constant: 5).isActive = true;
         creditCardTable.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
         creditCardTable.heightAnchor.constraint(equalToConstant: self.view.frame.height/2).isActive = true;
-        
-        //addNewCardButton
-        addNewCardButton = UIButton(type: .system);
-        addNewCardButton.translatesAutoresizingMaskIntoConstraints = false;
-        addNewCardButton.setTitle("Add Card", for: .normal);
-        addNewCardButton.setTitleColor(UIColor.black, for: .normal);
-        addNewCardButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 12);
-        addNewCardButton.backgroundColor = UIColor.appYellow;
-        addNewCardButton.layer.borderColor = UIColor.black.cgColor;
-        addNewCardButton.layer.borderWidth = 0.25;
-        addNewCardButton.layer.cornerRadius = 5;
-        self.view.addSubview(addNewCardButton);
-        //need x,y,with,height
-        addNewCardButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
-        addNewCardButton.topAnchor.constraint(equalTo: self.creditCardTable.bottomAnchor, constant: 5).isActive = true;
-        addNewCardButton.widthAnchor.constraint(equalToConstant: 90).isActive = true;
-        addNewCardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
-        addNewCardButton.addTarget(self, action: #selector(handleAddPaymentMethod), for: .touchUpInside);
     }
     
     @objc private func handleAddPaymentMethod(){
         let addCard = AddPaymentPage();
+        addCard.selectPaymentPage = self;
         self.navigationController?.pushViewController(addCard, animated: true);
     }
     
@@ -107,11 +97,19 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! CreditCardCell
-        let currentCard = cards![indexPath.item];
-        cell.setNickname(name: currentCard.nickName!);
-        cell.setLast4(digits: currentCard.last4!);
-        cell.setCardNum(cardNum: currentCard.cardNumber!);
-        cell.setCardExpiration(expiration: currentCard.expirationDate!);
+//        let currentCard = cCards[indexPath.item];
+//        print(indexPath.item);
+//        print(cell.setNickname(name: currentCard.value(forKey: "nickName") as! String));
+//        cell.setNickname(name: currentCard.value(forKey: "nickName") as! String);
+//        cell.setNickname(name: "new card");
+//        cell.setLast4(digits: currentCard.value(forKey: "last4") as! String);
+//        cell.setCardNum(cardNum: currentCard.value(forKey: "cardNum") as! String);
+//        cell.setCardExpiration(expiration: currentCard.value(forKey: "expiration") as! String);
+        
+//        cell.setNickname(name: currentCard.nickName!);
+//        cell.setLast4(digits: currentCard.last4!);
+//        cell.setCardNum(cardNum: currentCard.cardNumber!);
+//        cell.setCardExpiration(expiration: currentCard.expirationDate!);
         
         if(indexPath.item == cards!.count){
             cell.hideBorder();
@@ -133,11 +131,7 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if(cards!.count>0){
-            return cards!.count;
-        }else{
-            return 0;
-        }
+        return cCards.count;
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

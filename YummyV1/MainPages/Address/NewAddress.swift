@@ -103,12 +103,11 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white;
         self.navigationItem.title = "New Address";
-        let image = UIImage(named: "clear");
-        let button = UIButton(type: .system);
-        button.setBackgroundImage(image, for: .normal);
-        button.addTarget(self, action: #selector(self.clear), for: .touchUpInside);
-        button.frame = CGRect(x: 0, y: 0, width: 20, height: 20);
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button);
+        
+        let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);
+//        self.navigationItem.backBarButtonItem = leftBackButton;
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = leftBackButton;
+        
         setup();
         statePicker.delegate = self;
         statePicker.dataSource = self;
@@ -193,6 +192,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         var addressID: String!;
         if(addressField.text!.count > 0 && zipcodeField.text!.count > 0 && cityField.text!.count > 0 && stateField.text!.count > 0){
             if(userID != nil){
+                print("not null");
                 let conn = Conn();
                 let postString = "UserID=\(self.userID!)&address=\(self.addressField.text!)&city=\(self.cityField.text!)&zipcode=\(self.zipcodeField.text!)&state=\(self.stateField.text!)"
         //        dispatchGroup.enter();
@@ -225,20 +225,13 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                                 print("error");
                             }
                             self.selectAddress?.addressList.reloadData();
-//                            if(addresses.count > 1){
-//                                self.selectAddress?.addressList.reloadData();
-//                            }else{
-////                                addresses.append(address);
-////                                self.selectAddress?.mainAddress.text = self.addressField.text!;
-////                                self.selectAddress?.addAddressButton.isHidden = false;
-//                            }
-                            
                             //pop view controller
                             self.navigationController?.popViewController(animated: true);
                         }
                     }
                 }
             }else{
+                addressID = "0";
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate;
                 let context = appDelegate?.persistentContainer.viewContext;
                 let entity = NSEntityDescription.entity(forEntityName: "Address", in: context!)!;
@@ -252,14 +245,6 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                 addresses.append(address);
                 
                 self.selectAddress?.addressList.reloadData();
-//                if(addresses.count > 1){
-//                    self.selectAddress?.addressList.reloadData();
-//                }else{
-//                    self.selectAddress?.mainAddress.text = addressField.text!;
-//                    self.selectAddress?.addAddressButton.isHidden = false;
-//                }
-//                addresses.append(address);
-                //pop view controller
                 self.navigationController?.popViewController(animated: true);
             }
         }

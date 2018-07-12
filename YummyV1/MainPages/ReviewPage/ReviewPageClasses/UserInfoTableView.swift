@@ -102,6 +102,7 @@ class UserInfoTableView: UITableView, UITableViewDelegate, UITableViewDataSource
     func toDeliveryTime(){
         //delivery time
         let deliveryTime = DeliveryTimePage();
+        deliveryTime.reviewPage = self.reviewPage;
         self.reviewPage?.navigationController?.pushViewController(deliveryTime, animated: true);
     }
     
@@ -167,5 +168,13 @@ class UserInfoTableView: UITableView, UITableViewDelegate, UITableViewDataSource
             }
         }))
         self.reviewPage?.present(alert, animated: true, completion: nil);
+    }
+    
+    func handleReloadTable(){
+        self.userAddress = self.reviewPage?.userAddress
+        self.customer = self.reviewPage?.customer;
+        self.deliveryTime = self.reviewPage?.deliveryTime;
+        self.paymentCard = self.reviewPage?.paymentCard;
+        self.reloadData();
     }
 }

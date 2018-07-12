@@ -35,14 +35,12 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     }()
     var collectionView: UICollectionView!;
     
-    var nextButton: UIButton = {
-        let nextButton = UIButton(type: .system);
-        nextButton.translatesAutoresizingMaskIntoConstraints = false;
-        nextButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 20);
-        nextButton.setTitleColor(UIColor.black, for: .normal);
-        nextButton.backgroundColor = UIColor.appYellow;
-        return nextButton;
+    var placeOrderButton: ReviewPayButton = {
+        let placeOrderButton = ReviewPayButton();
+        placeOrderButton.translatesAutoresizingMaskIntoConstraints = false;
+        return placeOrderButton;
     }()
+    
     var total: UILabel = {
         let total = UILabel();
         total.translatesAutoresizingMaskIntoConstraints = false;
@@ -92,8 +90,8 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         return totalChargesView;
     }()
     var taxPriceFormat: String!;
-    
-    var customer = Customer();
+    var customer:Customer?
+//    var customer = Customer();
     
     var menuItemArray:[MainItem]?
     
@@ -105,9 +103,6 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     
     var selectedRestaurant: Restaurant?
     var mainItems:[MainItem]?
-    
-    var subPlan: String?
-    var freeOrders: Int?
     
     var userAddress: UserAddress?;
     var deliveryTime: String?;
@@ -125,25 +120,19 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     }
     
     private func setUpGeneralInformation(){
-        customer.customerName = "none";
-        customer.customerPhone = "none";
-        customer.customerEmail = "none";
-        
         //setup data
         if(user != nil){
             let newUserAddress = UserAddress();
             newUserAddress.address = addresses[0].value(forKey: "address") as? String;
             newUserAddress.addressID = addresses[0].value(forKey: "addressID") as? String;
             self.userAddress = newUserAddress;
-        }else{
-            
         }
         
         self.deliveryTime = "ASAP";
     }
     
     private func calculateTotals(){
-        if(freeOrders! > 0 && totalPrice! <= 20){
+        if(customer!.customerFreeOrders! > 0 && totalPrice! <= 20){
             orderTotal = totalPrice!;
         }else{
             orderTotal = totalPrice! + deliveryPrice!;
@@ -193,13 +182,16 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     
     fileprivate func setupNextButton(){
         let formatPayPrice = String(format: "%.2f", orderTotal);
-        nextButton.setTitle("Pay: $\(formatPayPrice)", for: .normal);
-        self.view.addSubview(nextButton);
-        nextButton.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
-        nextButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -10).isActive = true;
-        nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
-        nextButton.heightAnchor.constraint(equalToConstant: 70).isActive = true;
-//        nextButton.addTarget(self, action: #selector(self.nextPush), for: .touchUpInside);
+//        nextButton.setTitle("Pay: $\(formatPayPrice)", for: .normal);
+        
+        placeOrderButton.setTitle(buttonTitle: "Pay: $\(formatPayPrice)");
+        placeOrderButton.reviewPage = self;
+        
+        self.view.addSubview(placeOrderButton);
+        placeOrderButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        placeOrderButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+        placeOrderButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        placeOrderButton.heightAnchor.constraint(equalToConstant: 70).isActive = true; 
     }
     
     fileprivate func setupBorder2()->UIView{
@@ -210,7 +202,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         //need x,y,width,height
         border2.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
         border2.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        border2.bottomAnchor.constraint(equalTo: self.nextButton.topAnchor).isActive = true;
+        border2.bottomAnchor.constraint(equalTo: self.placeOrderButton.topAnchor).isActive = true;
         border2.heightAnchor.constraint(equalToConstant: 0.5).isActive = true;
         return border2;
     }
@@ -258,13 +250,13 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         //deliveryFee left side
         setupTotalCharges();
         setupDeliveryFee();
-        if(freeOrders! > 0 && totalPrice! <= 20.0){
+        if(customer!.customerFreeOrders! > 0 && totalPrice! <= 20.0){
             deliveryFee.text = "Delivery Fee: 1 free order";
         }else{
             deliveryFee.text = "Delivery Fee: $\(formatDeliveryPrice)";
         }
         setUpSum(sumText: formatTotalPrice);
-        setupTotalsView();
+        setupTotals();
     }
     
     
@@ -293,7 +285,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         sum.text = "$\(sumText)";
     }
     
-    fileprivate func setUpTotalsView(){
+    fileprivate func setupTotals(){
         self.totalChargesView.addSubview(total);
         //need x,y,width,height
         total.topAnchor.constraint(equalTo: totalChargesView.topAnchor).isActive = true;
@@ -318,6 +310,51 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
         tableView.bottomAnchor.constraint(equalTo: border2.topAnchor).isActive = true;
         tableView.topAnchor.constraint(equalTo: self.totalChargesView.bottomAnchor).isActive = true;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! ReviewCell;
+        let food = mainItems![indexPath.item];
+        cell.setName(name: food.name! );
+        cell.setQuantity(quant: food.quantity!);
+        cell.setPrice(price: food.itemTotals!);
+        return cell;
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        //        return menuItemArray.count;
+        return mainItems!.count;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: self.view.frame.size.width, height: 50);
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0;
+    }
+    
+    @objc func clear(){
+        self.newNavController.dismiss(animated: true, completion: nil);
+    }
+    
+    //MARK: GetTableInfo
+    func getTableInfo(){
+        
+        for item in cCards{
+            if((item.value(forKey: "mainCard") as? String) == "Y"){
+                //card number = the global card
+                self.paymentCard = item as? Card;
+            }
+        }
     }
 }
 

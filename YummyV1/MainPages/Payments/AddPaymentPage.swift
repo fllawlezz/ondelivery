@@ -13,48 +13,24 @@ import CoreData
 
 class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
     //STPPaymentCardTextField
-    var payment = STPPaymentCardTextField();
-    var imageView = UIImageView();
-    var addButton: UIBarButtonItem!;
-    var errorMessage: UILabel!;
-    var dispatch = DispatchGroup();
+    var selectPaymentPage: SelectPaymentPage?
     
-    var userID: String?
-    
-    override func viewDidLoad() {
-        self.navigationItem.title = "Add Card";
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
-        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton;
-        addButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.addCard));
-        self.navigationItem.rightBarButtonItem = addButton;
-        addButton.isEnabled = false;
-        self.view.backgroundColor = UIColor.white;
-        setup();
-        
-    }
-    
-    private func setup(){
-        //imageView
-        imageView.translatesAutoresizingMaskIntoConstraints = false;
-        imageView.image = #imageLiteral(resourceName: "creditCardBig");
-        self.view.addSubview(imageView);
-        //need x,y,width,height
-        imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
-        imageView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true;
-        imageView.widthAnchor.constraint(equalToConstant: 200).isActive = true;
-        imageView.heightAnchor.constraint(equalToConstant: 200).isActive = true;
-        
-        //payment Field
+    var payment: STPPaymentCardTextField = {
+        let payment = STPPaymentCardTextField();
         payment.translatesAutoresizingMaskIntoConstraints = false;
         payment.backgroundColor = UIColor.veryLightGray;
-        payment.delegate = self;
-        self.view.addSubview(payment);
-        payment.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
-        payment.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -10).isActive = true;
-        payment.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20).isActive = true;
-        payment.heightAnchor.constraint(equalToConstant: 30).isActive = true;
-     
-        errorMessage = UILabel();
+        return payment;
+    }()
+    var imageView: UIImageView = {
+        let imageView = UIImageView();
+        imageView.translatesAutoresizingMaskIntoConstraints = false;
+        imageView.image = #imageLiteral(resourceName: "creditCardBig");
+        return imageView;
+        
+    }()
+    var addButton: UIBarButtonItem!;
+    var errorMessage: UILabel = {
+        let errorMessage = UILabel();
         errorMessage.translatesAutoresizingMaskIntoConstraints = false;
         errorMessage.text = "Finish Entering your details";
         errorMessage.textColor = UIColor.red;
@@ -63,6 +39,46 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
         errorMessage.numberOfLines = 1;
         errorMessage.minimumScaleFactor = 0.1;
         errorMessage.adjustsFontSizeToFitWidth = true;
+        return errorMessage;
+    }()
+    
+    override func viewDidLoad() {
+        self.view.backgroundColor = UIColor.white;
+        self.setupNavBar();
+        setupImageView();
+        setupPayment();
+        setupErrorMessage();
+        
+    }
+    
+    fileprivate func setupNavBar(){
+        self.navigationItem.title = "Add Card";
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton;
+        addButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.addCard));
+        self.navigationItem.rightBarButtonItem = addButton;
+        addButton.isEnabled = false;
+    }
+    
+    fileprivate func setupImageView(){
+        self.view.addSubview(imageView);
+        //need x,y,width,height
+        imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
+        imageView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true;
+        imageView.widthAnchor.constraint(equalToConstant: 200).isActive = true;
+        imageView.heightAnchor.constraint(equalToConstant: 200).isActive = true;
+    }
+    
+    fileprivate func setupPayment(){
+        payment.delegate = self;
+        self.view.addSubview(payment);
+        payment.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
+        payment.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -10).isActive = true;
+        payment.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20).isActive = true;
+        payment.heightAnchor.constraint(equalToConstant: 30).isActive = true;
+    }
+    
+    fileprivate func setupErrorMessage(){
         self.view.addSubview(errorMessage);
         errorMessage.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10).isActive = true;
         errorMessage.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -10).isActive = true;
@@ -79,7 +95,7 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
         if(!payment.isValid){//is not valid
             errorMessage.isHidden = false;
         }else{
-            if(self.userID != nil){
+            if(user != nil){
                 let alert = UIAlertController(title: "NickName:", message: "Enter a nickname for this card", preferredStyle: .alert);
                 alert.addTextField(configurationHandler: { (textField) in
                     let textField = alert.textFields![0];
@@ -102,7 +118,7 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
     }
     
     private func mainCard(nickName: String!){
-        if(userID != nil){
+        if(user != nil){
             let stringy = nickName;
             let alert = UIAlertController(title: "Main Card?", message: "Make this your main card?", preferredStyle: .alert);
             alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) in
@@ -113,7 +129,7 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
             }))
             self.present(alert, animated: true, completion: nil);
         }else{
-            saveAndSend(main: "N", nickName: "New Card");
+            saveAndSend(main: "N", nickName: "Card1");
         }
     }
     
@@ -125,44 +141,43 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
         let last4 = payment.cardParams.last4();
         let expirationString = "\(expirationMonth)/\(expirationYear)";
         var cardID: String!;
-        if(userID != nil){
+        if(user != nil){
             //send to server
             let conn = Conn();
-            let postBody = "UserID=\(userID!)&NickName=\(nickName!)&Card=\(card)&Expiration=\(expirationString)&CVC=\(cvc)&MainCard=\(main!)";
-            dispatch.enter();
+            let postBody = "UserID=\(user!.userID!)&NickName=\(nickName!)&Card=\(card)&Expiration=\(expirationString)&CVC=\(cvc)&MainCard=\(main!)";
             conn.connect(fileName: "AddCard.php", postString: postBody, completion: { (re) in
                 //re is the cardID
                 cardID = re as String;
-                self.dispatch.leave();
+                DispatchQueue.main.async {
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    let context = appDelegate.persistentContainer.viewContext;
+                    let entity = NSEntityDescription.entity(forEntityName: "Card", in: context)!;
+                    let cardObject = NSManagedObject(entity: entity, insertInto: context);
+                    cardObject.setValue(card, forKey: "cardNum");
+                    cardObject.setValue(cvc, forKey: "cvc");
+                    cardObject.setValue(expirationString, forKey: "expiration");
+                    cardObject.setValue(last4!, forKey: "last4");
+                    cardObject.setValue(cardID, forKey: "cardID");
+                    cardObject.setValue(nickName, forKey: "nickName");
+                    cardObject.setValue(main!, forKey: "mainCard");
+                    
+                    do{
+                        try context.save();
+                        cCards.append(cardObject);
+                    }catch{
+                        print("error");
+                    }
+                }
             })
             
-            dispatch.notify(queue: .main) {
                 //send to server and save to core data
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                let context = appDelegate.persistentContainer.viewContext;
-                let entity = NSEntityDescription.entity(forEntityName: "Card", in: context)!;
-                let cardObject = NSManagedObject(entity: entity, insertInto: context);
-                cardObject.setValue(card, forKey: "cardNum");
-                cardObject.setValue(cvc, forKey: "cvc");
-                cardObject.setValue(expirationString, forKey: "expiration");
-                cardObject.setValue(last4!, forKey: "last4");
-                cardObject.setValue(cardID, forKey: "cardID");
-                cardObject.setValue(nickName, forKey: "nickName");
-                cardObject.setValue(main!, forKey: "mainCard");
-                
-                do{
-                    try context.save();
-                    cCards.append(cardObject);
-                }catch{
-                    print("error");
-                }
-                
+                self.selectPaymentPage?.creditCardTable.reloadData();
                 self.navigationController?.popViewController(animated: true);
-            }
         }else{
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let context = appDelegate.persistentContainer.viewContext;
-            let entity = NSEntityDescription.entity(forEntityName: "Card", in: context)!;
+            cardID = "0";
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            let context = appDelegate?.persistentContainer.viewContext;
+            let entity = NSEntityDescription.entity(forEntityName: "Card", in: context!)!;
             let cardObject = NSManagedObject(entity: entity, insertInto: context);
             cardObject.setValue(card, forKey: "cardNum");
             cardObject.setValue(cvc, forKey: "cvc");
@@ -172,13 +187,14 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
             cardObject.setValue(nickName, forKey: "nickName");
             cardObject.setValue(main!, forKey: "mainCard");
             
-//            do{
-//                try context.save();
+////            do{
+////                try context.save();
                 cCards.append(cardObject);
 //            }catch{
 //                print("error");
 //            }
-            
+//            print(cCards.count);
+            self.selectPaymentPage?.creditCardTable.reloadData();
             self.navigationController?.popViewController(animated: true);
         }
         

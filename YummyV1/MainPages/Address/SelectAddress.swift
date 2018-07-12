@@ -29,17 +29,6 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
         return listHeader;
     }()
     
-    var newAddress: UIButton = {
-        let newAddress = UIButton(type: .system);
-        newAddress.translatesAutoresizingMaskIntoConstraints = false;
-        newAddress.setTitle("Add Address", for: .normal);
-        newAddress.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 14);
-        newAddress.backgroundColor = UIColor.appYellow;
-        newAddress.setTitleColor(UIColor.black, for: .normal);
-        newAddress.layer.cornerRadius = 5;
-        return newAddress;
-    }()
-    
     var currentLocation: UILabel!;
     var currentLocationButton: UIButton!;
     //reuse identifier
@@ -59,7 +48,8 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = leftBackButton;
         
         let addAddressButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.addNewAddress));
-        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = addAddressButton;
+        self.navigationItem.rightBarButtonItem = addAddressButton;
+//        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = addAddressButton;
     }
     
     @objc private func clear(){
@@ -90,14 +80,6 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
         addressList.topAnchor.constraint(equalTo: listHeader.bottomAnchor).isActive = true;
         addressList.heightAnchor.constraint(equalToConstant: 200).isActive = true;
         
-        //add button
-        self.view.addSubview(newAddress);
-        //need x,y,width,height
-        newAddress.topAnchor.constraint(equalTo: addressList.bottomAnchor, constant: 10).isActive = true;
-        newAddress.widthAnchor.constraint(equalToConstant: 100).isActive = true;
-        newAddress.heightAnchor.constraint(equalToConstant: 30).isActive = true;
-        newAddress.addTarget(self, action: #selector(self.addNewAddress), for: .touchUpInside);
-        
     }
     
     @objc func addNewAddress(){
@@ -108,9 +90,11 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! AddressListCell
-            let address = addresses[indexPath.row+1];
+            let address = addresses[indexPath.row];
+        
             cell.setAddress(addressString: address.value(forKey: "address") as? String);
-            cell.indexPath = indexPath;
+            cell.setID(addressID: address.value(forKey: "addressID") as? String);
+            cell.selectAddressPage = self;
             return cell;
     }
     

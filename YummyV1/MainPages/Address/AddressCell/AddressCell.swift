@@ -12,16 +12,16 @@ class AddressListCell: UICollectionViewCell{
     
     var selectAddressPage: SelectAddress?
     
-    var indexPath: IndexPath?
-    
-    var userAddress = UserAddress();
+//    var userAddress = UserAddress();
+    var addressString: String?
+    var addressID: String?
     
     var address: UILabel = {
         let address = UILabel();
         address.translatesAutoresizingMaskIntoConstraints = false;
         address.text = "11880 Valencia Drive";
         address.textColor = UIColor.black;
-        address.font = UIFont(name: "Montserrat-Regular", size: 12);
+        address.font = UIFont(name: "Montserrat-Regular", size: 16);
         return address;
     }()
     
@@ -30,7 +30,7 @@ class AddressListCell: UICollectionViewCell{
         addButton.translatesAutoresizingMaskIntoConstraints = false;
         addButton.setTitle("+", for: .normal);
         addButton.setTitleColor(UIColor.black, for: .normal);
-        addButton.titleLabel?.font = UIFont(name: "Montserrat-Regular", size: 14);
+        addButton.titleLabel?.font = UIFont(name: "Montserrat-Regular", size: 16);
         addButton.layer.cornerRadius = 5;
         addButton.backgroundColor = UIColor.appYellow;
         return addButton;
@@ -67,15 +67,27 @@ class AddressListCell: UICollectionViewCell{
     }
     
     @objc func addButtonTapped(){
-        let address = addresses[indexPath!.row];
-        self.userAddress.address = address.value(forKey: "address") as? String;
-        self.userAddress.addressID = address.value(forKey: "id") as? String;
-        self.selectAddressPage?.reviewPage?.userAddress = self.userAddress;
-        self.selectAddressPage?.reviewPage?.tableView.reloadData();
+        
+        let reviewPage = self.selectAddressPage!.reviewPage!;
+        
+        let selectedAddress = UserAddress();
+        selectedAddress.address = self.addressString!;
+        selectedAddress.addressID = self.addressID!;
+        
+        reviewPage.userAddress = selectedAddress;
+        reviewPage.tableView.handleReloadTable();
         self.selectAddressPage?.navigationController?.popViewController(animated: true);
+        
+//        self.selectAddressPage?.reviewPage?.tableView.reloadData();
+//        self.selectAddressPage?.navigationController?.popViewController(animated: true);
     }
     
     func setAddress(addressString: String!){
+        self.addressString = addressString;
         self.address.text = addressString;
+    }
+    
+    func setID(addressID: String!){
+        self.addressID = addressID;
     }
 }
