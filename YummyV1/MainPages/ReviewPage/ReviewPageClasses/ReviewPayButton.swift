@@ -147,7 +147,7 @@ class ReviewPayButton: UIButton{
         self.restaurant = reviewPage?.selectedRestaurant;
     }
     
-    fileprivate func placeOrder(){
+    fileprivate func sendToken(){
         print("placed order");
         //create stripe Token, send to server, save to core data, alert view
         //MARK: Create Token
@@ -159,11 +159,6 @@ class ReviewPayButton: UIButton{
         cardParams.expYear = UInt((expirationArray[1] as NSString).integerValue);
         cardParams.cvc = self.paymentCard!.cvcNumber!;
         
-        cardParams.number = "4242424242424242";
-        cardParams.expMonth = 10;
-        cardParams.expYear = 2018;
-        cardParams.cvc = "123";
-        
         STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
             print("make token");
             guard let token = token, error == nil else {
@@ -173,76 +168,84 @@ class ReviewPayButton: UIButton{
             
             print(token);
             
-            if(user!.freeOrders! > 0 && self.orderTotalSum! <= 20.0){
-                user!.freeOrders! = user!.freeOrders! - 1;
-            }
-            let date = self.setDate();
-            let infoArray = [user?.userID!, date, self.userAddress!.addressID!, self.deliveryTime!, self.customer!.customerPhone!, self.customer!.customerName!, self.userAddress?.address!];
-            let json:[String: Any] = ["userInfo":infoArray,"totalSum":(self.orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":user!.freeOrders!,"token":token];
-            
-            let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
-            
-            print(jsonData);
-            
-            let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
-            var request:URLRequest = URLRequest(url: url);
-            request.httpMethod = "POST";
-            request.httpBody = jsonData;
-            let task = URLSession.shared.dataTask(with: request){
-                data,response,error in
-                if data != nil{
-                    let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
-                    DispatchQueue.main.async {
-                        //save order in core data
-                        if(user?.userID! != "1"){
-                            let appDelegate = UIApplication.shared.delegate as! AppDelegate;
-                            let context = appDelegate.persistentContainer.viewContext;
-                            let entity = NSEntityDescription.entity(forEntityName: "Order", in: context)!;
-                            let order = NSManagedObject(entity: entity, insertInto: context);
-                            //restaurant, price, orderID,image,date
-                            
-                            order.setValue(self.restaurant!.restaurantTitle!, forKey: "restaurantName");
-                            order.setValue(self.orderTotalSum, forKey: "price");
-                            order.setValue(re, forKey: "orderID");
-                            order.setValue(date, forKey: "date");
-                            order.setValue(self.restaurant!.restaurantID!, forKey: "restaurantID");
-                            
-                            let imageData = (UIImagePNGRepresentation(self.restaurant!.restaurantBuildingImage!) as Data?);
-                            order.setValue(imageData, forKey: "image");
-                            
-                            //convert arrays to data
-                            //                                let  = NSKeyedArchiver.archivedData(withRootObject: self.names);
-                            //                                let dataFoodPrices = NSKeyedArchiver.archivedData(withRootObject: self.prices);
-                            //                                let dataFoodQuantity = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
-                            //                                let dataFoodIDs = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
-                            
-                            do{
-                                try context.save();
-                                orders.append(order);
-                            }catch{
-                                print("error");
-                            }
+            let placeOrderBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
+            let conn = Conn();
+            conn.connect(fileName: "stripeOrder.php", postString: placeOrderBody, completion: { (re) in
+            })
+        }
+        handlePlaceOrder();
+    }
+    
+    fileprivate func handlePlaceOrder(){
+        
+        if(user!.freeOrders! > 0 && self.orderTotalSum! <= 20.0){
+            user!.freeOrders! = user!.freeOrders! - 1;
+        }
+        let date = self.setDate();
+        let infoArray = [user?.userID!, date, self.userAddress!.addressID!, self.deliveryTime!, self.customer!.customerPhone!, self.customer!.customerName!, self.userAddress?.address!];
+        let json:[String: Any] = ["userInfo":infoArray,"totalSum":(self.orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":user!.freeOrders!];
+        
+        let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
+        let decodedJsonData = try? JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments) as! NSDictionary;
+        print(decodedJsonData);
+        
+        let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
+        var request:URLRequest = URLRequest(url: url);
+        request.httpMethod = "POST";
+        request.httpBody = jsonData;
+        let task = URLSession.shared.dataTask(with: request){
+            data,response,error in
+            if data != nil{
+                let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
+                DispatchQueue.main.async {
+                    //save order in core data
+                    if(user?.userID! != "1"){
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate;
+                        let context = appDelegate.persistentContainer.viewContext;
+                        let entity = NSEntityDescription.entity(forEntityName: "Order", in: context)!;
+                        let order = NSManagedObject(entity: entity, insertInto: context);
+                        //restaurant, price, orderID,image,date
+                        
+                        order.setValue(self.restaurant!.restaurantTitle!, forKey: "restaurantName");
+                        order.setValue(self.orderTotalSum, forKey: "price");
+                        order.setValue(re, forKey: "orderID");
+                        order.setValue(date, forKey: "date");
+                        order.setValue(self.restaurant!.restaurantID!, forKey: "restaurantID");
+                        
+                        let imageData = (UIImagePNGRepresentation(self.restaurant!.restaurantBuildingImage!) as Data?);
+                        order.setValue(imageData, forKey: "image");
+                        
+                        //convert arrays to data
+                        //                                let  = NSKeyedArchiver.archivedData(withRootObject: self.names);
+                        //                                let dataFoodPrices = NSKeyedArchiver.archivedData(withRootObject: self.prices);
+                        //                                let dataFoodQuantity = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
+                        //                                let dataFoodIDs = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
+                        
+                        do{
+                            try context.save();
+                            orders.append(order);
+                        }catch{
+                            print("error");
                         }
-                        
-                        if(user?.userID! == "1"){
-                            user = nil;
-                            //                                addresses.removeAll();
-                            //                                cCards.removeAll();
-                        }
-                        
-                        let alert = UIAlertController(title: "Order Placed", message: "Your order has been placed!", preferredStyle: UIAlertControllerStyle.alert);
-                        alert.addAction(UIAlertAction(title: "Ok!", style: UIAlertActionStyle.default, handler: { (result) in
-                            self.reviewPage?.navigationController?.popToRootViewController(animated: true);
-                        }))
-                        self.reviewPage?.present(alert, animated: true, completion: nil);
-                        
                     }
                     
+                    if(user?.userID! == "1"){
+                        user = nil;
+                        //                                addresses.removeAll();
+                        //                                cCards.removeAll();
+                    }
+                    
+                    let alert = UIAlertController(title: "Order Placed", message: "Your order has been placed!", preferredStyle: UIAlertControllerStyle.alert);
+                    alert.addAction(UIAlertAction(title: "Ok!", style: UIAlertActionStyle.default, handler: { (result) in
+                        self.reviewPage?.navigationController?.popToRootViewController(animated: true);
+                    }))
+                    self.reviewPage?.present(alert, animated: true, completion: nil);
+                    
                 }
+                
             }
-            task.resume();
         }
-        print("no make");
+        task.resume();
     }
     
     @objc func nextPush(){
@@ -267,7 +270,7 @@ class ReviewPayButton: UIButton{
                         user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
 
                     }
-                    placeOrder();
+                    sendToken();
 
                     
                 }
