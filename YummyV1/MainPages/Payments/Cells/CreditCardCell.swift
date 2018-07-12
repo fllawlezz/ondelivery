@@ -50,12 +50,12 @@ class CreditCardCell: UICollectionViewCell{
         addButton.layer.cornerRadius = 5;
         return addButton;
     }()
-    var btnTapped: (()->())?
     
     var upgradeSubscriptionPage:SubscriptionUpgradePage?
     var subscriptionPlan: String?
     var subscriptionCharge: Double?
-    var paymentCard = Card();
+    var paymentCard = PaymentCard();
+    var selectPaymentPage: SelectPaymentPage?
     
     override init(frame: CGRect) {
         super.init(frame: frame);
@@ -111,9 +111,19 @@ class CreditCardCell: UICollectionViewCell{
     }
     
     @objc func selectCard(){
-        btnTapped?()
         if(upgradeSubscriptionPage != nil){
             upgradeSubscription();
+        }else{
+//            print("reviewPage");
+//            let newPaymentCard = PaymentCard();
+//            newPaymentCard.cardNumber = self.paymentCard.cardNumber!;
+//            newPaymentCard.cvcNumber = self.paymentCard.cvcNumber!;
+//            newPaymentCard.expirationDate = self.paymentCard.expirationDate!;
+//            newPaymentCard.last4 = self.paymentCard.last4!;
+            let reviewPage  = self.selectPaymentPage!.reviewPage;
+            reviewPage?.paymentCard = self.paymentCard;
+            reviewPage?.tableView.handleReloadTable();
+            self.selectPaymentPage?.navigationController?.popViewController(animated: true);
         }
     }
     
@@ -128,11 +138,15 @@ class CreditCardCell: UICollectionViewCell{
     }
     
     func setCardNum(cardNum: String){
-        paymentCard.cardNum = cardNum;
+        paymentCard.cardNumber = cardNum;
     }
     
     func setCardExpiration(expiration: String){
-        paymentCard.expiration = expiration;
+        paymentCard.expirationDate = expiration;
+    }
+    
+    func setCvcNumber(cvc: String){
+        paymentCard.cvcNumber = cvc;
     }
     
     func hideBorder(){
@@ -202,13 +216,13 @@ class CreditCardCell: UICollectionViewCell{
     
     private func updateSubscriptionServers(total: Double){
         let cardParams = STPCardParams();
-        let expirationString = self.paymentCard.expiration?.components(separatedBy: "/");
+        let expirationString = self.paymentCard.expirationDate?.components(separatedBy: "/");
         let expirationMonth = expirationString![0];
         let expirationYear = expirationString![1];
-        cardParams.number = self.paymentCard.cardNum!
+        cardParams.number = self.paymentCard.cardNumber!
         cardParams.expMonth = UInt((expirationMonth as NSString).integerValue);
         cardParams.expYear = UInt((expirationYear as NSString).integerValue);
-        cardParams.cvc = self.paymentCard.cvc;
+        cardParams.cvc = self.paymentCard.cvcNumber;
         
         STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
             guard let token = token, error == nil else {

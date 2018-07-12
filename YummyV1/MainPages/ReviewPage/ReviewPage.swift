@@ -108,7 +108,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     var deliveryTime: String?;
     
     var lastCardDigits: String?;
-    var paymentCard: Card?;
+    var paymentCard: PaymentCard?;
     
     let reuse = "one";
     let reuse2 = "two";
@@ -352,7 +352,15 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
         for item in cCards{
             if((item.value(forKey: "mainCard") as? String) == "Y"){
                 //card number = the global card
-                self.paymentCard = item as? Card;
+                let newPaymentCard = PaymentCard();
+                newPaymentCard.cardID = item.value(forKey: "cardID") as? String;
+                newPaymentCard.cardNumber = item.value(forKey: "cardNum") as? String;
+                newPaymentCard.mainCard = "Y";
+                newPaymentCard.cvcNumber = item.value(forKey: "cvc") as? String;
+                newPaymentCard.expirationDate = item.value(forKey: "expiration") as? String;
+                newPaymentCard.last4 = item.value(forKey: "last4") as? String;
+                newPaymentCard.nickName = item.value(forKey: "nickName") as? String;
+                self.paymentCard = newPaymentCard;
             }
         }
     }

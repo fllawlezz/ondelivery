@@ -25,7 +25,7 @@ class ReviewPayButton: UIButton{
     
     var deliveryTime: String?;
     var userAddress: UserAddress?;
-    var paymentCard: Card?;
+    var paymentCard: PaymentCard?;
     
     var orderTotalSum: Double!;
     var numberOfFreeOrders: Int?;
@@ -50,7 +50,8 @@ class ReviewPayButton: UIButton{
         self.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 18);
         self.setTitleColor(UIColor.black, for: .normal);
         self.backgroundColor = UIColor.appYellow;
-        self.target(forAction: #selector(self.nextPush), withSender: self);
+//        self.target(forAction: #selector(self.nextPush), withSender: self);
+        self.addTarget(self, action: #selector(self.nextPush), for: .touchUpInside);
     }
     
     func setTitle(buttonTitle: String){
@@ -115,12 +116,12 @@ class ReviewPayButton: UIButton{
         //create stripe Token, send to server, save to core data, alert view
         //MARK: Create Token
         let cardParams = STPCardParams();
-        cardParams.number = self.paymentCard?.cardNum!;
-        let expirationArray = self.paymentCard?.expiration!.components(separatedBy: "/");
+        cardParams.number = self.paymentCard?.cardNumber!;
+        let expirationArray = self.paymentCard?.expirationDate!.components(separatedBy: "/");
         
         cardParams.expMonth = UInt((expirationArray![0] as NSString).integerValue);
         cardParams.expYear = UInt((expirationArray![1] as NSString).integerValue);
-        cardParams.cvc = self.paymentCard?.cvc!;
+        cardParams.cvc = self.paymentCard?.cvcNumber!;
         
         var realToken:STPToken?
         
@@ -135,16 +136,22 @@ class ReviewPayButton: UIButton{
         return realToken!;
     }
     
-    fileprivate func renewCustomer(){
-        self.customer = reviewPage!.customer!;
+    fileprivate func renewOrderData(){
+        self.customer = reviewPage!.customer;
+        self.paymentCard = reviewPage!.paymentCard;
+        self.userAddress = reviewPage!.userAddress;
+        self.deliveryTime = reviewPage!.deliveryTime;
+        self.mainItems = reviewPage?.mainItems;
+    
     }
     
     @objc func nextPush(){
-        
+        renewOrderData();
+        getOrderDetails();
         if(self.customer?.customerEmail != nil && self.customer?.customerName != nil && self.customer?.customerPhone != nil){
-            
+
             getOrderDetails();
-            
+
             if(user?.userID == nil && customer!.customerPhone! == "none" && customer!.customerName! == "none"){
                 let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
                 alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
@@ -156,24 +163,21 @@ class ReviewPayButton: UIButton{
                     self.reviewPage?.present(alert, animated: true, completion: nil);
                 }else{
                     if(user == nil){
-                        if(customer?.customerEmail == nil){
-                            customer?.customerEmail = "ondeliveryLLC@gmail.com";
-                        }
                         user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
-                        
+
                     }
-                    
+
                     let token = handleCreateToken();
-                    
+
                     if(self.numberOfFreeOrders! > 0 && self.orderTotalSum! <= 20.0){
                         self.numberOfFreeOrders = numberOfFreeOrders! - 1;
                     }
                     let date = setDate();
                     let infoArray = [user?.userID!, date, self.userAddress!.addressID!, self.deliveryTime!, self.customer!.customerPhone!, self.customer!.customerName!, self.userAddress?.address!];
                     let json:[String: Any] = ["userInfo":infoArray,"totalSum":(orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":numberOfFreeOrders!,"token":token];
-                    
+
                     let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
-                    
+
                     let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
                     var request:URLRequest = URLRequest(url: url);
                     request.httpMethod = "POST";
@@ -190,22 +194,22 @@ class ReviewPayButton: UIButton{
                                     let entity = NSEntityDescription.entity(forEntityName: "Order", in: context)!;
                                     let order = NSManagedObject(entity: entity, insertInto: context);
                                     //restaurant, price, orderID,image,date
-                                    
+
                                     order.setValue(self.restaurant!.restaurantTitle!, forKey: "restaurantName");
                                     order.setValue(self.orderTotalSum, forKey: "price");
                                     order.setValue(re, forKey: "orderID");
                                     order.setValue(date, forKey: "date");
                                     order.setValue(self.restaurant!.restaurantID!, forKey: "restaurantID");
-                                    
+
                                     let imageData = (UIImagePNGRepresentation(self.restaurant!.restaurantBuildingImage!) as Data?);
                                     order.setValue(imageData, forKey: "image");
-                                    
+
                                     //convert arrays to data
     //                                let  = NSKeyedArchiver.archivedData(withRootObject: self.names);
     //                                let dataFoodPrices = NSKeyedArchiver.archivedData(withRootObject: self.prices);
     //                                let dataFoodQuantity = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
     //                                let dataFoodIDs = NSKeyedArchiver.archivedData(withRootObject: self.quantity);
-                                    
+
                                     do{
                                         try context.save();
                                         orders.append(order);
@@ -213,21 +217,21 @@ class ReviewPayButton: UIButton{
                                         print("error");
                                     }
                                 }
-                                
+
                                 if(user?.userID! == "1"){
                                     user = nil;
     //                                addresses.removeAll();
     //                                cCards.removeAll();
                                 }
-                                
+
                                 let alert = UIAlertController(title: "Order Placed", message: "Your order has been placed!", preferredStyle: UIAlertControllerStyle.alert);
                                 alert.addAction(UIAlertAction(title: "Ok!", style: UIAlertActionStyle.default, handler: { (result) in
                                     self.reviewPage?.navigationController?.popToRootViewController(animated: true);
                                 }))
                                 self.reviewPage?.present(alert, animated: true, completion: nil);
-                                
+
                             }
-                            
+
                         }
                     }
                     task.resume();

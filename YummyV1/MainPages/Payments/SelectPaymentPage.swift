@@ -12,6 +12,7 @@ import Stripe
 
 
 class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
+    var reviewPage: ReviewPage?
     
     var fromProfilePage = false;
     var fromUpgradeSubscriptionpage = false;
@@ -97,21 +98,19 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! CreditCardCell
-//        let currentCard = cCards[indexPath.item];
-//        print(indexPath.item);
-//        print(cell.setNickname(name: currentCard.value(forKey: "nickName") as! String));
-//        cell.setNickname(name: currentCard.value(forKey: "nickName") as! String);
-//        cell.setNickname(name: "new card");
-//        cell.setLast4(digits: currentCard.value(forKey: "last4") as! String);
-//        cell.setCardNum(cardNum: currentCard.value(forKey: "cardNum") as! String);
-//        cell.setCardExpiration(expiration: currentCard.value(forKey: "expiration") as! String);
-        
+        let currentCard = cCards[indexPath.item];
+        cell.setNickname(name: currentCard.value(forKey: "nickName") as! String);
+        cell.setLast4(digits: currentCard.value(forKey: "last4") as! String);
+        cell.setCardNum(cardNum: currentCard.value(forKey: "cardNum") as! String);
+        cell.setCardExpiration(expiration: currentCard.value(forKey: "expiration") as! String);
+        cell.setCvcNumber(cvc: currentCard.value(forKey: "cvc") as! String);
+        cell.selectPaymentPage = self;
 //        cell.setNickname(name: currentCard.nickName!);
 //        cell.setLast4(digits: currentCard.last4!);
 //        cell.setCardNum(cardNum: currentCard.cardNumber!);
 //        cell.setCardExpiration(expiration: currentCard.expirationDate!);
         
-        if(indexPath.item == cards!.count){
+        if(indexPath.item == cCards.count){
             cell.hideBorder();
         }else{
             cell.border.isHidden = false;

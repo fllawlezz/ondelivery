@@ -14,7 +14,7 @@ class UserInfoTableView: UITableView, UITableViewDelegate, UITableViewDataSource
     var reuseIdentifier = "reuseIdentifier";
     var userAddress: UserAddress?
     var deliveryTime: String?
-    var paymentCard: Card?
+    var paymentCard: PaymentCard?
     
     var customer: Customer?
     
@@ -45,7 +45,7 @@ class UserInfoTableView: UITableView, UITableViewDelegate, UITableViewDataSource
             cell.setUserText(text: self.userAddress!.address!);
         }else if(indexPath.row == 1 && self.deliveryTime != nil){
             cell.setUserText(text: self.deliveryTime!);
-        }else if(indexPath.row == 2 && self.paymentCard?.last4 != nil){
+        }else if(indexPath.row == 2 && self.paymentCard != nil){
             cell.setUserText(text: "...\(self.paymentCard!.last4!)");
         }else if(indexPath.row == 3){
             cell.setUserText(text:  "\(customer!.customerName!)");
@@ -108,6 +108,7 @@ class UserInfoTableView: UITableView, UITableViewDelegate, UITableViewDataSource
     
     func toSelectPayments(){
         let payments = SelectPaymentPage();
+        payments.reviewPage = self.reviewPage;
         self.reviewPage?.navigationController?.pushViewController(payments, animated: true);
     }
     

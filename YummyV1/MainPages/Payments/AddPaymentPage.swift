@@ -186,10 +186,10 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
             cardObject.setValue(cardID, forKey: "cardID");
             cardObject.setValue(nickName, forKey: "nickName");
             cardObject.setValue(main!, forKey: "mainCard");
-            
-////            do{
-////                try context.save();
-                cCards.append(cardObject);
+//
+//////            do{
+//////                try context.save();
+            cCards.append(cardObject);
 //            }catch{
 //                print("error");
 //            }
