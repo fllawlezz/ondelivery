@@ -33,21 +33,14 @@ class StartingNavigationPage: UIViewController{
         return onDeliveryTitle;
     }()
     
-    lazy var buttonViews: UIView = {
-        let buttonViews = UIView();
-        buttonViews.translatesAutoresizingMaskIntoConstraints = false;
-        buttonViews.backgroundColor = UIColor.appYellow;
-        return buttonViews;
-    }()
-    
     lazy var loginButton: UIButton = {
         let loginButton = UIButton(type: .system);
         loginButton.translatesAutoresizingMaskIntoConstraints = false;
         loginButton.setTitle("Log In", for: .normal);
         loginButton.setTitleColor(UIColor.black, for: .normal);
-        loginButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 14);
+        loginButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 18);
         loginButton.layer.borderColor = UIColor.black.cgColor;
-        loginButton.layer.borderWidth = 2;
+        loginButton.layer.borderWidth = 1;
         loginButton.backgroundColor = UIColor.appYellow;
         loginButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10);
         loginButton.addTarget(self, action: #selector(self.toLoginPage), for: .touchUpInside);
@@ -59,9 +52,7 @@ class StartingNavigationPage: UIViewController{
         signUpButton.translatesAutoresizingMaskIntoConstraints = false;
         signUpButton.setTitle("Sign Up", for: .normal);
         signUpButton.setTitleColor(UIColor.appYellow, for: .normal);
-        signUpButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 14);
-//        signUpButton.layer.borderColor = UIColor.white.cgColor;
-        signUpButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10);
+        signUpButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 18);
         signUpButton.layer.borderWidth = 1;
         signUpButton.backgroundColor = UIColor.black;
         signUpButton.addTarget(self, action: #selector(self.toSignUpPage), for: .touchUpInside);
@@ -83,35 +74,17 @@ class StartingNavigationPage: UIViewController{
         self.onDeliveryTitle.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -25).isActive = true;
         self.onDeliveryTitle.heightAnchor.constraint(equalToConstant: 35).isActive = true;
         
-        self.view.addSubview(buttonViews);
-        buttonViews.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        buttonViews.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        buttonViews.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true;
-        buttonViews.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        self.view.addSubview(signUpButton);
+        signUpButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        signUpButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+        signUpButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
         
-        self.buttonViews.addSubview(loginButton);
-//        self.loginButton.leftAnchor.constraint(equalTo: self.buttonViews.leftAnchor, constant: 25).isActive = true;
-        self.loginButton.rightAnchor.constraint(equalTo: self.buttonViews.centerXAnchor, constant: -15).isActive = true;
-        self.loginButton.bottomAnchor.constraint(equalTo: self.buttonViews.bottomAnchor, constant: -25).isActive = true;
-        if(UIScreenHeight == 568){
-            self.loginButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
-            self.loginButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
-        }else{
-            self.loginButton.widthAnchor.constraint(equalToConstant: 150).isActive = true;
-            self.loginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
-        }
-        
-        self.buttonViews.addSubview(signUpButton);
-//        self.signUpButton.rightAnchor.constraint(equalTo: self.buttonViews.rightAnchor, constant: -25).isActive = true;
-        self.signUpButton.leftAnchor.constraint(equalTo: self.buttonViews.centerXAnchor, constant: 15).isActive = true;
-        self.signUpButton.bottomAnchor.constraint(equalTo: self.buttonViews.bottomAnchor, constant: -25).isActive = true;
-        if(UIScreenHeight == 568){
-            self.signUpButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
-            self.signUpButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
-        }else{
-            self.signUpButton.widthAnchor.constraint(equalToConstant: 150).isActive = true;
-            self.signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
-        }
+        self.view.addSubview(loginButton);
+        loginButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        loginButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+        loginButton.bottomAnchor.constraint(equalTo: self.signUpButton.topAnchor).isActive = true;
+        loginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
     }
     
     @objc func toLoginPage(){

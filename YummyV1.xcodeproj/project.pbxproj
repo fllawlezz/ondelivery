@@ -87,6 +87,8 @@
 		CA9A1F7020EADA2F003FEC13 /* SpecialInstructionsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9A1F6F20EADA2F003FEC13 /* SpecialInstructionsPage.swift */; };
 		CA9A1F7320EAEDF5003FEC13 /* OrderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9A1F7220EAEDF5003FEC13 /* OrderItem.swift */; };
 		CAA6A00B20203D4700D47DDF /* AddressPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA6A00A20203D4700D47DDF /* AddressPage.swift */; };
+		CAADF67D20F9D9A100B6CC77 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAADF67C20F9D9A100B6CC77 /* SignUpView.swift */; };
+		CAADF68020F9DD7100B6CC77 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAADF67F20F9DD7100B6CC77 /* LoginView.swift */; };
 		CAB7C4FD20868A1500FF0CD9 /* StartingNavigationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB7C4FC20868A1500FF0CD9 /* StartingNavigationPage.swift */; };
 		CAB7C4FF2086B2D400FF0CD9 /* ProfileGetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB7C4FE2086B2D400FF0CD9 /* ProfileGetData.swift */; };
 		CABDF9F320ED55900015D0BF /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABDF9F220ED55900015D0BF /* FoodItem.swift */; };
@@ -227,6 +229,8 @@
 		CA9A1F6F20EADA2F003FEC13 /* SpecialInstructionsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialInstructionsPage.swift; sourceTree = "<group>"; };
 		CA9A1F7220EAEDF5003FEC13 /* OrderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		CAA6A00A20203D4700D47DDF /* AddressPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressPage.swift; sourceTree = "<group>"; };
+		CAADF67C20F9D9A100B6CC77 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		CAADF67F20F9DD7100B6CC77 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		CAB7C4FC20868A1500FF0CD9 /* StartingNavigationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartingNavigationPage.swift; sourceTree = "<group>"; };
 		CAB7C4FE2086B2D400FF0CD9 /* ProfileGetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileGetData.swift; sourceTree = "<group>"; };
 		CABDF9F220ED55900015D0BF /* FoodItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodItem.swift; sourceTree = "<group>"; };
@@ -493,6 +497,7 @@
 		CA435BEE207ECC8C00A8A2D2 /* ProfileLogin */ = {
 			isa = PBXGroup;
 			children = (
+				CAADF67E20F9DD5700B6CC77 /* loginSignUpViews */,
 				CAD83F4520D9898600566175 /* LoginDataModels */,
 				CA7043CB208730F800D3C77F /* ForgotPassword */,
 				CA435BEF207ECCA300A8A2D2 /* ProfileLogin.swift */,
@@ -628,6 +633,15 @@
 				CA9A1F6F20EADA2F003FEC13 /* SpecialInstructionsPage.swift */,
 			);
 			path = SpecialInstructions;
+			sourceTree = "<group>";
+		};
+		CAADF67E20F9DD5700B6CC77 /* loginSignUpViews */ = {
+			isa = PBXGroup;
+			children = (
+				CAADF67C20F9D9A100B6CC77 /* SignUpView.swift */,
+				CAADF67F20F9DD7100B6CC77 /* LoginView.swift */,
+			);
+			path = loginSignUpViews;
 			sourceTree = "<group>";
 		};
 		CAB7C4FB208689CD00FF0CD9 /* StartPage */ = {
@@ -1079,6 +1093,7 @@
 				CAF1EC6320F0478D00B80B59 /* GlobalVariables.swift in Sources */,
 				CAF1EC6620F0640600B80B59 /* CreditCardCell.swift in Sources */,
 				CA9A1F6D20EAA5D3003FEC13 /* SpecialOptionsHeader.swift in Sources */,
+				CAADF67D20F9D9A100B6CC77 /* SignUpView.swift in Sources */,
 				CAE7241B1FC52E7C00AA01C0 /* ProfilePage.swift in Sources */,
 				CA1E3D8B20E60D74008529C6 /* PriceCollectionViewCell.swift in Sources */,
 				CAF1EC6D20F17A7B00B80B59 /* Customer.swift in Sources */,
@@ -1114,6 +1129,7 @@
 				CAC18D3E2075DD1E008A2997 /* FiltersViewCell.swift in Sources */,
 				CA311379206EC908002DD79A /* SubscriptionUpgradePage.swift in Sources */,
 				CAF1EC5C20EEE0AD00B80B59 /* ReviewPayButton.swift in Sources */,
+				CAADF68020F9DD7100B6CC77 /* LoginView.swift in Sources */,
 				CAF86F0B1FBE82DA008ADD1E /* CustomTabBarController.swift in Sources */,
 				CA4CA16F2016F34000003AE1 /* GlobalFunctions.swift in Sources */,
 				CA93D6DC20E954C500BB83C8 /* NormalUILabel.swift in Sources */,

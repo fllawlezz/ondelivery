@@ -14,7 +14,8 @@ extension ProfileLogin{
     func checkPassword(){
         self.loadingTitle.text = "Checking Password";
         let conn = Conn();
-        let postString = "telephone=\(loginTelephoneField.textField.text!)&password=\(loginPasswordField.textField.text!)";
+//        let postString = "telephone=\(loginTelephoneField.textField.text!)&password=\(loginPasswordField.textField.text!)";
+        let postString = "hello";
 //        print(postString);
         conn.connect(fileName: "Login.php", postString: postString) { (re) in
             let result = re as String;
@@ -26,7 +27,7 @@ extension ProfileLogin{
                     UIView.animate(withDuration: 0.3, animations: {
                         self.darkView.alpha = 0;
                     })
-                    self.loginPasswordField.textField.text = "";
+//                    self.loginPasswordField.textField.text = "";
                     let alert = UIAlertController(title: "No Match", message: "Email and Password doesn't match", preferredStyle: .alert);
                     alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
                     self.present(alert, animated: true, completion: nil);
@@ -43,11 +44,11 @@ extension ProfileLogin{
                         self.lastName = (items[2] as? String)!;//lastName global save
                         self.email = (items[3] as? String)!;//email global save
                         self.subPlan = (items[5] as? String)!;//subscription plan
-                        self.telephone = self.loginTelephoneField.textField.text!
+//                        self.telephone = self.loginTelephoneField.textField.text!
                         let stringItem = (items[6] as? String)!;
                         let intVersion = Int(stringItem)!;
                         self.freeOrders = intVersion;
-                        self.password = self.loginPasswordField.textField.text!
+//                        self.password = self.loginPasswordField.textField.text!
                         DispatchQueue.main.sync {
 //                            print("getAddresses");
                             self.locManager = CLLocationManager();
@@ -89,7 +90,7 @@ extension ProfileLogin{
         //ran on the main thread
         //        dispatchGroup.enter();
         self.loadingTitle.text = "Getting Addreses";
-        saveDefaults(defaults: defaults!, firstName: firstName!, lastName: lastName!, email: email!, phoneNumber: telephone!, password: self.loginPasswordField.textField.text!);
+//        saveDefaults(defaults: defaults!, firstName: firstName!, lastName: lastName!, email: email!, phoneNumber: telephone!, password: self.loginPasswordField.textField.text!);
         saveSubscription(defaults: defaults!, subscriptionPlan: subPlan!, freeOrders: freeOrders!);
 //        populateDefaults(defaults: defaults);
         
@@ -154,7 +155,7 @@ extension ProfileLogin{
                     }else{
                         self.coreDataSaveAll();
                         self.customTabController?.selectedIndex = 3;
-                        self.loginPasswordField.textField.resignFirstResponder();
+//                        self.loginPasswordField.textField.resignFirstResponder();
                         self.dismiss(animated: true, completion: nil);
                     }
                 }
@@ -280,7 +281,7 @@ extension ProfileLogin{
         self.coreDataSaveAll();
         
         self.customTabController?.selectedIndex = 3;
-        self.loginPasswordField.textField.resignFirstResponder();
+//        self.loginPasswordField.textField.resignFirstResponder();
         
         if let orderPage = self.customTabController?.orderPage{
             orderPage.pastOrders = self.pastOrders;

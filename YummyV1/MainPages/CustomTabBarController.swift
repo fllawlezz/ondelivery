@@ -76,7 +76,7 @@ class CustomTabBarController: UITabBarController, UITabBarControllerDelegate{
         navigationController3.navigationBar.tintColor = UIColor.white;
         navigationController3.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : UIColor.white, NSAttributedStringKey.font : UIFont(name: "Montserrat-Bold", size: 20) ?? UIFont.boldSystemFont(ofSize: 20)];
         
-        viewControllers = [navigationController, navigationController1, navigationController2, navigationController3];
+        viewControllers = [navigationController, navigationController2, navigationController3];
         // Do any additional setup after loading the view.
     }
     
@@ -90,14 +90,14 @@ class CustomTabBarController: UITabBarController, UITabBarControllerDelegate{
     }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        if(item == self.viewControllers![3]){
+        if(item == self.viewControllers![2]){
             let profileCellView = ProfileLogin();
             self.present(profileCellView, animated: true, completion: nil);
         }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if(viewController == self.viewControllers![3] || viewController == self.viewControllers![2]){
+        if(viewController == self.viewControllers![2] || viewController == self.viewControllers![1]){
             if(userID == nil){
                 let profileLogin = ProfileLogin();
                 profileLogin.customTabController = self;

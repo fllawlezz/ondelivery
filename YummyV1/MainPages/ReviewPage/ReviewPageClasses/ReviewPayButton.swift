@@ -112,32 +112,38 @@ class ReviewPayButton: UIButton{
         return date;
     }
     
-    fileprivate func handleCreateToken()->STPToken{
-        //create stripe Token, send to server, save to core data, alert view
-        //MARK: Create Token
-        let cardParams = STPCardParams();
-        cardParams.number = self.paymentCard?.cardNumber!;
-        let expirationArray = self.paymentCard?.expirationDate!.components(separatedBy: "/");
-        
-        cardParams.expMonth = UInt((expirationArray![0] as NSString).integerValue);
-        cardParams.expYear = UInt((expirationArray![1] as NSString).integerValue);
-        cardParams.cvc = self.paymentCard?.cvcNumber!;
-        
-        var realToken:STPToken?
-        
-        STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
-            guard let token = token, error == nil else {
-                // Present error to user...
-                fatalError();
+    @objc func nextPush(){
+        //        print("pushed");
+        renewOrderData();
+        if(self.customer?.customerEmail != nil && self.customer?.customerName != nil && self.customer?.customerPhone != nil){
+            
+            getOrderDetails();
+            
+            if(user?.userID == nil && customer!.customerPhone! == "none" && customer!.customerName! == "none"){
+                let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
+                self.reviewPage?.present(alert, animated: true, completion: nil);
+            }else{
+                if(paymentCard == nil || self.userAddress == nil || self.deliveryTime == nil){
+                    let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
+                    self.reviewPage?.present(alert, animated: true, completion: nil);
+                }else{
+                    print("stage 2");
+                    if(user == nil){
+                        user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
+                        
+                    }
+                    sendToken();
+                    
+                    
+                }
             }
-            realToken = token;
-
         }
-        return realToken!;
     }
     
     fileprivate func renewOrderData(){
-        print("renew");
+//        print("renew");
         self.customer = reviewPage!.customer;
         self.paymentCard = reviewPage!.paymentCard;
         self.userAddress = reviewPage!.userAddress;
@@ -148,7 +154,7 @@ class ReviewPayButton: UIButton{
     }
     
     fileprivate func sendToken(){
-        print("placed order");
+//        print("placed order");
         //create stripe Token, send to server, save to core data, alert view
         //MARK: Create Token
         let cardParams = STPCardParams();
@@ -166,12 +172,11 @@ class ReviewPayButton: UIButton{
                 return;
             }
             
-            print(token);
-            
-            let placeOrderBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
+            let postBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
             let conn = Conn();
-            conn.connect(fileName: "stripeOrder.php", postString: placeOrderBody, completion: { (re) in
+            conn.connect(fileName: "stripeOrder.php", postString: postBody, completion: { (result) in
             })
+//            print(token);
         }
         handlePlaceOrder();
     }
@@ -186,8 +191,6 @@ class ReviewPayButton: UIButton{
         let json:[String: Any] = ["userInfo":infoArray,"totalSum":(self.orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":user!.freeOrders!];
         
         let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
-        let decodedJsonData = try? JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments) as! NSDictionary;
-        print(decodedJsonData);
         
         let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
         var request:URLRequest = URLRequest(url: url);
@@ -246,35 +249,5 @@ class ReviewPayButton: UIButton{
             }
         }
         task.resume();
-    }
-    
-    @objc func nextPush(){
-        print("pushed");
-        renewOrderData();
-        if(self.customer?.customerEmail != nil && self.customer?.customerName != nil && self.customer?.customerPhone != nil){
-
-            getOrderDetails();
-
-            if(user?.userID == nil && customer!.customerPhone! == "none" && customer!.customerName! == "none"){
-                let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
-                self.reviewPage?.present(alert, animated: true, completion: nil);
-            }else{
-                if(paymentCard == nil || self.userAddress == nil || self.deliveryTime == nil){
-                    let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);
-                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
-                    self.reviewPage?.present(alert, animated: true, completion: nil);
-                }else{
-                    print("stage 2");
-                    if(user == nil){
-                        user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
-
-                    }
-                    sendToken();
-
-                    
-                }
-            }
-        }
     }
 }
