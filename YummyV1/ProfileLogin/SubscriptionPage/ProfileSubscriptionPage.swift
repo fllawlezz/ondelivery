@@ -13,15 +13,7 @@ import UIKit
 
 class ProfileSubscriptionPage: UIViewController{
     
-    var freeOrders: Int?
-    var subPlan: String?
-    
-//    let orderNumber = self.freeOrders!;
-//    let subscriptionPlan = self.subPlan!;
-    var userID: String?
-    
     var popUpTopAnchor: NSLayoutConstraint!;
-    
     
     lazy var ordersView: UIView = {
         let ordersView = UIView();
@@ -48,7 +40,7 @@ class ProfileSubscriptionPage: UIViewController{
         let numberOfOrders = UILabel();
         numberOfOrders.translatesAutoresizingMaskIntoConstraints = false;
         numberOfOrders.textAlignment = .center;
-        numberOfOrders.text = "\(self.freeOrders!)";
+        numberOfOrders.text = "\(user!.freeOrders!)";
         numberOfOrders.font = UIFont(name: "Montserrat-Regular", size: 16);
         numberOfOrders.textColor = UIColor.black;
         return numberOfOrders;
@@ -229,9 +221,9 @@ class ProfileSubscriptionPage: UIViewController{
     }
     
     func setupText(){
-        numberOfOrders.text = "\(self.freeOrders!)";
-        subscriptionPayingLabel.text = self.subPlan!;
-        switch(subPlan!){
+        numberOfOrders.text = "\(user!.freeOrders!)";
+        subscriptionPayingLabel.text = user!.subscriptionPlan!;
+        switch(user!.subscriptionPlan!){
         case "Standard":
             self.perMonthChargeAmount.text = "$7.99";
             break;
@@ -267,7 +259,6 @@ class ProfileSubscriptionPage: UIViewController{
     
     @objc func toUpgradePage(){
         let upgradePage = SubscriptionUpgradePage();
-        upgradePage.subscriptionPlan = subPlan!;
         self.navigationController?.pushViewController(upgradePage, animated: true);
     }
     
@@ -275,10 +266,9 @@ class ProfileSubscriptionPage: UIViewController{
         let alert = UIAlertController(title: "Cancel Subscription", message: "Are you sure you want to cancel your subscription?", preferredStyle: .alert);
         alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (result) in
             //remove sub plan, send to server that they are no longer subscribed, keep orders
-            self.subPlan = "NONE";
-            saveSubscription(defaults: defaults!, subscriptionPlan: self.subPlan!, freeOrders: self.freeOrders!);
+            user!.subscriptionPlan = "NONE";
             let conn = Conn();
-            let postBody = "UserID=\(self.userID!)";
+            let postBody = "UserID=\(user!.userID!)";
             conn.connect(fileName: "cancelSubscription.php", postString: postBody, completion: { (result) in
             })
             self.showConfirmationAlert();
@@ -290,8 +280,8 @@ class ProfileSubscriptionPage: UIViewController{
     }
     
     private func showConfirmationAlert(){
-        let alert = UIAlertController(title: "Subscription Canceled!", message: "Your subscription has been canceled", preferredStyle: .alert);
-        alert.addAction(UIAlertAction(title: "Ok!", style: .destructive, handler: { (result) in
+        let alert = UIAlertController(title: "Subscription Canceled", message: "Your subscription has been canceled", preferredStyle: .alert);
+        alert.addAction(UIAlertAction(title: "Ok", style: .destructive, handler: { (result) in
             self.navigationController?.popToRootViewController(animated: true);
         }))
         self.present(alert, animated: true, completion: nil);

@@ -167,12 +167,12 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
                     }catch{
                         print("error");
                     }
+                    self.selectPaymentPage?.creditCardTable.reloadData();
+                    self.navigationController?.popViewController(animated: true);
                 }
             })
             
                 //send to server and save to core data
-                self.selectPaymentPage?.creditCardTable.reloadData();
-                self.navigationController?.popViewController(animated: true);
         }else{
             cardID = "0";
             let appDelegate = UIApplication.shared.delegate as? AppDelegate

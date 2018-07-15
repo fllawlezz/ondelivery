@@ -33,19 +33,27 @@ class Conn{
 }
 
 //MARK: Functions
-func saveDefaults(defaults: UserDefaults!, firstName: String!, lastName: String!, email: String!, phoneNumber: String!, password: String!){
-    defaults.set(firstName, forKey: "firstName");
-    defaults.set(lastName, forKey: "lastName");
-    defaults.set(password, forKey: "password");
-    defaults.set(email, forKey: "email");
-    defaults.set(phoneNumber, forKey: "telephone");
+func saveDefaults(defaults: UserDefaults!){
+    defaults.set(user!.firstName!, forKey: "firstName");
+    defaults.set(user!.lastName, forKey: "lastName");
+    defaults.set(user!.email!, forKey: "email");
+    defaults.set(user!.telephone!, forKey: "telephone");
+    defaults.set(user!.subscriptionPlan!, forKey: "subscriptionPlan");
+    defaults.set(user!.freeOrders!, forKey: "freeOrders");
+    defaults.set(user!.userID!, forKey: "userID");
+    
+//    defaults.set(firstName, forKey: "firstName");
+//    defaults.set(lastName, forKey: "lastName");
+//    defaults.set(password, forKey: "password");
+//    defaults.set(email, forKey: "email");
+//    defaults.set(phoneNumber, forKey: "telephone");
 //    defaults.set(userID, forKey: "userID");
 }
 
-func saveSubscription(defaults: UserDefaults!, subscriptionPlan: String!, freeOrders: Int){
-    defaults.set(subscriptionPlan, forKey: "subscriptionPlan");
-    defaults.set(freeOrders, forKey: "freeOrders");
-}
+//func saveSubscription(defaults: UserDefaults!, subscriptionPlan: String!, freeOrders: Int){
+//    defaults.set(subscriptionPlan, forKey: "subscriptionPlan");
+//    defaults.set(freeOrders, forKey: "freeOrders");
+//}
 
 func removeDefaults(defaults: UserDefaults!){
     defaults.removeObject(forKey: "firstName");

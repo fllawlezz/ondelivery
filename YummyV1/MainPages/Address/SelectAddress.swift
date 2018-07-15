@@ -13,7 +13,7 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
     
     var reviewPage: ReviewPage?;
     var selectedAddress: UserAddress?;
-    
+    var profilePage: ProfilePage?;
     //MARK: UI elements
     var addressList: UICollectionView!;
     
@@ -95,6 +95,11 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
             cell.setAddress(addressString: address.value(forKey: "address") as? String);
             cell.setID(addressID: address.value(forKey: "addressID") as? String);
             cell.selectAddressPage = self;
+        
+            if(profilePage != nil){
+                cell.addButton.isHidden = true;
+            }
+        
             return cell;
     }
     

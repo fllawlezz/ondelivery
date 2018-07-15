@@ -18,19 +18,10 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     
     var restaurants = [Restaurant]();
     var advertisedRestaurants = [Restaurant]();
+    
     var cards = [PaymentCard]();
     var pastOrders = [PastOrder]();
-    var addresses = [UserAddress]()
-    var userAddresses = [NSManagedObject]();
-    
-    var userID: String?
-    var email: String?
-    var telephone: String?
-    var firstName: String?
-    var lastName: String?
-    var subPlan: String?
-    var freeOrders: Int?
-    var password: String?
+    var userAddresses = [UserAddress]()
     
     //data variables
     let pageItems = ["Sign Up","Login"];
@@ -69,12 +60,14 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     
     lazy var signUpView: SignUpView = {
         let signUpView = SignUpView(mainView: self.view);
+        signUpView.profileLoginPage = self;
         return signUpView;
     }();
     
     //login functions
     lazy var loginView: LoginView = {
         let loginView = LoginView();
+        loginView.profileLoginPage = self;
         return loginView;
     }()
     
@@ -131,9 +124,6 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
         loginView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         loginView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         
-//        setupSignUpView();
-//        setupLoginView();
-        
         setupLoadingView();
         
         if(loginBoolean){
@@ -168,73 +158,32 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
         //send data to server and test for email address
         signingUp = true;
         
+        let telephone = telephoneSignUp;
+        let email = emailSignUp;
+        let firstName = firstNameSignUp;
+        let lastName = lastNameSignUp;
+        let password = passwordSignUp;
+        
+        self.spinner.animating = true;
+        self.spinner.updateAnimation();
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.darkView.alpha = 0.7;
+        })
+        
         self.locManager = CLLocationManager();
         self.locManager.delegate = self;
         
         let locStatus = CLLocationManager.authorizationStatus();
         if(locStatus == .notDetermined){
             //ask for location
-//            print("asking");
+            self.locManager.requestWhenInUseAuthorization();
             self.locManager.requestAlwaysAuthorization();
         }else if(locStatus == .denied){
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
+            presentNeedLocation()
             self.skipButton.isEnabled = true;
         }else if(locStatus == .authorizedAlways || locStatus == .authorizedWhenInUse){
-            let conn = Conn();
-            let postString = "email=\(emailSignUp!)&firstName=\(firstNameSignUp!)&lastName=\(lastNameSignUp!)&telephone=\(telephoneSignUp!)&password=\(passwordSignUp!)"
-            print(postString);
-            conn.connect(fileName: "SignUpPart1.php", postString: postString) { (re) in
-                let result = re as String;
-                DispatchQueue.main.async {
-                    if(result == "found"){
-                        //email is taken
-                        let alert = UIAlertController(title: "Found That Account", message: "That account has already been registered. Please login instead.", preferredStyle: .alert);
-                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
-                        self.present(alert, animated: true, completion: nil);
-                        self.skipButton.isEnabled = true;
-                    }else{
-                        //                    print(result);
-                        self.userID = result;
-                        self.firstName = firstNameSignUp!;
-                        self.lastName = lastNameSignUp!;
-                        self.email = emailSignUp!;
-                        self.password = passwordSignUp!;
-                        self.telephone = telephoneSignUp!;
-                        
-                        self.subPlan = "NONE";
-                        self.freeOrders = 0;
-                        
-                        self.spinner.animating = true;
-                        self.spinner.updateAnimation();
-                        
-                        UIView.animate(withDuration: 0.3, animations: {
-                            self.darkView.alpha = 0.7;
-                        })
-                        
-//                        self.telephoneField.textField.resignFirstResponder();
-//                        self.emailField.textField.resignFirstResponder();
-//                        self.firstNameField.textField.resignFirstResponder();
-//                        self.lastNameField.textField.resignFirstResponder();
-//                        self.passwordField.textField.resignFirstResponder();
-                        
-                        defaults.set("wentThroughStartup", forKey: "startup");
-                        
-                        saveDefaults(defaults: defaults!, firstName: self.firstName!, lastName: self.lastName!, email: self.email!, phoneNumber: self.telephone!, password: self.password!);
-                        saveSubscription(defaults: defaults!, subscriptionPlan: self.subPlan!, freeOrders: self.freeOrders!);
-//                        populateDefaults(defaults: defaults);
-                        
-                        self.getLocation();
-                    }
-                }
-            }
+            handleSignUp(telephoneSignUp: telephone , emailSignUp: email, firstNameSignUp: firstName, lastNameSignUp: lastName, passwordSignUp: password);
         }
     }
     
@@ -269,81 +218,81 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
         
         let locStatus = CLLocationManager.authorizationStatus();
         if(locStatus == .notDetermined){
-            //ask for location    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//            switch(textField){
-//            case self.telephoneField.textField: emailField.textField.becomeFirstResponder();break;
-//            case self.emailField.textField: firstNameField.textField.becomeFirstResponder();break;
-//            case self.firstNameField.textField: lastNameField.textField.becomeFirstResponder();break;
-//            case self.lastNameField.textField: passwordField.textField.becomeFirstResponder();break;
-//            case self.loginTelephoneField.textField: loginPasswordField.textField.becomeFirstResponder();break;
-//            case self.loginPasswordField.textField: self.loginAttempt();break;
-//            case self.passwordField.textField: self.submitFields();break;
-//            default: break;
-//            }
-//            return true;
-//
-//            locManager.requestAlwaysAuthorization();
+            print("request");
+            locManager.requestAlwaysAuthorization();
+            locManager.requestWhenInUseAuthorization();
         }else if(locStatus == .denied){
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
+            print("denied");
+           presentNeedLocation()
         }else if(locStatus == .authorizedAlways || locStatus == .authorizedWhenInUse){
+            print("authorized");
             getLocation();
-        }else{
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
         }
     }
-
+    
+    func handleSignUp(telephoneSignUp: String!, emailSignUp: String!, firstNameSignUp: String!, lastNameSignUp: String!, passwordSignUp: String!){
+        let conn = Conn();
+        let postString = "email=\(emailSignUp!)&firstName=\(firstNameSignUp!)&lastName=\(lastNameSignUp!)&telephone=\(telephoneSignUp!)&password=\(passwordSignUp!)"
+        print(postString);
+        conn.connect(fileName: "SignUpPart1.php", postString: postString) { (re) in
+            let result = re as String;
+            DispatchQueue.main.async {
+                if(result == "found"){
+                    //email is taken
+                    self.spinner.animating = false;
+                    self.spinner.updateAnimation();
+                    
+                    UIView.animate(withDuration: 0.3, animations: {
+                        self.darkView.alpha = 0.0;
+                    })
+                    
+                    let alert = UIAlertController(title: "Account Exists", message: "That account has already been registered. Please login instead.", preferredStyle: .alert);
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
+                    self.present(alert, animated: true, completion: nil);
+                    self.skipButton.isEnabled = true;
+                }else{
+                    let newUser = User(firstName: firstNameSignUp, lastName: lastNameSignUp, userID: result, email: emailSignUp, telephone: telephoneSignUp, subscriptionPlan: "NONE", freeOrders: 0);
+                    user = newUser;
+                    defaults.set("wentThroughStartup", forKey: "startup");
+                    saveDefaults(defaults: defaults!);
+                    
+                    self.getLocation();
+                }
+            }
+        }
+    }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if(status == .authorizedAlways || status == .authorizedWhenInUse){
-            getLocation();
+            if(signUpView.isHidden){
+                getLocation();
+            }else{
+                let telephone = signUpView.telephoneField.textField.text!;
+                let email = signUpView.emailField.textField.text!;
+                let firstName = signUpView.firstNameField.textField.text!;
+                let lastName = signUpView.lastNameField.textField.text!;
+                let password = signUpView.passwordField.textField.text!;
+                
+                self.handleSignUp(telephoneSignUp: telephone, emailSignUp: email, firstNameSignUp: firstName, lastNameSignUp: lastName, passwordSignUp: password);
+            }
+            print("authorized");
         }else if(status == .denied){
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
-        }else if(status == .restricted){
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
-        }else if(status == .notDetermined){
-            self.locManager.requestAlwaysAuthorization();
-        }else{
-            let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.darkView.alpha = 0.0;
-                    self.spinner.animating = false;
-                    self.spinner.updateAnimation();
-                })
-            }))
-            self.present(alert, animated: true, completion: nil);
+            presentNeedLocation();
+            print("denied");
         }
+    }
+    
+    
+    
+    func presentNeedLocation(){
+        let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
+            UIView.animate(withDuration: 0.3, animations: {
+                self.darkView.alpha = 0.0;
+                self.spinner.animating = false;
+                self.spinner.updateAnimation();
+            })
+        }))
+        self.present(alert, animated: true, completion: nil);
     }
 }

@@ -11,7 +11,7 @@ import UIKit
 class ForgotPasswordPage1: UIViewController{
     //MARK: Elements
     //imageView, backgroundView, backButton, title, codeField, nextButton
-    var imageView: UIImageView!;
+//    var imageView: UIImageView!;
     var backgroundView: UIView!;
     var titleField: UILabel!;
     var backButton: UIButton!;
@@ -32,17 +32,19 @@ class ForgotPasswordPage1: UIViewController{
     private func setup(){
         let backNavButton = UIBarButtonItem(image: #imageLiteral(resourceName: "backButtonWhite"), style: .plain, target: self, action: #selector(self.backToRoot));
         self.navigationItem.leftBarButtonItem = backNavButton;
+        
+        self.view.backgroundColor = UIColor.white;
         //        self.navigationController?.navigationBar.isHidden = true;
         
-        imageView = UIImageView();
-        imageView.translatesAutoresizingMaskIntoConstraints = false;
-        imageView.image = #imageLiteral(resourceName: "spaghetti");
-        self.view.addSubview(imageView);
-        //need x,y,width,height
-        imageView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        imageView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        imageView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-        imageView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+//        imageView = UIImageView();
+//        imageView.translatesAutoresizingMaskIntoConstraints = false;
+//        imageView.image = #imageLiteral(resourceName: "spaghetti");
+//        self.view.addSubview(imageView);
+//        //need x,y,width,height
+//        imageView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+//        imageView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+//        imageView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
+//        imageView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         
         backgroundView = UIView();
         backgroundView.translatesAutoresizingMaskIntoConstraints = false;
@@ -59,7 +61,7 @@ class ForgotPasswordPage1: UIViewController{
         titleField.translatesAutoresizingMaskIntoConstraints = false;
         titleField.text = "Enter the code sent to your phone";
         titleField.font = UIFont(name: "Montserrat-SemiBold", size: 18);
-        titleField.textColor = UIColor.appYellow;
+        titleField.textColor = UIColor.black;
         titleField.textAlignment = .center;
         titleField.adjustsFontSizeToFitWidth = true;
         titleField.numberOfLines = 1;

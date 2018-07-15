@@ -89,16 +89,16 @@ class CustomTabBarController: UITabBarController, UITabBarControllerDelegate{
         // Dispose of any resources that can be recreated.
     }
     
-    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        if(item == self.viewControllers![2]){
-            let profileCellView = ProfileLogin();
-            self.present(profileCellView, animated: true, completion: nil);
-        }
-    }
+//    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+//        if(item == self.viewControllers![2]){
+//            let profileCellView = ProfileLogin();
+//            self.present(profileCellView, animated: true, completion: nil);
+//        }
+//    }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if(viewController == self.viewControllers![2] || viewController == self.viewControllers![1]){
-            if(userID == nil){
+            if(user == nil){
                 let profileLogin = ProfileLogin();
                 profileLogin.customTabController = self;
                 let navigationController = UINavigationController(rootViewController: profileLogin);

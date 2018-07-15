@@ -24,14 +24,11 @@ class AddressPage: UIViewController, UICollectionViewDelegate, UICollectionViewD
     
     var userID: String?
     
-    //Data Elements
-    var addresses: [NSManagedObject]?
-    
     override func viewDidLoad() {
         //title
         self.navigationItem.title = "Address List";
 //        print(addresses?.count);
-        print(addresses![0].value(forKey: "address") as! String);
+//        print(addresses![0].value(forKey: "address") as! String);
         //collectionView with different addresses and an add address button
         self.view.backgroundColor = UIColor.white;
         
@@ -62,7 +59,7 @@ class AddressPage: UIViewController, UICollectionViewDelegate, UICollectionViewD
                 var object: NSManagedObject!;
                 var count = 0;
                 
-                for item in self.addresses!{
+                for item in addresses{
                     if((item.value(forKey: "address") as! String) == address){
                         object = item;
                         break;
@@ -82,7 +79,7 @@ class AddressPage: UIViewController, UICollectionViewDelegate, UICollectionViewD
                     
                 }
         
-                self.addresses!.remove(at: count);
+                addresses.remove(at: count);
                 self.addressList.deleteItems(at: [indexPath]);
                 self.addressList.reloadData();
                
@@ -206,7 +203,7 @@ extension AddressPage{
 //        if(addresses!.count > 1){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! AddressListCell
             //        cell.setAddress(addressString: addressListDataSource[indexPath.row]);
-            let address = addresses![indexPath.row];
+            let address = addresses[indexPath.row];
             cell.setAddress(addressString: address.value(forKey: "address") as? String);
             return cell;
 //        }
@@ -226,7 +223,7 @@ extension AddressPage{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 //        if(addresses!.count > 1){
-            return self.addresses!.count;
+        return addresses.count;
 //        }else{
 //            return 0;
 //        }

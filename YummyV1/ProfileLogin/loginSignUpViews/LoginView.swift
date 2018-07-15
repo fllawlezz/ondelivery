@@ -100,7 +100,7 @@ class LoginView: UIView, UITextFieldDelegate{
         loginButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true;
         loginButton.topAnchor.constraint(equalTo: self.forgotPassword.bottomAnchor, constant: 10).isActive = true;
         loginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
-        
+        loginButton.addTarget(self, action: #selector(loginAttempt), for: .touchUpInside);
         self.isHidden = true;
     }
     
@@ -118,7 +118,7 @@ class LoginView: UIView, UITextFieldDelegate{
             UIView.animate(withDuration: 0.3, animations: {
                 self.profileLoginPage?.darkView.alpha = 0.7;
             })
-            self.profileLoginPage?.checkPassword();
+            self.profileLoginPage?.checkPassword(telephone: self.loginTelephoneField.textField.text!, password: self.loginPasswordField.textField.text!);
         }
     }
     
@@ -148,6 +148,18 @@ class LoginView: UIView, UITextFieldDelegate{
                 numberString.insert("-", at: numberString.index(numberString.startIndex, offsetBy: 9));
             }
             self.loginTelephoneField.textField.text = numberString;
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.loginTelephoneField.textField.resignFirstResponder();
+        self.loginPasswordField.textField.resignFirstResponder();
+        self.profileLoginPage?.spinner.animating = true;
+        self.profileLoginPage?.spinner.updateAnimation();
+        UIView.animate(withDuration: 0.3, animations: {
+            self.profileLoginPage?.darkView.alpha = 0.7;
+        })
+        self.profileLoginPage?.checkPassword(telephone: self.loginTelephoneField.textField.text!, password: self.loginPasswordField.textField.text!);
+        return true;
     }
     
     @objc func forgotPasswordFunction(){

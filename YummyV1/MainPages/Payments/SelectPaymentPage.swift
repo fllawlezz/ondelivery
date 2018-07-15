@@ -15,7 +15,8 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     var reviewPage: ReviewPage?
     
     var fromProfilePage = false;
-    var fromUpgradeSubscriptionpage = false;
+//    var fromUpgradeSubscriptionpage = false;
+    var upgradeSubscriptionPage: SubscriptionUpgradePage?
     var subscriptionPlan: String?;
     var subscriptionCharge: Double?;
     
@@ -33,16 +34,8 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
     var digits = ["1234","4455","2222","8888","4444"];
     let reuse = "one";
     
-    var cardArray = [String]();
-    var nickNameArray = [String]();
-    var mainArray = [String]();
-    var cvcArray = [String]();
-    var expirationArray = [String]();
-    var cardFull = [String]();
-    
     override func viewDidLoad() {
         setupNavBar();
-        getData();
         setup();
     }
     
@@ -53,18 +46,6 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
         
         let addCardButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(handleAddPaymentMethod));
         self.navigationItem.rightBarButtonItem = addCardButton;
-    }
-    
-    private func getData(){
-        for card in cCards{
-            //card is an object
-            self.cardArray.append(card.value(forKey: "last4") as! String);
-            self.nickNameArray.append(card.value(forKey: "nickName") as! String);
-            self.mainArray.append(card.value(forKey: "mainCard") as! String);//get if the card is main or not
-            self.cvcArray.append(card.value(forKey: "cvc") as! String);
-            self.expirationArray.append(card.value(forKey: "expiration") as! String);
-            self.cardFull.append(card.value(forKey: "cardNum") as! String);
-        }
     }
     
     private func setup(){
@@ -105,10 +86,12 @@ class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UI
         cell.setCardExpiration(expiration: currentCard.value(forKey: "expiration") as! String);
         cell.setCvcNumber(cvc: currentCard.value(forKey: "cvc") as! String);
         cell.selectPaymentPage = self;
-//        cell.setNickname(name: currentCard.nickName!);
-//        cell.setLast4(digits: currentCard.last4!);
-//        cell.setCardNum(cardNum: currentCard.cardNumber!);
-//        cell.setCardExpiration(expiration: currentCard.expirationDate!);
+        
+        if(upgradeSubscriptionPage != nil){
+            cell.upgradeSubscriptionPage = self.upgradeSubscriptionPage;
+            cell.subscriptionPlan = self.subscriptionPlan!;
+            cell.subscriptionCharge = self.subscriptionCharge!;
+        }
         
         if(indexPath.item == cCards.count){
             cell.hideBorder();

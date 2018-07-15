@@ -11,27 +11,22 @@ import CoreData
 import MapKit
 
 extension ProfileLogin{
-    func checkPassword(){
+    func checkPassword(telephone: String, password: String){
         self.loadingTitle.text = "Checking Password";
         let conn = Conn();
-//        let postString = "telephone=\(loginTelephoneField.textField.text!)&password=\(loginPasswordField.textField.text!)";
-        let postString = "hello";
-//        print(postString);
+        let postString = "telephone=\(telephone)&password=\(password)";
         conn.connect(fileName: "Login.php", postString: postString) { (re) in
             let result = re as String;
             if(result == "failure"){// if result is failure, then unhide wrongPassword Label and reset passwordField
                 DispatchQueue.main.async {
-                    //                    print("notPassed");
                     self.spinner.animating = false;
                     self.spinner.updateAnimation();
                     UIView.animate(withDuration: 0.3, animations: {
                         self.darkView.alpha = 0;
                     })
-//                    self.loginPasswordField.textField.text = "";
                     let alert = UIAlertController(title: "No Match", message: "Email and Password doesn't match", preferredStyle: .alert);
                     alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil));
                     self.present(alert, animated: true, completion: nil);
-//                    self.wrongPasswordLabel.isHidden = false;
                 }
             }else{
                 //if can't be parsed to result, then parse to json
@@ -39,40 +34,31 @@ extension ProfileLogin{
                     self.jsonresult = try JSONSerialization.jsonObject(with: urlData, options: .allowFragments) as! NSDictionary;
                     //jsonResult into NSARRAY
                     if let items = self.jsonresult["results"] as? NSArray{
-                        self.userID = (items[0] as? String)!;//userID save global
-                        self.firstName = (items[1] as? String)!;//firstName global save
-                        self.lastName = (items[2] as? String)!;//lastName global save
-                        self.email = (items[3] as? String)!;//email global save
-                        self.subPlan = (items[5] as? String)!;//subscription plan
-//                        self.telephone = self.loginTelephoneField.textField.text!
+                        let userID = (items[0] as? String)!;//userID save global
+                        let firstName = (items[1] as? String)!;//firstName global save
+                        let lastName = (items[2] as? String)!;//lastName global save
+                        let email = (items[3] as? String)!;//email global save
+                        let subplan = (items[5] as? String)!;//subscription plan
                         let stringItem = (items[6] as? String)!;
-                        let intVersion = Int(stringItem)!;
-                        self.freeOrders = intVersion;
-//                        self.password = self.loginPasswordField.textField.text!
+                        let freeOrdersInteger = Int(stringItem)!;
+                        
+                        let newUser = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subplan, freeOrders: freeOrdersInteger);
+                        user = newUser;
+                        saveDefaults(defaults: defaults);
                         DispatchQueue.main.sync {
 //                            print("getAddresses");
                             self.locManager = CLLocationManager();
                             self.locManager.delegate = self;
-                            //        locManager.requestAlwaysAuthorization();
                             
                             let locStatus = CLLocationManager.authorizationStatus();
                             if(locStatus == .notDetermined){
                                 //ask for location
                                 self.locManager.requestAlwaysAuthorization();
                             }else if(locStatus == .denied){
-                                let alert = UIAlertController(title: "Need Location Services", message: "We need your location to determine what restaurants are around you. Allow location services to continue", preferredStyle: .alert);
-                                alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (result) in
-                                    UIView.animate(withDuration: 0.3, animations: {
-                                        self.darkView.alpha = 0.0;
-                                        self.spinner.animating = false;
-                                        self.spinner.updateAnimation();
-                                    })
-                                }))
-                                self.present(alert, animated: true, completion: nil);
+                                self.presentNeedLocation();
                             }else if(locStatus == .authorizedAlways || locStatus == .authorizedWhenInUse){
                                 self.getAddresses();
                             }
-//                            self.getAddresses();
                         }
                         
                     }
@@ -88,23 +74,15 @@ extension ProfileLogin{
     //MARK: GetAddresses
     func getAddresses(){
         //ran on the main thread
-        //        dispatchGroup.enter();
         self.loadingTitle.text = "Getting Addreses";
-//        saveDefaults(defaults: defaults!, firstName: firstName!, lastName: lastName!, email: email!, phoneNumber: telephone!, password: self.loginPasswordField.textField.text!);
-        saveSubscription(defaults: defaults!, subscriptionPlan: subPlan!, freeOrders: freeOrders!);
-//        populateDefaults(defaults: defaults);
-        
         // first address will always be your main
         let conn = Conn();
-        let postString = "UserID=\(userID!)"
-        //        print(postString);
+        let postString = "UserID=\(user!.userID!)"
         conn.connect(fileName: "GetAddresses.php", postString: postString, completion: { (re) in
             let result = re as String;
             if(result == "none"){
-//                print("none");
                 self.getCardsAndOrders();
             }else{
-//                print("ok");
                 do{
                     self.jsonresult = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
                     //addresses
@@ -125,7 +103,7 @@ extension ProfileLogin{
                         newAddress.addressID = userAddressIDs[count] as? String;
                         newAddress.mainAddress = userMains[count] as? String;
                         
-                        self.addresses.append(newAddress);
+                        self.userAddresses.append(newAddress);
                         
                         count+=1;
                     }
@@ -135,6 +113,7 @@ extension ProfileLogin{
                     //save to core data the items, and then get out of dispatchGroup
                     
                 }catch{
+                    print("getAddress error");
                     print(error)
                     fatalError();
                 }
@@ -144,8 +123,7 @@ extension ProfileLogin{
     
     func getCardsAndOrders(){
         let conn = Conn();
-        let postBody = "UserID=\(userID!)"
-//        print(postBody);
+        let postBody = "UserID=\(user!.userID!)"
         conn.connect(fileName: "GetCardsAndOrders.php", postString: postBody) { (re) in
             let result = re as String;
             if(result == "none"){
@@ -155,14 +133,12 @@ extension ProfileLogin{
                     }else{
                         self.coreDataSaveAll();
                         self.customTabController?.selectedIndex = 3;
-//                        self.loginPasswordField.textField.resignFirstResponder();
                         self.dismiss(animated: true, completion: nil);
                     }
                 }
             }else{
                 do{
                     let json = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
-//                    print(json)
                     DispatchQueue.main.async {
                         self.getOrders(json: json);
                     }
@@ -192,10 +168,6 @@ extension ProfileLogin{
         let foodPrices = json["foodPrices"] as! NSArray;
         let foodQuantities = json["foodQuantities"] as! NSArray;
         let foodIDs = json["foodIDs"] as! NSArray;
-        print(json);
-        
-        print(foodNames.count)
-        print(foodIDs.count);
         
         var count = 0;
         while(count < restaurantNames.count){
@@ -232,6 +204,9 @@ extension ProfileLogin{
                 foodCounts += 1;
             }
             newPastOrder.foods = newPastOrderFoodList;
+            
+            
+            
             self.pastOrders.append(newPastOrder);
             
             count+=1;
@@ -243,13 +218,11 @@ extension ProfileLogin{
     func loadImage(urlString: String)-> UIImage{
         let url = URL(string: urlString);
         let data = try? Data(contentsOf: url!);
-//        self.foodPicArray.append(data! as NSData);
         let image = UIImage(data: data!);
         return image!;
     }
     
     func getCards(json: NSDictionary){
-        //        print("getCards");
         self.loadingTitle.text = "Loading Cards";
         
         let nickNames = json["nickName"] as! NSArray;
@@ -280,17 +253,11 @@ extension ProfileLogin{
         
         self.coreDataSaveAll();
         
-        self.customTabController?.selectedIndex = 3;
-//        self.loginPasswordField.textField.resignFirstResponder();
+        self.customTabController?.selectedIndex = 2;
         
         if let orderPage = self.customTabController?.orderPage{
             orderPage.pastOrders = self.pastOrders;
             orderPage.collectionView?.reloadData();
-        }
-        
-        if let profilePage = self.customTabController?.profilePage{
-            profilePage.addresses = self.userAddresses;
-            profilePage.cards = self.cards;
         }
         
         if(self.fromStartUpPage){
@@ -304,14 +271,11 @@ extension ProfileLogin{
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.persistentContainer.viewContext;
-//        print("start address");
-//        let num = self.idArray.count;
         var count = 0;
         var entity = NSEntityDescription.entity(forEntityName: "Address", in: managedContext);
-//        while(count<num){
-        while(count<self.addresses.count){
+        while(count<self.userAddresses.count){
             let address = NSManagedObject(entity: entity!, insertInto: managedContext);
-            let userAddressObject = self.addresses[count];
+            let userAddressObject = self.userAddresses[count];
             address.setValue(userAddressObject.address!, forKey: "address");
             address.setValue(userAddressObject.city!, forKey: "city");
             address.setValue(userAddressObject.zipcode!, forKey: "zipcode");
@@ -326,16 +290,12 @@ extension ProfileLogin{
                 fatalError();
             }
             
-            self.userAddresses.append(address);
+            addresses.append(address);
             count+=1;
-//            addresses.append(address);//append address to the global addresses array
         }
-//        print(userAddresses.count);
         
-//        print("start orderes");
         entity = NSEntityDescription.entity(forEntityName: "Order", in: managedContext)!;
         count = 0;
-//        while(count < self.orderIDArray.count){
         while(count < self.pastOrders.count){
             let order = NSManagedObject(entity: entity!, insertInto: managedContext);
             let pastOrder = pastOrders[count];
@@ -344,6 +304,8 @@ extension ProfileLogin{
             order.setValue(pastOrder.orderID!, forKey: "orderID");
             order.setValue(pastOrder.orderDate!, forKey: "date");
             order.setValue(pastOrder.restaurantID!, forKey: "restaurantID");
+            let data:NSData = UIImageJPEGRepresentation(pastOrder.restaurantPic!, 75)! as NSData;
+            order.setValue(data, forKey: "image");
             
             do{
                 try managedContext.save();
@@ -351,12 +313,11 @@ extension ProfileLogin{
                 print("error");
                 fatalError();
             }
+            orders.append(order);
             count+=1;
         }
-//        print("start Cards");
         count = 0;
         entity = NSEntityDescription.entity(forEntityName: "Card", in: managedContext)!;
-//        while(count < nickNameArray.count){
         while(count < cards.count){
             let cardObject = NSManagedObject(entity: entity!, insertInto: managedContext);
             let paymentCard = self.cards[count]
@@ -364,9 +325,6 @@ extension ProfileLogin{
             cardObject.setValue(paymentCard.cardNumber!, forKey: "cardNum");
             cardObject.setValue(paymentCard.cvcNumber!, forKey: "cvc");
             cardObject.setValue(paymentCard.expirationDate!, forKey: "expiration");
-            //get the last 4 digits from cardArray[count]
-//            let cardNum = paymentCard.cardNumber!
-//            let last4 = String(cardNum.suffix(4));
             cardObject.setValue(paymentCard.last4!, forKey: "last4");
             cardObject.setValue(paymentCard.cardID!, forKey: "cardID");
             cardObject.setValue(paymentCard.nickName!, forKey: "nickName");
@@ -378,7 +336,7 @@ extension ProfileLogin{
                 print("error");
                 fatalError();
             }
-//            cCards.append(cardObject);
+            cCards.append(cardObject);
             count+=1;
         }
         

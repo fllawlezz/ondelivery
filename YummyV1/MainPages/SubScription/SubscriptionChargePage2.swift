@@ -23,16 +23,8 @@ class SubscriptionPage2: UIViewController, UITextFieldDelegate{
     var subscriptionPlan: Int?
     var cardID: String?
     
-    var subPlan: String?
-    var freeOrders: Int?
-    
     var restaurants: [Restaurant]?
     var advertisedRestaurants: [Restaurant]?
-    
-    //PASSING DATA
-    var userID:String?
-    var email: String?
-    
     
     let paymentField: STPPaymentCardTextField = {
         let paymentField = STPPaymentCardTextField();
@@ -273,13 +265,13 @@ class SubscriptionPage2: UIViewController, UITextFieldDelegate{
         default: break;
         }
         
-        subPlan = subscriptionString;
-        freeOrders = freeOrdersWithSubscription;
-        saveSubscription(defaults: defaults!, subscriptionPlan: subPlan!, freeOrders: freeOrders!);
+        user!.subscriptionPlan = subscriptionString;
+        user!.freeOrders = freeOrdersWithSubscription;
+        saveDefaults(defaults: defaults!);
         
         let conn = Conn();
         let dateString = "\(cardParams.expMonth)/\(cardParams.expYear)"
-        let postBody = "userID=\(userID!)&stripeToken=\(token)&subPlan=\(subscriptionString!)&freeOrders=\(freeOrders!)&email=\(email!)&chargeAmount=\(totalCharge!)&NickName=\(self.nickNameField.text!)&Card=\(cardParams.number!)&Expiration=\(dateString)&CVC=\(cardParams.cvc!)&MainCard=Y";
+        let postBody = "userID=\(user!.userID!)&stripeToken=\(token)&subPlan=\(subscriptionString!)&freeOrders=\(user!.freeOrders!)&email=\(user!.email!)&chargeAmount=\(totalCharge!)&NickName=\(self.nickNameField.text!)&Card=\(cardParams.number!)&Expiration=\(dateString)&CVC=\(cardParams.cvc!)&MainCard=N";
         print(postBody);
         conn.connect(fileName: "subscribe.php", postString: postBody) { (result) in
             self.cardID = result as String;
@@ -298,7 +290,7 @@ class SubscriptionPage2: UIViewController, UITextFieldDelegate{
                 cardObject.setValue(self.paymentField.cardParams.last4(), forKey: "last4");
                 cardObject.setValue(self.cardID!, forKey: "cardID");
                 cardObject.setValue(self.nickNameField.text, forKey: "nickName");
-                cardObject.setValue("Y", forKey: "mainCard");
+                cardObject.setValue("N", forKey: "mainCard");
                 
                 do{
                     try context.save();
@@ -309,18 +301,18 @@ class SubscriptionPage2: UIViewController, UITextFieldDelegate{
                 if(self.fromStartUp){
                     let customTabBar = CustomTabBarController();
                     let mainPage = customTabBar.mainPage;
-                    let recommendedPage = customTabBar.recomendedMainPage;
+//                    let recommendedPage = customTabBar.recomendedMainPage;
                     
                     mainPage?.restaurants = self.restaurants;
                     mainPage?.advertisedRestaurants = self.advertisedRestaurants;
                     
-                    recommendedPage?.restaurants = self.restaurants;
-                    recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
+//                    recommendedPage?.restaurants = self.restaurants;
+//                    recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
                     
                     self.present(customTabBar, animated: true, completion: nil);
 
                 }else{
-                    self.customTabBarController?.selectedIndex = 3;
+                    self.customTabBarController?.selectedIndex = 2;
                     self.dismiss(animated: true, completion: nil);
                 }
             }

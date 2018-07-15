@@ -140,6 +140,7 @@ class LoginForgot: UIViewController, UITextFieldDelegate{
                 //code saved
                 self.telephone = self.textField.text!;
                 let forgotPass = ForgotPasswordPage1();
+                forgotPass.code = self.code;
                 self.navigationController?.pushViewController(forgotPass, animated: true);
 //                self.present(forgotPass, animated: true, completion: nil);
             }

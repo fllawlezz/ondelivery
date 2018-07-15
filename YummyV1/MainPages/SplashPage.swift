@@ -18,9 +18,9 @@ import CoreLocation
 class SplashPage: UIViewController, CLLocationManagerDelegate{
     
     var logo: UIImageView!;
-    var addresses = [NSManagedObject]();
-    var orders = [NSManagedObject]();
-    var cards = [NSManagedObject]();
+//    var addresses = [NSManagedObject]();
+//    var orders = [NSManagedObject]();
+//    var cards = [NSManagedObject]();
     
     var pastOrders = [PastOrder]();
     var userCards = [PaymentCard]();
@@ -45,7 +45,8 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.appYellow;
         
-        if(userID != nil){
+        if(user != nil){
+            print("load core data");
             loadCoreData()
         }
 //        getData();
@@ -83,59 +84,12 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
         fetchOrders.fetchLimit = 10;
         let fetchCards = NSFetchRequest<NSManagedObject>(entityName: "Card");
         
-        //load image
         do{
-            self.addresses = try managedContext.fetch(fetchRequest);
-            self.orders = try managedContext.fetch(fetchOrders);
-            self.cards = try managedContext.fetch(fetchCards);
-            
-            //transfer image data into images and add to picOrdersArray
-            for order in orders{
-                let pastOrder = PastOrder();
-                let restaurantName = order.value(forKey: "restaurantName") as! String;
-                let totalSumDouble = order.value(forKey: "price") as! Double;
-                let totalSumString = String(totalSumDouble);
-                let orderDate = order.value(forKey: "date") as! String;
-                let orderID = order.value(forKey: "orderID") as! String;
-                
-//                print(restaurantName);
-                
-                pastOrder.restaurantName = restaurantName;
-                pastOrder.totalSum = totalSumString;
-                pastOrder.orderDate = orderDate;
-                pastOrder.orderID = orderID;
-                
-                pastOrders.append(pastOrder);
-            }
-//            print("cards");
-            for card in cards{
-                let userCard = PaymentCard();
-                
-                let cardNum = card.value(forKey: "cardNum") as! String;
-                let cvcNum = card.value(forKey: "cvc") as! String;
-                let expirationDate = card.value(forKey: "expiration") as! String;
-                let last4Nums = card.value(forKey: "last4") as! String;
-                let cardID = card.value(forKey: "cardID") as! String;
-                let nickName = card.value(forKey: "nickName") as! String;
-                let mainCard = card.value(forKey: "mainCard") as! String;
-                
-                userCard.cardNumber = cardNum;
-                userCard.cvcNumber = cvcNum;
-                userCard.expirationDate = expirationDate;
-                userCard.last4 = last4Nums;
-                userCard.cardID = cardID;
-                userCard.nickName = nickName;
-                userCard.mainCard = mainCard;
-                
-//                print(cardNum);
-                
-                self.userCards.append(userCard);
-                
-            }
-            
-            print("finished");
+        addresses = try managedContext.fetch(fetchRequest);
+        orders = try managedContext.fetch(fetchOrders);
+        cCards = try managedContext.fetch(fetchCards);
         }catch{
-            print("error");
+            print("could not load addresses,orders,cards");
         }
         
     }
@@ -205,20 +159,12 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
                         let customTabBar = CustomTabBarController();
                         let mainPage = customTabBar.mainPage;
                         let recommendedPage = customTabBar.recomendedMainPage;
-                        let orderPage = customTabBar.orderPage;
-                        let profilePage = customTabBar.profilePage;
                         
                         mainPage?.restaurants = self.restaurants;
                         mainPage?.advertisedRestaurants = self.advertisedRestaurants;
                         
                         recommendedPage?.restaurants = self.restaurants;
                         recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
-                        
-                        orderPage?.pastOrders = self.pastOrders;
-                        
-//                        print(self.userCards.count);
-                        profilePage?.cards = self.userCards;
-                        profilePage?.addresses = self.addresses;
                         
                         self.present(customTabBar, animated: true, completion: nil);
                     }

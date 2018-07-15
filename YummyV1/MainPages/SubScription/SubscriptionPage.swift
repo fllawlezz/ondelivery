@@ -19,9 +19,6 @@ import UIKit
 class SubscriptionPage: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
     var customTabBar: CustomTabBarController?
     
-    var subPlan: String?
-    var freeOrders: Int?
-    
     var restaurants: [Restaurant]?
     var advertisedRestaurants: [Restaurant]?
     
@@ -165,10 +162,6 @@ class SubscriptionPage: UIViewController, UICollectionViewDelegateFlowLayout, UI
             self.selectedDarkView.alpha = 0.7;
         })
         
-        subPlan = "NONE";
-        freeOrders = 0;
-        saveSubscription(defaults: defaults!, subscriptionPlan: subPlan!, freeOrders: freeOrders!);
-        
         if(fromStartUp){
             let customTabBar = CustomTabBarController();
             let mainPage = customTabBar.mainPage;
@@ -183,7 +176,7 @@ class SubscriptionPage: UIViewController, UICollectionViewDelegateFlowLayout, UI
             self.present(customTabBar, animated: true, completion: nil);
 
         }else{
-            self.customTabBar?.selectedIndex = 3;
+            self.customTabBar?.selectedIndex = 2;
             self.dismiss(animated: true, completion: nil);
         }
         //dismiss this navigationControlelr

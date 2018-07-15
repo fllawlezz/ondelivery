@@ -122,10 +122,12 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     private func setUpGeneralInformation(){
         //setup data
         if(user != nil){
-            let newUserAddress = UserAddress();
-            newUserAddress.address = addresses[0].value(forKey: "address") as? String;
-            newUserAddress.addressID = addresses[0].value(forKey: "addressID") as? String;
-            self.userAddress = newUserAddress;
+            if(addresses.count > 0){
+                let newUserAddress = UserAddress();
+                newUserAddress.address = addresses[0].value(forKey: "address") as? String;
+                newUserAddress.addressID = addresses[0].value(forKey: "addressID") as? String;
+                self.userAddress = newUserAddress;
+            }
         }
         
         self.deliveryTime = "ASAP";

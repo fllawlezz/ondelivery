@@ -36,14 +36,15 @@ class Forgotpasswordpage2: UIViewController, UITextFieldDelegate{
     
     private func setup(){
         
-        backgroundImageView = UIImageView();
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false;
-        backgroundImageView.image = #imageLiteral(resourceName: "spaghetti");
-        self.view.addSubview(backgroundImageView);
-        backgroundImageView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        backgroundImageView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        backgroundImageView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
-        backgroundImageView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+//        backgroundImageView = UIImageView();
+//        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false;
+//        backgroundImageView.image = #imageLiteral(resourceName: "spaghetti");
+//        self.view.addSubview(backgroundImageView);
+//        backgroundImageView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+//        backgroundImageView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+//        backgroundImageView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
+//        backgroundImageView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        self.view.backgroundColor = UIColor.white;
         
         //backgroundView
         backgroundView = UIView();
@@ -61,7 +62,7 @@ class Forgotpasswordpage2: UIViewController, UITextFieldDelegate{
         titleLabel.text = "Enter your new Password";
         titleLabel.textAlignment = .center;
         titleLabel.textColor = UIColor.black;
-        titleLabel.font = UIFont(name: "Copperplate", size: 20);
+        titleLabel.font = UIFont.montserratSemiBold(fontSize: 16);
         titleLabel.adjustsFontSizeToFitWidth = true;
         titleLabel.minimumScaleFactor = 0.1;
         titleLabel.numberOfLines = 1;
@@ -140,7 +141,7 @@ class Forgotpasswordpage2: UIViewController, UITextFieldDelegate{
         submitButton.backgroundColor = UIColor.appYellow;
         submitButton.setTitle("Finish", for: .normal);
         submitButton.setTitleColor(UIColor.black, for: .normal);
-        submitButton.titleLabel?.font = UIFont(name: "Copperplate", size: 18);
+        submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 16);
         submitButton.layer.cornerRadius = 5;
         self.backgroundView.addSubview(submitButton);
         submitButton.leftAnchor.constraint(equalTo: self.backgroundView.leftAnchor, constant: 10).isActive = true;

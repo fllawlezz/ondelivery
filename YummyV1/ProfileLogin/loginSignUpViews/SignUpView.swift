@@ -163,6 +163,7 @@ class SignUpView: UIView, UITextFieldDelegate{
         signUpButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true;
         signUpButton.topAnchor.constraint(equalTo: self.termsAndConditions.bottomAnchor, constant: 10).isActive = true;
         signUpButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        signUpButton.addTarget(self, action: #selector(self.submitFields), for: .touchUpInside);
     }
     
     func setupTerms(){
@@ -211,6 +212,8 @@ class SignUpView: UIView, UITextFieldDelegate{
     }
     
     @objc func submitFields(){
+        handleResignAll();
+        
         let telephoneTextField = self.telephoneField.textField;
         let emailTextField = self.emailField.textField;
         let firstNameTextField = self.firstNameField.textField;
@@ -218,7 +221,6 @@ class SignUpView: UIView, UITextFieldDelegate{
         let passwordTextField = self.passwordField.textField;
         
         self.profileLoginPage?.skipButton.isEnabled = false;
-        //        print(telephoneTextField.text);
         
         if(telephoneTextField.text!.count < 10 || emailTextField.text!.count < 4 || firstNameTextField.text!.count < 1 || lastnameTextField.text!.count < 1 || passwordTextField.text!.count < 7){
             //show error message
@@ -233,12 +235,16 @@ class SignUpView: UIView, UITextFieldDelegate{
         
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    func handleResignAll(){
         self.telephoneField.textField.resignFirstResponder();
         self.emailField.textField.resignFirstResponder();
         self.firstNameField.textField.resignFirstResponder();
         self.lastNameField.textField.resignFirstResponder();
         self.passwordField.textField.resignFirstResponder();
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleResignAll();
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

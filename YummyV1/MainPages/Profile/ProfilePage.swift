@@ -14,9 +14,6 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
     
     var customTabBar: CustomTabBarController?
     
-    var addresses:[NSManagedObject]?
-    var cards: [PaymentCard]?
-    
     private let reuseCell = "yes";
     private let imageNames = ["profile","phone","home","creditCard","document","orderPolicy","exclamation","specialOffer","logout"];
     var tableView: UITableView!;
@@ -116,15 +113,14 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
         self.navigationController!.pushViewController(email, animated: true);
     }
     private func toAddress(){
-        let addressPage = AddressPage();
-        addressPage.addresses = self.addresses;
+        let addressPage = SelectAddress();
+        addressPage.profilePage = self;
         addressPage.hidesBottomBarWhenPushed = true;
         self.navigationController?.pushViewController(addressPage, animated: true);
     }
     private func toPayments(){
         let selectPayment = SelectPaymentPage();
         selectPayment.fromProfilePage = true;
-        selectPayment.cards = self.cards;
         selectPayment.hidesBottomBarWhenPushed = true;
         self.navigationController!.pushViewController(selectPayment, animated: true);
     }
@@ -187,12 +183,14 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
                 orderPage.collectionView?.reloadData();
             }
             
-//            addresses.removeAll();
-//            cCards.removeAll();
+            user = nil;
+            removeDefaults(defaults: defaults);
             
 //            addresses.removeAll();
-//            orders.removeAll();
 //            cCards.removeAll();
+            addresses.removeAll();
+            orders.removeAll();
+            cCards.removeAll();
             
             //goBack to startup page
             let profileLoginPage = ProfileLogin();
@@ -215,17 +213,17 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
             switch(indexPath.item){
                 
             case 0:
-                cell.setTitle(string: "First Name: \(firstName!)");
+                cell.setTitle(string: "First Name: \(user!.firstName!)");
                 cell.setImage(name: imageNames[0]);
                 break;
-            case 1: cell.setTitle(string: "Last Name: \(lastName!)");
+            case 1: cell.setTitle(string: "Last Name: \(user!.lastName!)");
                 cell.setImage(name: imageNames[0]);
                 break;
-            case 2: cell.setTitle(string: "Phone Number: \(telephone!)");
+            case 2: cell.setTitle(string: "Phone Number: \(user!.telephone!)");
                 cell.setImage(name: imageNames[1]);
                 break;
             case 3:
-                cell.setTitle(string: "Email: \(email!)");
+                cell.setTitle(string: "Email: \(user!.email!)");
                 cell.setImage(name: "email");
                 break;
             case 4: cell.setTitle(string: "Addresses");

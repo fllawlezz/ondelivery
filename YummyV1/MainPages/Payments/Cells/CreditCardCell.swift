@@ -114,12 +114,6 @@ class CreditCardCell: UICollectionViewCell{
         if(upgradeSubscriptionPage != nil){
             upgradeSubscription();
         }else{
-//            print("reviewPage");
-//            let newPaymentCard = PaymentCard();
-//            newPaymentCard.cardNumber = self.paymentCard.cardNumber!;
-//            newPaymentCard.cvcNumber = self.paymentCard.cvcNumber!;
-//            newPaymentCard.expirationDate = self.paymentCard.expirationDate!;
-//            newPaymentCard.last4 = self.paymentCard.last4!;
             let reviewPage  = self.selectPaymentPage!.reviewPage;
             reviewPage?.paymentCard = self.paymentCard;
             reviewPage?.tableView.handleReloadTable();
@@ -163,7 +157,7 @@ class CreditCardCell: UICollectionViewCell{
             //send to server to update and then simeutaenously update subPlan and FreeOrders
             
             //toselect card
-            
+//            print(self.subscriptionPlan!);
             switch(self.subscriptionPlan!){
             case "Standard":
                 self.upgradeStandard();
@@ -178,7 +172,7 @@ class CreditCardCell: UICollectionViewCell{
             }
         }))
         alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { (result) in
-            
+            self.selectPaymentPage?.navigationController?.popToRootViewController(animated: true);
         }))
         self.upgradeSubscriptionPage?.present(alert, animated: true, completion: nil);
     }
@@ -186,31 +180,34 @@ class CreditCardCell: UICollectionViewCell{
     private func upgradeStandard(){
         //upgrade to standard
         let total = 7.99;
-        updateSubscriptionServers(total: total);
         
-        user?.subscriptionPlan = "Standard";
+        user!.subscriptionPlan = "Standard";
         user!.freeOrders = user!.freeOrders! + 5;
-        saveSubscription(defaults: defaults!, subscriptionPlan: user!.subscriptionPlan!, freeOrders: user!.freeOrders!);
+        saveDefaults(defaults: defaults!);
+        
+        updateSubscriptionServers(total: total);
         alertConfirmation()
     }
     
     private func upgradePremium(){
         let total = 10.99;
+        
+        user!.subscriptionPlan = "Premium";
+        user!.freeOrders = user!.freeOrders! + 10;
+        saveDefaults(defaults: defaults!);
+        
         updateSubscriptionServers(total: total);
         
-        user?.subscriptionPlan = "Premium";
-        user!.freeOrders = user!.freeOrders! + 10;
-        saveSubscription(defaults: defaults!, subscriptionPlan: user?.subscriptionPlan!, freeOrders: user!.freeOrders!);
         alertConfirmation()
     }
     
     private func upgradeExecutive(){
         let total = 14.99;
-        updateSubscriptionServers(total: total);
         
-        user?.subscriptionPlan = "Executive";
+        user!.subscriptionPlan = "Executive";
         user!.freeOrders = user!.freeOrders! + 15;
-        saveSubscription(defaults: defaults!, subscriptionPlan: user?.subscriptionPlan!, freeOrders: user!.freeOrders!);
+        saveDefaults(defaults: defaults!);
+        updateSubscriptionServers(total: total);
         alertConfirmation()
     }
     
@@ -229,8 +226,10 @@ class CreditCardCell: UICollectionViewCell{
                 // Present error to user...
                 return
             }
+//            print(token);
             let conn = Conn();
             let postBody = "UserID=\(user!.userID!)&subPlan=\(user!.subscriptionPlan!)&freeOrders=\(user!.freeOrders!)&email=\(user!.email!)&stripeToken=\(token)&total=\(total)"
+//            print(postBody);
             conn.connect(fileName: "updateSubscription.php", postString: postBody) { (result) in
             }
         }
@@ -243,7 +242,7 @@ class CreditCardCell: UICollectionViewCell{
             
             self.upgradeSubscriptionPage?.navigationController?.popToRootViewController(animated: true);
         }))
-        self.upgradeSubscriptionPage?.present(alert, animated: true, completion: nil);
+        self.selectPaymentPage?.present(alert, animated: true, completion: nil);
     }
     
 }//collectionview cell 

@@ -86,22 +86,12 @@ extension ProfileLogin{
                             let customTabBar = CustomTabBarController();
                             let mainPage = customTabBar.mainPage;
                             let recommendedPage = customTabBar.recomendedMainPage;
-                            let orderPage = customTabBar.orderPage;
-                            let profilePage = customTabBar.profilePage
                             
                             mainPage?.restaurants = self.restaurants;
                             mainPage?.advertisedRestaurants = self.advertisedRestaurants;
                             
                             recommendedPage?.restaurants = self.restaurants;
                             recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
-                            
-                            orderPage?.pastOrders = self.pastOrders;
-                            
-//                            print("user address:\(self.userAddresses.count)")
-//                            print("user address:\(self.userAddresses[0].value(forKey: "address") as! String)")
-                            
-                            profilePage?.addresses = self.userAddresses;
-                            profilePage?.cards = self.cards;
                             
                             self.present(customTabBar, animated: true, completion: nil);
                         }
@@ -119,7 +109,6 @@ extension ProfileLogin{
         self.loadingTitle.text = "Getting Location"
         locManager.desiredAccuracy = kCLLocationAccuracyBest;
         locManager.delegate = self;
-        //        self.dispatch.enter();
         locManager.requestLocation();
         print("getting location");
     }
@@ -137,11 +126,9 @@ extension ProfileLogin{
         userLatitude = String(format: "%f",locValue.latitude);
         userLongtiude = String(format: "%f",locValue.longitude);
         
-        //        dispatch.enter();
         let geoCoder = CLGeocoder();
         geoCoder.reverseGeocodeLocation(location) { (placemarks, error) in
             if(error == nil && placemarks!.count > 0){
-                //                print("getLocation");
                 self.placeMark = placemarks?.last;
                 userCurrentCity = self.placeMark.locality;
                 self.locManager.stopUpdatingLocation();

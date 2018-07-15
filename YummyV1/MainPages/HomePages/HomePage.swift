@@ -314,6 +314,7 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         
         //set up frames based on the scrollViewSize
         var count = 0;
+        print(advertisedRestaurants?.count);
         while(count < advertisedRestaurants!.count){
             let restaurant = advertisedRestaurants![count];
             let frame = CGRect(x: 0+(scrollViewWidth*CGFloat(count)), y: 0, width: scrollViewWidth, height: scrollViewHeight);
