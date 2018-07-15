@@ -29,13 +29,6 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     let signUpTitles = ["Telephone","Email","First Name","Last Name", "Password"];
     let loginTitles = ["Email","Password"];
     
-    var fromStartUpPage = false;
-    var onLoginPage = false;
-    
-    //address variables
-    
-    var loginBoolean = false;
-    
     var locManager: CLLocationManager!
     var placeMark: CLPlacemark!;
     
@@ -100,6 +93,12 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     //data variables
     var jsonresult: NSDictionary!;
     var signingUp = false;
+    var fromStartUpPage = false;
+    var onLoginPage = false;
+    
+    //address variables
+    
+    var loginBoolean = false;
     
     override func viewDidLoad() {
         self.navigationController?.navigationBar.isHidden = false;
@@ -265,15 +264,21 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if(status == .authorizedAlways || status == .authorizedWhenInUse){
             if(signUpView.isHidden){
-                getLocation();
-            }else{
-                let telephone = signUpView.telephoneField.textField.text!;
-                let email = signUpView.emailField.textField.text!;
-                let firstName = signUpView.firstNameField.textField.text!;
-                let lastName = signUpView.lastNameField.textField.text!;
-                let password = signUpView.passwordField.textField.text!;
+                //logging in
                 
-                self.handleSignUp(telephoneSignUp: telephone, emailSignUp: email, firstNameSignUp: firstName, lastNameSignUp: lastName, passwordSignUp: password);
+                self.getAddresses();
+            }else{
+                if(signingUp){
+                    let telephone = signUpView.telephoneField.textField.text!;
+                    let email = signUpView.emailField.textField.text!;
+                    let firstName = signUpView.firstNameField.textField.text!;
+                    let lastName = signUpView.lastNameField.textField.text!;
+                    let password = signUpView.passwordField.textField.text!;
+                    
+                    self.handleSignUp(telephoneSignUp: telephone, emailSignUp: email, firstNameSignUp: firstName, lastNameSignUp: lastName, passwordSignUp: password);
+                }else{
+                    getLocation();
+                }
             }
             print("authorized");
         }else if(status == .denied){

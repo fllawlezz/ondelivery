@@ -54,10 +54,11 @@ extension ProfileLogin{
                             if(locStatus == .notDetermined){
                                 //ask for location
                                 self.locManager.requestAlwaysAuthorization();
+                                self.locManager.requestWhenInUseAuthorization();
                             }else if(locStatus == .denied){
                                 self.presentNeedLocation();
                             }else if(locStatus == .authorizedAlways || locStatus == .authorizedWhenInUse){
-                                self.getAddresses();
+//                                self.getAddresses();
                             }
                         }
                         
@@ -256,9 +257,14 @@ extension ProfileLogin{
         self.customTabController?.selectedIndex = 2;
         
         if let orderPage = self.customTabController?.orderPage{
-            orderPage.pastOrders = self.pastOrders;
+//            orderPage.pastOrders = self.pastOrders;
             orderPage.collectionView?.reloadData();
         }
+        
+        print(addresses.count);
+        print(cCards.count);
+        print(orders.count);
+        
         
         if(self.fromStartUpPage){
             self.getLocation();

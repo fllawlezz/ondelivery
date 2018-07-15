@@ -83,15 +83,16 @@ extension ProfileLogin{
                             
                             self.navigationController?.pushViewController(subscriptionController, animated: true);
                         }else{
+                            
                             let customTabBar = CustomTabBarController();
                             let mainPage = customTabBar.mainPage;
-                            let recommendedPage = customTabBar.recomendedMainPage;
+//                            let recommendedPage = customTabBar.recomendedMainPage;
                             
                             mainPage?.restaurants = self.restaurants;
                             mainPage?.advertisedRestaurants = self.advertisedRestaurants;
                             
-                            recommendedPage?.restaurants = self.restaurants;
-                            recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
+//                            recommendedPage?.restaurants = self.restaurants;
+//                            recommendedPage?.advertisedRestaurants = self.advertisedRestaurants;
                             
                             self.present(customTabBar, animated: true, completion: nil);
                         }

@@ -155,7 +155,6 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
         alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (re) in
             //remove defaults
             removeDefaults(defaults: defaults);
-            self.userID = nil;
             //remove everything from core Data
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else{
                 return;
@@ -191,6 +190,8 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
             addresses.removeAll();
             orders.removeAll();
             cCards.removeAll();
+            print(addresses.count);
+            print(orders.count);
             
             //goBack to startup page
             let profileLoginPage = ProfileLogin();
