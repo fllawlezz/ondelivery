@@ -13,7 +13,6 @@ import CoreData
 class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     var selectAddress: SelectAddress?
-    var userID: String?
     
     //MARK: UI Elements
     var titleMessage: UILabel = {
@@ -81,7 +80,7 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         let addButton = UIButton(type: .system);
         addButton.translatesAutoresizingMaskIntoConstraints = false;
         addButton.setTitle("Add", for: .normal);
-        addButton.titleLabel?.font = UIFont(name: "Montserrat-SemiBold", size: 16);
+        addButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 14);
         addButton.setTitleColor(UIColor.black, for: .normal);
         addButton.backgroundColor = UIColor.appYellow;
         addButton.layer.borderColor = UIColor.lightGray.cgColor;
@@ -165,10 +164,12 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         //add button
         self.view.addSubview(addButton);
         //need x,y,width,height
-        addButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
-        addButton.topAnchor.constraint(equalTo: self.stateField.bottomAnchor, constant: 20).isActive = true;
-        addButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
+//        addButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true;
+        addButton.topAnchor.constraint(equalTo: self.stateField.bottomAnchor, constant: 25).isActive = true;
+//        addButton.widthAnchor.constraint(equalToConstant: 100).isActive = true;
         addButton.heightAnchor.constraint(equalToConstant: 40).isActive = true;
+        addButton.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 25).isActive = true;
+        addButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -25).isActive = true;
         addButton.addTarget(self, action: #selector(self.addAddress), for: .touchUpInside);
         
         //errorLabel
@@ -191,10 +192,10 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
         //upload to server
         var addressID: String!;
         if(addressField.text!.count > 0 && zipcodeField.text!.count > 0 && cityField.text!.count > 0 && stateField.text!.count > 0){
-            if(userID != nil){
-                print("not null");
+            if(user != nil){
+//                print("not null");
                 let conn = Conn();
-                let postString = "UserID=\(self.userID!)&address=\(self.addressField.text!)&city=\(self.cityField.text!)&zipcode=\(self.zipcodeField.text!)&state=\(self.stateField.text!)"
+                let postString = "UserID=\(user!.userID!)&address=\(self.addressField.text!)&city=\(self.cityField.text!)&zipcode=\(self.zipcodeField.text!)&state=\(self.stateField.text!)"
         //        dispatchGroup.enter();
                 conn.connect(fileName: "AddAddress.php", postString: postString) { (re) in
                     let result = re as String
@@ -241,14 +242,14 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                 address.setValue(self.zipcodeField.text!, forKey: "zipcode");
                 address.setValue(self.stateField.text!, forKey: "state");
                 address.setValue(addressID, forKey: "addressID");
-                
+
                 addresses.append(address);
-                
+
                 self.selectAddress?.addressList.reloadData();
                 self.navigationController?.popViewController(animated: true);
-            }
         }
     }
+}
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if(textField == addressField){

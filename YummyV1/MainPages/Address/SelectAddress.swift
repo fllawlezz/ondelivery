@@ -37,6 +37,7 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
     
     override func viewDidLoad() {
         self.view.backgroundColor = UIColor.white;
+        print(addresses.count);
         setupNavBar();
         setup();
     }

@@ -39,6 +39,12 @@ class OrderPage: UICollectionViewController, UICollectionViewDelegateFlowLayout{
         }
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //get foodList from server
+//        print("ok");
+        self.getPastOrder(indexPath: indexPath);
+    }
+    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1;
     }
@@ -63,6 +69,41 @@ class OrderPage: UICollectionViewController, UICollectionViewDelegateFlowLayout{
         
     }
     
+    func getPastOrder(indexPath: IndexPath){
+        let conn = Conn();
+        let pastOrder = orders[indexPath.item];
+        let postBody = "OrderID=\(pastOrder.value(forKey: "orderID") as! String)";
+        conn.connect(fileName: "LoadPastOrder.php", postString: postBody) { (result) in
+            if(urlData != nil){
+                
+                let jsonData = try? JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
+                let foodNames = jsonData!["foodNames"] as! NSArray;
+                let foodQuantities = jsonData!["foodQuantities"] as! NSArray;
+                DispatchQueue.main.async {
+                    var count = 0;
+                    var orderFoods = [OrderHistoryItem]();
+                    while(count < foodNames.count){
+                        let orderItem = OrderHistoryItem();
+                        orderItem.foodName = (foodNames[count] as! String);
+                        let stringFoodQuantity = foodQuantities[count] as! String;
+                        let intFoodQuantity = Int(stringFoodQuantity);
+                        orderItem.foodQuantity = intFoodQuantity;
+                        orderFoods.append(orderItem);
+                        count+=1;
+                    }
+                    
+                    let orderPageDetails = OrderDetailsPage();
+                    orderPageDetails.date = pastOrder.value(forKey: "date") as? String;
+                    orderPageDetails.orderSum = pastOrder.value(forKey: "price") as? Double;
+                    orderPageDetails.restaurantName = pastOrder.value(forKey: "restaurantName") as? String;
+                    orderPageDetails.orderFoods = orderFoods;
+                    
+                    self.navigationController?.pushViewController(orderPageDetails, animated: true);
+                }
+                
+            }
+        }
+    }
     
     
 }

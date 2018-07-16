@@ -26,6 +26,7 @@ class ReviewPayButton: UIButton{
     var deliveryTime: String?;
     var userAddress: UserAddress?;
     var paymentCard: PaymentCard?;
+    var deliveryCharge: Double?
     
     var orderTotalSum: Double!;
     var numberOfFreeOrders: Int?;
@@ -35,6 +36,7 @@ class ReviewPayButton: UIButton{
     var optionIDs = [[[Int]]]();
     var mainFoodIDs = [Int]();
     var mainFoodQuantities = [Int]();
+    var mainFoodHasOptions = [String]();
     
     override init(frame: CGRect) {
         super.init(frame: frame);
@@ -64,6 +66,7 @@ class ReviewPayButton: UIButton{
         while(count < mainItems!.count){
             let mainItem = mainItems![count];
             if(mainItem.hasOptions){
+                self.mainFoodHasOptions.append("Y");
                 //loop through foodItems and get each of the specialoptions and add them to an array
                 let itemOptions = getSpecialOptions(mainItem: mainItem);
                 self.mainFoodIDs.append(Int(mainItem.id)!);
@@ -71,8 +74,17 @@ class ReviewPayButton: UIButton{
                 self.optionIDs.append(itemOptions);
             }else{
                 //get foodID and quantity
+                self.mainFoodHasOptions.append("N");
+                var count = 0;
+                var itemOptions = [[Int]]();
+                while(count < mainItem.quantity){
+                    let fakeOption = [0];
+                    itemOptions.append(fakeOption);
+                    count+=1;
+                }
                 self.mainFoodQuantities.append(mainItem.quantity);
                 self.mainFoodIDs.append(Int(mainItem.id)!);
+                self.optionIDs.append(itemOptions);
             }
             count+=1;
         }
@@ -131,6 +143,7 @@ class ReviewPayButton: UIButton{
                 }else{
                     print("stage 2");
                     if(user == nil){
+                        formatTelephone();
                         user = User(firstName: self.customer!.customerName!, lastName: "Checkout", userID: "1", email: self.customer!.customerEmail!, telephone: self.customer!.customerPhone!, subscriptionPlan: "NONE", freeOrders: 0);
                         
                     }
@@ -142,6 +155,18 @@ class ReviewPayButton: UIButton{
         }
     }
     
+    fileprivate func formatTelephone(){
+        var numberString = self.customer!.customerPhone!
+        numberString.insert("(", at: numberString.startIndex);
+        numberString.insert(")", at: numberString.index(numberString.startIndex, offsetBy: 4));
+        numberString.insert("-", at: numberString.index(numberString.startIndex, offsetBy: 5));
+        numberString.insert("-", at: numberString.index(numberString.startIndex, offsetBy: 9));
+        
+        self.customer!.customerPhone = numberString;
+//        print(self.customer!.customerPhone!);
+
+    }
+    
     fileprivate func renewOrderData(){
 //        print("renew");
         self.customer = reviewPage!.customer;
@@ -151,6 +176,8 @@ class ReviewPayButton: UIButton{
         self.mainItems = reviewPage?.mainItems;
         self.orderTotalSum = reviewPage?.orderTotal;
         self.restaurant = reviewPage?.selectedRestaurant;
+        self.deliveryCharge = reviewPage?.deliveryPrice;
+        
     }
     
     fileprivate func sendToken(){
@@ -166,16 +193,16 @@ class ReviewPayButton: UIButton{
         cardParams.cvc = self.paymentCard!.cvcNumber!;
         
         STPAPIClient.shared().createToken(withCard: cardParams) { (token: STPToken?, error: Error?) in
-            print("make token");
+//            print("make token");
             guard let token = token, error == nil else {
                 // Present error to user...
                 return;
             }
-            
-            let postBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
-            let conn = Conn();
-            conn.connect(fileName: "stripeOrder.php", postString: postBody, completion: { (result) in
-            })
+            print(token);
+//            let postBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
+//            let conn = Conn();
+//            conn.connect(fileName: "stripeOrder.php", postString: postBody, completion: { (result) in
+//            })
 //            print(token);
         }
         handlePlaceOrder();
@@ -186,11 +213,15 @@ class ReviewPayButton: UIButton{
         if(user!.freeOrders! > 0 && self.orderTotalSum! <= 20.0){
             user!.freeOrders! = user!.freeOrders! - 1;
         }
+        
         let date = self.setDate();
         let infoArray = [user?.userID!, date, self.userAddress!.addressID!, self.deliveryTime!, self.customer!.customerPhone!, self.customer!.customerName!, self.userAddress?.address!];
-        let json:[String: Any] = ["userInfo":infoArray,"totalSum":(self.orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs, "restID":self.restaurant!.restaurantID!, "freeOrders":user!.freeOrders!];
+        let json:[String: Any] = ["userInfo":infoArray,"deliveryCharge":self.deliveryCharge!,"totalSum":(self.orderTotalSum),"foodQuantity":self.mainFoodQuantities, "foodIDs":self.mainFoodIDs,"optionIDs":self.optionIDs,"hasOptions":self.mainFoodHasOptions,"restID":self.restaurant!.restaurantID!, "freeOrders":user!.freeOrders!];
         
         let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted);
+        let jsonString = try? JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments);
+        print(jsonString!);
+        print(self.optionIDs.count);
         
         let url: URL = URL(string: "https://onDeliveryinc.com/OrderPlaced.php")!;
         var request:URLRequest = URLRequest(url: url);
@@ -202,7 +233,9 @@ class ReviewPayButton: UIButton{
                 let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
                 DispatchQueue.main.async {
                     //save order in core data
-                    if(user?.userID! != "1"){
+                    print(re);
+                    
+                    if(user!.userID! != "1"){
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate;
                         let context = appDelegate.persistentContainer.viewContext;
                         let entity = NSEntityDescription.entity(forEntityName: "Order", in: context)!;
@@ -230,9 +263,14 @@ class ReviewPayButton: UIButton{
                         }catch{
                             print("error");
                         }
+                        
+                        if(user!.freeOrders! > 0){
+                            user!.freeOrders! -= 1;
+                        }
+                        saveDefaults(defaults: defaults!);
                     }
                     
-                    if(user?.userID! == "1"){
+                    if(user!.userID! == "1"){
                         user = nil;
                         //                                addresses.removeAll();
                         //                                cCards.removeAll();

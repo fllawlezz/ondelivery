@@ -79,6 +79,7 @@ extension ProfileLogin{
         // first address will always be your main
         let conn = Conn();
         let postString = "UserID=\(user!.userID!)"
+//        print(postString);
         conn.connect(fileName: "GetAddresses.php", postString: postString, completion: { (re) in
             let result = re as String;
             if(result == "none"){

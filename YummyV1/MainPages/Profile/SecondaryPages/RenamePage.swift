@@ -17,9 +17,6 @@ class RenamePage: UIViewController{
     var firstNameBox: TextFieldPadded!;
     var lastNameBox: TextFieldPadded!;
     
-    var firstName: String?
-    var lastName: String?
-    
     override func viewDidLoad() {
         let backButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton;
@@ -50,7 +47,7 @@ class RenamePage: UIViewController{
         firstNameBox = TextFieldPadded();
         firstNameBox.translatesAutoresizingMaskIntoConstraints = false;
         firstNameBox.borderStyle = .roundedRect;
-        firstNameBox.text = "\(firstName!)";
+        firstNameBox.text = "\(user!.firstName!)";
         firstNameBox.textColor = UIColor.black;
         firstNameBox.font = UIFont(name: "Montserrat-Regular", size: 14);
         self.view.addSubview(firstNameBox);
@@ -78,7 +75,7 @@ class RenamePage: UIViewController{
         lastNameBox.translatesAutoresizingMaskIntoConstraints = false;
         lastNameBox.textColor = UIColor.black;
         lastNameBox.borderStyle = .roundedRect;
-        lastNameBox.text = "\(lastName!)";
+        lastNameBox.text = "\(user!.lastName!)";
         lastNameBox.font = UIFont(name: "Montserrat-Regular", size: 14);
         self.view.addSubview(lastNameBox);
         lastNameBox.leftAnchor.constraint(equalTo: self.lastNameLabel.rightAnchor, constant: 5).isActive = true;

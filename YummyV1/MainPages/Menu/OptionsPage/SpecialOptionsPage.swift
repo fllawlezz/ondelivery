@@ -223,11 +223,12 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         if(selectedIndexPaths.count == numberOfSections){
             handleItemExists();
             if(!itemExists){
-                let orderItem = MainItem(name: self.mainFoodName!, price: self.mainFoodPrice!, quantity: 1);
+                let orderItem = MainItem(name: self.mainFoodName!, price: 0, quantity: 1);
                 orderItem.id = String(self.mainFoodID!);
                 orderItem.itemPrice = self.mainFoodPrice!;
                 orderItem.hasOptions = true;
                 calculateFoodPrice();
+                orderItem.addPrice(price: self.orderItemTotal);
                 let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
                 for option in self.selectedOptions{
                     let appendedOption = SpecialOption();
@@ -272,6 +273,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
                 mainItem.foodItems.append(foodItem);
                 mainItem.addPrice(price: orderItemTotal);
                 mainItem.addQuantity(giveQuantity: 1);
+                
                 if(menuCell != nil){
                     updateMenuCell();
                 }else{
@@ -297,6 +299,7 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
             let currentIndexPath = selectedIndexPaths[count];
             let currentSection = self.specialOptions[currentIndexPath.section];
             let selectedOption = currentSection[currentIndexPath.item];//selected option
+            print(selectedOption.specialOptionPrice);
             
             orderItemTotal = orderItemTotal+selectedOption.specialOptionPrice;
             

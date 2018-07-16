@@ -46,7 +46,7 @@ class EmailPage: UIViewController, UITextFieldDelegate{
         
         emailField = TextFieldPadded();
         emailField.translatesAutoresizingMaskIntoConstraints = false;
-        emailField.placeholder = "\(email!)";
+        emailField.placeholder = "\(user!.email!)";
         emailField.font = UIFont.systemFont(ofSize: 14);
         emailField.keyboardType = .emailAddress;
         emailField.autocorrectionType = .no;
@@ -79,7 +79,7 @@ class EmailPage: UIViewController, UITextFieldDelegate{
         submitButton.translatesAutoresizingMaskIntoConstraints = false;
         submitButton.setTitle("Submit", for: .normal);
         submitButton.backgroundColor = UIColor.appYellow;
-        submitButton.titleLabel?.font = UIFont(name: "Montserrat-Regular", size: 18);
+        submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 16);
         submitButton.setTitleColor(UIColor.black, for: .normal);
         submitButton.layer.cornerRadius = 5;
         self.view.addSubview(submitButton);

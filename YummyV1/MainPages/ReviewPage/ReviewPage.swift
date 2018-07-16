@@ -317,6 +317,7 @@ class ReviewPage: UIViewController,UICollectionViewDelegate, UICollectionViewDat
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuse, for: indexPath) as! ReviewCell;
         let food = mainItems![indexPath.item];
+        print(food.itemTotals!);
         cell.setName(name: food.name! );
         cell.setQuantity(quant: food.quantity!);
         cell.setPrice(price: food.itemTotals!);

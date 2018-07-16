@@ -215,17 +215,19 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         selectedDarkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         selectedDarkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         
-        selectedDarkView.addSubview(spinner);
+        self.view.addSubview(spinner);
         spinner.centerXAnchor.constraint(equalTo: selectedDarkView.centerXAnchor).isActive = true;
         spinner.centerYAnchor.constraint(equalTo: selectedDarkView.centerYAnchor).isActive = true;
         spinner.widthAnchor.constraint(equalToConstant: 50).isActive = true;
         spinner.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        spinner.alpha = 0;
         
-        selectedDarkView.addSubview(message);
+        self.view.addSubview(message);
         message.centerXAnchor.constraint(equalTo: selectedDarkView.centerXAnchor).isActive = true;
         message.bottomAnchor.constraint(equalTo: spinner.topAnchor, constant: -10).isActive = true;
         message.widthAnchor.constraint(equalToConstant: 150).isActive = true;
         message.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+        message.alpha = 0;
     }
     
     //MARK: changeText
@@ -243,7 +245,7 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         if(searchBar.text!.count > 0){
             let searchText = self.searchBar.text!
             let conn = Conn();
-            let postBody = "Search=\(searchText)&Latitude=\(userLatitude!)&Longitude=\(userLongtiude!)";
+            let postBody = "Search=\(searchText)&Latitude=\(userLatitude!)&Longitude=\(userLongtiude!)&City=\(userCurrentCity!)";
             conn.connect(fileName: "SearchRestaurant.php", postString: postBody, completion: { (re) in
                 if(re != "none"){
                     do{
@@ -470,7 +472,9 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         }
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        loadMenu(index: indexPath.item, advertised: false);
+        if(self.restaurants!.count > 0){
+            loadMenu(index: indexPath.item, advertised: false);
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -508,6 +512,8 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         
         UIView.animate(withDuration: 0.3) {
             self.selectedDarkView.alpha = 0.7;
+            self.spinner.alpha = 1;
+            self.message.alpha = 1;
         }
         
         //index to search restaurants
@@ -600,6 +606,8 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
                         self.navigationController?.pushViewController(menu, animated: true);
                         
                         self.selectedDarkView.alpha = 0.0;
+                        self.spinner.alpha = 0;
+                        self.message.alpha = 0;
                         self.spinner.animating = false;
                         self.spinner.updateAnimation();
                     }

@@ -18,12 +18,6 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
     private let imageNames = ["profile","phone","home","creditCard","document","orderPolicy","exclamation","specialOffer","logout"];
     var tableView: UITableView!;
     
-    var userID: String?
-    var firstName: String?
-    var lastName: String?
-    var email: String?
-    var telephone: String?
-    
     override func viewDidLoad() {
         setup();
         self.view.backgroundColor = UIColor.gray;
@@ -154,6 +148,7 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
         let alert = UIAlertController(title: "Logout?", message: "Are you sure you want to logout?", preferredStyle: .alert);
         alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (re) in
             //remove defaults
+            user = nil;
             removeDefaults(defaults: defaults);
             //remove everything from core Data
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else{
@@ -177,21 +172,13 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
                 print("Error");
             }
             
-            if let orderPage = self.customTabBar?.orderPage{
-                orderPage.pastOrders?.removeAll();
-                orderPage.collectionView?.reloadData();
-            }
-            
-            user = nil;
-            removeDefaults(defaults: defaults);
-            
 //            addresses.removeAll();
 //            cCards.removeAll();
             addresses.removeAll();
             orders.removeAll();
             cCards.removeAll();
-            print(addresses.count);
-            print(orders.count);
+//            print(addresses.count);
+//            print(orders.count);
             
             //goBack to startup page
             let profileLoginPage = ProfileLogin();

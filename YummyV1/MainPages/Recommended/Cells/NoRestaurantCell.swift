@@ -18,10 +18,13 @@ class NoRestaurantsCell: UICollectionViewCell{
         //load center Title
         centerTitle = UILabel();
         centerTitle.translatesAutoresizingMaskIntoConstraints = false;
-        centerTitle.text = "No restaurants around you";
+        centerTitle.text = "Sorry, there are no restaurants available to order from around you. In the near future there will be restaurants ready for you to order from!";
         centerTitle.font = UIFont(name: "Montserrat-Regular", size: 16);
         centerTitle.textColor = UIColor.black;
         centerTitle.textAlignment = .center;
+        centerTitle.adjustsFontSizeToFitWidth = true;
+        centerTitle.minimumScaleFactor = 0.1;
+        centerTitle.numberOfLines = 0;
         self.addSubview(centerTitle);
         centerTitle.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true;
         centerTitle.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;

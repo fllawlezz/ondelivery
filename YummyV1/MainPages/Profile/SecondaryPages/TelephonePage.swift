@@ -15,8 +15,6 @@ class TelephonePage: UIViewController{
     var telephoneField: TextFieldPadded!;
     var messageLabel: UILabel!;
     
-    var telephone: String?
-    
     override func viewDidLoad() {
         let button = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = button;
@@ -42,7 +40,7 @@ class TelephonePage: UIViewController{
         
         telephoneField = TextFieldPadded();
         telephoneField.translatesAutoresizingMaskIntoConstraints = false;
-        telephoneField.placeholder = "\(telephone!)";
+        telephoneField.placeholder = "\(user!.telephone!)";
         telephoneField.textColor = UIColor.black;
         telephoneField.borderStyle = .roundedRect;
         telephoneField.textAlignment = .center;

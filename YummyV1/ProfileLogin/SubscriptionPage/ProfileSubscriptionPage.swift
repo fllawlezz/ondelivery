@@ -263,24 +263,28 @@ class ProfileSubscriptionPage: UIViewController{
     }
     
     @objc func cancelPlan(){
-        let alert = UIAlertController(title: "Cancel Subscription", message: "Are you sure you want to cancel your subscription?", preferredStyle: .alert);
-        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (result) in
-            //remove sub plan, send to server that they are no longer subscribed, keep orders
-            user!.subscriptionPlan = "NONE";
-            let conn = Conn();
-            let postBody = "UserID=\(user!.userID!)";
-            conn.connect(fileName: "cancelSubscription.php", postString: postBody, completion: { (result) in
-            })
-            self.showConfirmationAlert();
-        }))
-        alert.addAction(UIAlertAction(title: "No", style: .default, handler: {(result) in
-            
-        }))
-        self.present(alert, animated: true, completion: nil);
+        if(user!.subscriptionPlan! != "NONE"){
+            let alert = UIAlertController(title: "Cancel Subscription", message: "Are you sure you want to cancel your subscription?", preferredStyle: .alert);
+            alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (result) in
+                //remove sub plan, send to server that they are no longer subscribed, keep orders
+                user!.subscriptionPlan = "NONE";
+                let conn = Conn();
+                let postBody = "UserID=\(user!.userID!)";
+                conn.connect(fileName: "cancelSubscription.php", postString: postBody, completion: { (result) in
+                })
+                self.showConfirmationAlert();
+            }))
+            alert.addAction(UIAlertAction(title: "No", style: .default, handler: {(result) in
+                
+            }))
+            self.present(alert, animated: true, completion: nil);
+        }else{
+            dismissPopUp();
+        }
     }
     
     private func showConfirmationAlert(){
-        let alert = UIAlertController(title: "Subscription Canceled", message: "Your subscription has been canceled", preferredStyle: .alert);
+        let alert = UIAlertController(title: "Subscription Canceled", message: "Your subscription has been canceled. You still get to keep your remaining free orders though!", preferredStyle: .alert);
         alert.addAction(UIAlertAction(title: "Ok", style: .destructive, handler: { (result) in
             self.navigationController?.popToRootViewController(animated: true);
         }))
