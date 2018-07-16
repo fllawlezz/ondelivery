@@ -198,14 +198,16 @@ class ReviewPayButton: UIButton{
                 // Present error to user...
                 return;
             }
-            print(token);
-//            let postBody = "stripeToken=\(token)&totalSum=\(self.orderTotalSum)&email=\(self.customer!.customerEmail!)"
-//            let conn = Conn();
-//            conn.connect(fileName: "stripeOrder.php", postString: postBody, completion: { (result) in
-//            })
 //            print(token);
+            let orderCharge = String(format: "%.2f", self.orderTotalSum!);
+            let postBody = "stripeToken=\(token)&totalSum=\(orderCharge)&email=\(self.customer!.customerEmail!)"
+//            print(postBody);
+            let conn = Conn();
+            conn.connect(fileName: "stripeOrder.php", postString: postBody, completion: { (result) in
+            })
+//            print(token);
+            self.handlePlaceOrder();
         }
-        handlePlaceOrder();
     }
     
     fileprivate func handlePlaceOrder(){
