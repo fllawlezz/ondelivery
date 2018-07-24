@@ -21,10 +21,22 @@ class Conn{
         request.httpBody = postString.data(using: String.Encoding.utf8);
         let task = URLSession.shared.dataTask(with: request){
             data,response,error in
-            if data != nil{
-                urlData = data;
-                let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
-                completion(re);
+            if(error == nil){
+                if data != nil{
+                    urlData = data;
+                    let re = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)!;
+                    completion(re);
+                }
+            }else{
+                switch error!{
+                case URLError.networkConnectionLost, URLError.notConnectedToInternet:
+                    print("no network connection");
+                    break;
+                case URLError.cannotFindHost:
+                    print("can't find host");
+                    break;
+                default: print("unknown error");
+                }
             }
         }
         task.resume();

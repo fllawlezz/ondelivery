@@ -117,6 +117,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     
     
     override func viewDidLoad() {
+        pageNum = 1;
+        
         let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);
         navigationItem.backBarButtonItem = leftBackButton;
         navigationItem.title = "\(selectedRestaurant!.restaurantTitle!)";
@@ -389,6 +391,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MenuCell;
             //model CELL: shown = false, hidden
             cell.menuPage = self;
+//            cell.options = false;
             cell.buttonShown = false;//set shown = to false.
             cell.hideButton();//hide the minus and the label
             cell.setQuantity(quantity: 0);//reset the quantity to zero
@@ -404,6 +407,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                 cell.setDescription(description: food.descript!);
                 if(food.options == "Y"){
                     cell.options = true;
+                }else{
+                    cell.options = false;
                 }
                 //if food is selected then set orders and
                 
@@ -420,6 +425,12 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
                         cell.setFoodID(id: food.id!);
                         cell.foodImage.image = food.image!;
                         cell.setDescription(description: food.descript!);
+                        
+                        if(food.options == "Y"){
+                            cell.options = true;
+                        }else{
+                            cell.options = false;
+                        }
                     }
                     count+=1;
                 }

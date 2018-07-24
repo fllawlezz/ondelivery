@@ -14,6 +14,7 @@ class SelectAddress: UIViewController, UICollectionViewDelegate, UICollectionVie
     var reviewPage: ReviewPage?;
     var selectedAddress: UserAddress?;
     var profilePage: ProfilePage?;
+    
     //MARK: UI elements
     var addressList: UICollectionView!;
     

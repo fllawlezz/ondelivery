@@ -54,7 +54,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
             }
-            window?.rootViewController = SplashPage();
+            
+            window?.rootViewController = PlaceOrderPage();
+            
+//            window?.rootViewController = SplashPage();
         }else{
             window?.rootViewController = StartingNavigationPage();
         }

@@ -529,93 +529,146 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
         let conn = Conn();
         let postBody = "RestID=\(restaurantID)";
         
-        conn.connect(fileName: "LoadMenu.php", postString: postBody) { (re) in
-            if(urlData != nil){
-                do{
-                    let json = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
-                    
-                    let menuID = json["menuID"] as! NSArray;
-                    let section = json["sections"] as! NSArray;
-                    let foodNames = json["foodNames"] as! NSArray;
-                    let foodSection = json["foodSection"] as! NSArray;
-                    let foodPrices = json["foodPrice"] as! NSArray;
-                    let foodIDs = json["foodID"] as! NSArray;
-                    let sectNames = json["sectionNames"] as! NSArray;
-                    let sectSection = json["sectionSection"] as! NSArray; //section section is the actual section that the section is: EX: section name: Chinese Food, Section section =  1;
-                    let foodPicURLs = json["pics"] as! NSArray;
-                    let hotFoods = json["hotFood"] as! NSArray;
-                    let descript = json["description"] as! NSArray;
-                    let options = json["options"] as! NSArray;
-                    
-                    let sectionAsInt = Int(section[0] as! String);
-                    
-                    let newMenu = Menu();
-                    newMenu.menuID = menuID[0] as? String;
-                    newMenu.numberOfSections = sectionAsInt!;
-                    
-                    var count = 0;
-                    while(count < sectNames.count){
-                        let sectionItem = SectionItem();
-                        let sectionNumberString = sectSection[count] as? String;
-                        let sectionNumberInt = Int(sectionNumberString!);
-                        sectionItem.sectionNumber = sectionNumberInt;
-                        sectionItem.sectionTitle = sectNames[count] as? String;
-                        newMenu.sectionItems.append(sectionItem);
-                        count+=1;
-                    }
-                    
-                    
-                    count = 0;
-                    while(count < foodNames.count){
-                        let newMenuDataItem = MenuDataItem();
-                        newMenuDataItem.foodName = foodNames[count] as? String;
-                        newMenuDataItem.foodID = foodIDs[count] as? String;
-                        
-                        let foodSectionString = foodSection[count] as? String;
-                        let foodSectionInt = Int(foodSectionString!);
-                        newMenuDataItem.foodSection = foodSectionInt;
-                        
-                        let foodPriceString = foodPrices[count] as! String;
-                        let foodPriceDouble = Double(foodPriceString);
-                        newMenuDataItem.foodPrice = foodPriceDouble;
-                        
-                        newMenuDataItem.foodPicURL = foodPicURLs[count] as? String;
-                        
-                        let foodImage = self.loadImage(urlString: newMenuDataItem.foodPicURL!);
-                        newMenuDataItem.foodImage = foodImage;
-                        
-                        newMenuDataItem.foodIsHot = hotFoods[count] as? String;
-                        newMenuDataItem.foodDescription = descript[count] as? String;
-                        
-                        let options = options[count] as? String;
-                        newMenuDataItem.options = options;
-                        
-                        newMenu.menu.append(newMenuDataItem);
-                        count+=1;
-                    }
-                    
-                    DispatchQueue.main.async {
-                        let menu = MenuPage();
-                        menu.hidesBottomBarWhenPushed = true;
-                        
-                        menu.menu = newMenu;
-                        
-                        menu.selectedRestaurant = selectedRestaurant;
-                        
-                        
-                        self.navigationController?.pushViewController(menu, animated: true);
-                        
-                        self.selectedDarkView.alpha = 0.0;
-                        self.spinner.alpha = 0;
-                        self.message.alpha = 0;
-                        self.spinner.animating = false;
-                        self.spinner.updateAnimation();
-                    }
-                }catch{
-                    print("Error parsing json");
+        loadMenuTest();
+//        conn.connect(fileName: "LoadMenu1.php", postString: postBody) { (re) in
+//            if(urlData != nil){
+//                do{
+//                    let json = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
+//
+//                    let menuID = json["menuID"] as! NSArray;
+//                    let section = json["sections"] as! NSArray;
+//                    let foodNames = json["foodNames"] as! NSArray;
+//                    let foodSection = json["foodSection"] as! NSArray;
+//                    let foodPrices = json["foodPrice"] as! NSArray;
+//                    let foodIDs = json["foodID"] as! NSArray;
+//                    let sectNames = json["sectionNames"] as! NSArray;
+//                    let sectSection = json["sectionSection"] as! NSArray; //section section is the actual section that the section is: EX: section name: Chinese Food, Section section =  1;
+//                    let foodPicURLs = json["pics"] as! NSArray;
+//                    let hotFoods = json["hotFood"] as! NSArray;
+//                    let descript = json["description"] as! NSArray;
+//                    let options = json["options"] as! NSArray;
+//
+//                    let sectionAsInt = Int(section[0] as! String);
+//
+//                    let newMenu = Menu();
+//                    newMenu.menuID = menuID[0] as? String;
+//                    newMenu.numberOfSections = sectionAsInt!;
+//
+//                    var count = 0;
+//                    while(count < sectNames.count){
+//                        let sectionItem = SectionItem();
+//                        let sectionNumberString = sectSection[count] as? String;
+//                        let sectionNumberInt = Int(sectionNumberString!);
+//                        sectionItem.sectionNumber = sectionNumberInt;
+//                        sectionItem.sectionTitle = sectNames[count] as? String;
+//                        newMenu.sectionItems.append(sectionItem);
+//                        count+=1;
+//                    }
+//
+//
+//                    count = 0;
+//                    while(count < foodNames.count){
+//                        let newMenuDataItem = MenuDataItem();
+//                        newMenuDataItem.foodName = foodNames[count] as? String;
+//                        newMenuDataItem.foodID = foodIDs[count] as? String;
+//
+//                        let foodSectionString = foodSection[count] as? String;
+//                        let foodSectionInt = Int(foodSectionString!);
+//                        newMenuDataItem.foodSection = foodSectionInt;
+//
+//                        let foodPriceString = foodPrices[count] as! String;
+//                        let foodPriceDouble = Double(foodPriceString);
+//                        newMenuDataItem.foodPrice = foodPriceDouble;
+//
+//                        newMenuDataItem.foodPicURL = foodPicURLs[count] as? String;
+//
+//                        let foodImage = self.loadImage(urlString: newMenuDataItem.foodPicURL!);
+//                        newMenuDataItem.foodImage = foodImage;
+//
+//                        newMenuDataItem.foodIsHot = hotFoods[count] as? String;
+//                        newMenuDataItem.foodDescription = descript[count] as? String;
+//
+//                        let options = options[count] as? String;
+//                        newMenuDataItem.options = options;
+//
+//                        newMenu.menu.append(newMenuDataItem);
+//                        count+=1;
+//                    }
+//
+//                    DispatchQueue.main.async {
+//                        let menu = MenuPage();
+//                        menu.hidesBottomBarWhenPushed = true;
+//
+//                        menu.menu = newMenu;
+//
+//                        menu.selectedRestaurant = selectedRestaurant;
+//
+//
+//                        self.navigationController?.pushViewController(menu, animated: true);
+//
+//                        self.selectedDarkView.alpha = 0.0;
+//                        self.spinner.alpha = 0;
+//                        self.message.alpha = 0;
+//                        self.spinner.animating = false;
+//                        self.spinner.updateAnimation();
+//                    }
+//                }catch{
+//                    print("Error parsing json");
+//                }
+//            }
+//        }
+    }
+    
+    fileprivate func loadMenuTest(){
+        print("loadMenuTest");
+        let url = URL(string: "https://onDeliveryinc.com/loadMenu1.php");
+        var request: URLRequest = URLRequest(url: url!);
+        let postBody = "UserID=\(user!.userID!)"
+        request.httpMethod = "POST";
+        request.httpBody = postBody.data(using: String.Encoding.utf8);
+        let task = URLSession.shared.dataTask(with: request) { (data, response, errorOrNil) in
+            if let error = errorOrNil{
+                print("error not nil");
+                switch error{
+                case URLError.networkConnectionLost, URLError.notConnectedToInternet:
+                    print("no network connection");
+                    self.selectedDarkView.alpha = 0;
+                    self.spinner.alpha = 0;
+                    self.message.alpha = 0;
+                    self.spinner.animating = false;
+                    self.spinner.updateAnimation();
+                    break;
+                case URLError.cannotFindHost:
+                    print("can't find host");
+                    self.selectedDarkView.alpha = 0;
+                    self.spinner.alpha = 0;
+                    self.message.alpha = 0;
+                    self.spinner.animating = false;
+                    self.spinner.updateAnimation();
+                    break;
+                default: print("unknown error");
                 }
             }
+            guard let httpResponse = response as? HTTPURLResponse
+                else{
+                    print("not status");
+                    return;
+            }
+            
+            if(httpResponse.statusCode == 404 || httpResponse.statusCode == 400){
+                print("cannot find or bad access");
+                DispatchQueue.main.async {
+                    self.selectedDarkView.alpha = 0;
+                    self.spinner.alpha = 0;
+                    self.message.alpha = 0;
+                    self.spinner.animating = false;
+                    self.spinner.updateAnimation();
+                }
+                return;
+            }
         }
+        task.resume()
+        print("task resumed");
     }
 }
 

@@ -26,13 +26,27 @@ class MenuCell: UICollectionViewCell{
         foodName.minimumScaleFactor = 12;
         return foodName;
     }()
-    var foodDescriptionLabel: UILabel = {
-        let foodDescription = UILabel();
+//    var foodDescriptionLabel: UILabel = {
+//        let foodDescription = UILabel();
+//        foodDescription.translatesAutoresizingMaskIntoConstraints = false;
+//        foodDescription.text = "This is the description of the food";
+//        foodDescription.font = UIFont.systemFont(ofSize: 12);
+//        foodDescription.textColor = UIColor.gray;
+//        foodDescription.minimumScaleFactor = 12;
+//        foodDescription.numberOfLines = 0;
+//        return foodDescription;
+//    }()
+    
+    var foodDescriptionLabel: UITextView = {
+        let foodDescription = UITextView();
         foodDescription.translatesAutoresizingMaskIntoConstraints = false;
         foodDescription.text = "This is the description of the food";
         foodDescription.font = UIFont.systemFont(ofSize: 12);
         foodDescription.textColor = UIColor.gray;
-        foodDescription.minimumScaleFactor = 12;
+//        foodDescription.minimumScaleFactor = 12;
+//        foodDescription.numberOfLines = 0;
+        foodDescription.isEditable = false;
+        foodDescription.textAlignment = .left;
         return foodDescription;
     }()
     
@@ -129,12 +143,6 @@ class MenuCell: UICollectionViewCell{
         let formatString = String(format: "%.2f",foodPrice);
         foodPriceLabel.text = "$"+formatString;
         
-        self.addSubview(foodDescriptionLabel);
-        foodDescriptionLabel.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
-        foodDescriptionLabel.topAnchor.constraint(equalTo: foodNameLabel.bottomAnchor, constant: 5).isActive = true;
-        foodDescriptionLabel.rightAnchor.constraint(equalTo: foodPriceLabel.leftAnchor).isActive = true;
-        foodDescriptionLabel.heightAnchor.constraint(equalToConstant: 25);
-        
         self.addSubview(addButton);
         //need x,y,width,height
         addButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
@@ -155,6 +163,12 @@ class MenuCell: UICollectionViewCell{
         minusButton.centerYAnchor.constraint(equalTo: numberOfItems.centerYAnchor).isActive = true;
         minusButton.widthAnchor.constraint(equalToConstant: 35).isActive = true;
         minusButton.heightAnchor.constraint(equalToConstant: 35).isActive = true;
+        
+        self.addSubview(foodDescriptionLabel);
+        foodDescriptionLabel.leftAnchor.constraint(equalTo: foodImage.rightAnchor, constant: 10).isActive = true;
+        foodDescriptionLabel.topAnchor.constraint(equalTo: foodNameLabel.bottomAnchor).isActive = true;
+        foodDescriptionLabel.rightAnchor.constraint(equalTo: minusButton.leftAnchor).isActive = true;
+        foodDescriptionLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true;
         
         let border = UIView();
         border.translatesAutoresizingMaskIntoConstraints = false;
@@ -184,6 +198,7 @@ class MenuCell: UICollectionViewCell{
     func setDescription(description: String){
         self.foodDescription = description;
         foodDescriptionLabel.text = description
+//        foodDescriptionLabel.sizeToFit();
     }
     
     func setQuantity(quantity: Int){

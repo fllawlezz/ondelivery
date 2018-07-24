@@ -283,6 +283,29 @@ class ProfileSubscriptionPage: UIViewController{
         }
     }
     
+    private func cancelSubscriptionPlan(){
+        let url = URL(string: "https://onDeliveryinc.com/cancelSubscription.php");
+        var request: URLRequest = URLRequest(url: url!);
+        let postBody = "UserID=\(user!.userID!)"
+        request.httpMethod = "POST";
+        request.httpBody = postBody.data(using: String.Encoding.utf8);
+        let task = URLSession.shared.dataTask(with: request) { (data, response, errorOrNil) in
+            if let error = errorOrNil{
+                switch error{
+                case URLError.networkConnectionLost, URLError.notConnectedToInternet:
+                    print("no network connection");
+                    break;
+                case URLError.cannotFindHost:
+                    print("can't find host");
+                    break;
+                default: print("unknown error");
+                }
+            }
+        }
+        task.resume()
+        
+    }
+    
     private func showConfirmationAlert(){
         let alert = UIAlertController(title: "Subscription Canceled", message: "Your subscription has been canceled. You still get to keep your remaining free orders though!", preferredStyle: .alert);
         alert.addAction(UIAlertAction(title: "Ok", style: .destructive, handler: { (result) in
