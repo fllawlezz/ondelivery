@@ -28,7 +28,7 @@ class UserOptionHeader: UICollectionReusableView{
     fileprivate func setupSectionTitle(){
         self.addSubview(sectionTitle);
         sectionTitle.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
-        sectionTitle.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        sectionTitle.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
         sectionTitle.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
         sectionTitle.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
     }

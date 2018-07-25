@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 
 class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
@@ -14,12 +15,13 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     
     let reuseOne = "one";
     let reuseTwo = "two";
+    let reuseThree = "three";
     let reuseHeader = "header";
     
     let tableTitles = ["Address","Delivery Time","Payment","Name","Telephone","Email"];
     let tableImages = ["home","clock","creditCard","profile","phone","email"];
     
-    let sectionTitles = ["Your Info","Tip"];
+    let sectionTitles = ["Your Info","Tip","Totals"];
     
     var userAddress: UserAddress?;
     var deliveryTime: String?;
@@ -27,8 +29,11 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     
     var customer: Customer?;
     
+    var orderTotal: Double?;
+    
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout);
+        orderTotal = 22.00
 //        user = nil;
 //        customer = Customer();
 //        customer?.customerEmail = "hi";
@@ -37,8 +42,10 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
         self.translatesAutoresizingMaskIntoConstraints = false;
         self.dataSource = self;
         self.delegate = self;
+        self.showsVerticalScrollIndicator = false;
         self.register(UserOptionCell.self, forCellWithReuseIdentifier: reuseOne);
         self.register(TipsCell.self, forCellWithReuseIdentifier: reuseTwo);
+        self.register(UserOptionTotalsCell.self, forCellWithReuseIdentifier: reuseThree);
         self.register(UserOptionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseHeader);
         self.backgroundColor = UIColor.white;
     }
@@ -68,8 +75,11 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
             }
             
             return cell;
-        }else{
+        }else if (indexPath.section == 1){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTwo, for: indexPath) as! TipsCell;
+            return cell;
+        }else{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseThree, for: indexPath) as! UserOptionTotalsCell;
             return cell;
         }
     }
@@ -81,8 +91,10 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if(indexPath.section == 0){
             return CGSize(width: self.frame.width, height: 50);
-        }else{
+        }else if(indexPath.section == 1){
             return CGSize(width: self.frame.width, height: 80);
+        }else{
+            return CGSize(width: self.frame.width, height: 160);
         }
     }
     
@@ -93,7 +105,7 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2;
+        return 3;
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

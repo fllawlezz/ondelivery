@@ -29,19 +29,19 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
         self.translatesAutoresizingMaskIntoConstraints = false;
         self.delegate = self;
         self.dataSource = self;
+        self.showsVerticalScrollIndicator = false;
+        self.showsHorizontalScrollIndicator = false;
         self.register(TipsCollectionViewCell.self, forCellWithReuseIdentifier: reuseOne);
         self.register(TipsShowTotalCell.self, forCellWithReuseIdentifier: reuseTwo);
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(indexPath.item != 4){
-//            print("sectionOne");
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! TipsCollectionViewCell;
             cell.setButtonTitle(percentage: percentageArray[indexPath.item]);
             cell.tipsCollectionView = self;
             return cell;
         }else{
-//            print("section2");
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTwo, for: indexPath) as! TipsShowTotalCell;
             return cell;
         }
@@ -52,11 +52,7 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        if(section == 0){
             return 5;
-//        }else{
-//            return 1;
-//        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -68,11 +64,6 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        if(indexPath.section == 0){
-//            return CGSize(width: self.frame.width/4, height: 50);
-//        }else{
-//            return CGSize(width: self.frame.width, height: 25);
-//        }
         if(indexPath.item != 4){
             return CGSize(width: self.frame.width/4, height: 50);
         }else{
