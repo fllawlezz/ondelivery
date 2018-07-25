@@ -13,13 +13,13 @@ class PlaceOrderPage: UIViewController {
     
     lazy var userOptionsTable: UserOptionsTable = {
         let layout = UICollectionViewFlowLayout();
-        layout.itemSize = CGSize(width: self.view.frame.width, height: 50);
+//        layout.itemSize = CGSize(width: self.view.frame.width, height: 50);
         let userOptionsTable = UserOptionsTable(frame: .zero, collectionViewLayout: layout);
         return userOptionsTable;
     }()
     
     lazy var placeOrderButton: PlaceOrderButton = {
-        let placeOrderButton = PlaceOrderButton(backgroundColor: UIColor.yellow, title: "Place Order", font: UIFont.montserratSemiBold(fontSize: 16), fontColor: UIColor.black);
+        let placeOrderButton = PlaceOrderButton(backgroundColor: UIColor.appYellow, title: "Place Order", font: UIFont.montserratSemiBold(fontSize: 16), fontColor: UIColor.black);
         return placeOrderButton;
     }()
     

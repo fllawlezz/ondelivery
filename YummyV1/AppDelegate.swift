@@ -54,8 +54,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
             }
-            
-            window?.rootViewController = PlaceOrderPage();
+            let placeOrder = PlaceOrderPage();
+            let navigationController = UINavigationController(rootViewController: placeOrder);
+            navigationController.navigationBar.isTranslucent = false;
+            navigationController.navigationBar.backgroundColor = UIColor.black;
+            navigationController.navigationBar.barTintColor = UIColor.black;
+            window?.rootViewController = navigationController;
             
 //            window?.rootViewController = SplashPage();
         }else{

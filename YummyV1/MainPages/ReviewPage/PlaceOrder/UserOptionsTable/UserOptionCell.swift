@@ -54,8 +54,8 @@ class UserOptionCell: UICollectionViewCell{
         self.addSubview(optionImage);
         optionImage.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
 //        optionImage.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true;
-        optionImage.heightAnchor.constraint(equalToConstant: 15).isActive = true;
-        optionImage.widthAnchor.constraint(equalToConstant: 15).isActive = true;
+        optionImage.heightAnchor.constraint(equalToConstant: 18).isActive = true;
+        optionImage.widthAnchor.constraint(equalToConstant: 18).isActive = true;
         optionImage.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
         
         self.addSubview(optionTitle);

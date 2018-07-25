@@ -102,6 +102,11 @@
 		CAADF68B20FAD4A500B6CC77 /* SubscriptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAADF68A20FAD4A500B6CC77 /* SubscriptionCell.swift */; };
 		CAB7C4FD20868A1500FF0CD9 /* StartingNavigationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB7C4FC20868A1500FF0CD9 /* StartingNavigationPage.swift */; };
 		CAB7C4FF2086B2D400FF0CD9 /* ProfileGetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB7C4FE2086B2D400FF0CD9 /* ProfileGetData.swift */; };
+		CABB831D2108608600CECB1E /* TipsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABB831C2108608600CECB1E /* TipsCell.swift */; };
+		CABB83232108636A00CECB1E /* TipsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABB83222108636A00CECB1E /* TipsCollectionView.swift */; };
+		CABB8325210863AC00CECB1E /* TipsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABB8324210863AC00CECB1E /* TipsCollectionViewCell.swift */; };
+		CABB83272108686800CECB1E /* UserOptionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABB83262108686800CECB1E /* UserOptionHeader.swift */; };
+		CABB832A21086CB100CECB1E /* TipsShowTotalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABB832921086CB100CECB1E /* TipsShowTotalCell.swift */; };
 		CABDF9F320ED55900015D0BF /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABDF9F220ED55900015D0BF /* FoodItem.swift */; };
 		CAC18D3B2075DB36008A2997 /* NoRestaurantCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC18D3A2075DB36008A2997 /* NoRestaurantCell.swift */; };
 		CAC18D3E2075DD1E008A2997 /* FiltersViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC18D3D2075DD1E008A2997 /* FiltersViewCell.swift */; };
@@ -258,6 +263,11 @@
 		CAADF68A20FAD4A500B6CC77 /* SubscriptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionCell.swift; sourceTree = "<group>"; };
 		CAB7C4FC20868A1500FF0CD9 /* StartingNavigationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartingNavigationPage.swift; sourceTree = "<group>"; };
 		CAB7C4FE2086B2D400FF0CD9 /* ProfileGetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileGetData.swift; sourceTree = "<group>"; };
+		CABB831C2108608600CECB1E /* TipsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsCell.swift; sourceTree = "<group>"; };
+		CABB83222108636A00CECB1E /* TipsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsCollectionView.swift; sourceTree = "<group>"; };
+		CABB8324210863AC00CECB1E /* TipsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsCollectionViewCell.swift; sourceTree = "<group>"; };
+		CABB83262108686800CECB1E /* UserOptionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserOptionHeader.swift; sourceTree = "<group>"; };
+		CABB832921086CB100CECB1E /* TipsShowTotalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipsShowTotalCell.swift; sourceTree = "<group>"; };
 		CABDF9F220ED55900015D0BF /* FoodItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodItem.swift; sourceTree = "<group>"; };
 		CAC18D3A2075DB36008A2997 /* NoRestaurantCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoRestaurantCell.swift; sourceTree = "<group>"; };
 		CAC18D3D2075DD1E008A2997 /* FiltersViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewCell.swift; sourceTree = "<group>"; };
@@ -727,6 +737,33 @@
 			path = StartPage;
 			sourceTree = "<group>";
 		};
+		CABB831E210860E200CECB1E /* Tips */ = {
+			isa = PBXGroup;
+			children = (
+				CABB83212108634200CECB1E /* TipsView */,
+				CABB831C2108608600CECB1E /* TipsCell.swift */,
+			);
+			path = Tips;
+			sourceTree = "<group>";
+		};
+		CABB83212108634200CECB1E /* TipsView */ = {
+			isa = PBXGroup;
+			children = (
+				CABB832821086C9000CECB1E /* Cells */,
+				CABB83222108636A00CECB1E /* TipsCollectionView.swift */,
+			);
+			path = TipsView;
+			sourceTree = "<group>";
+		};
+		CABB832821086C9000CECB1E /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CABB8324210863AC00CECB1E /* TipsCollectionViewCell.swift */,
+				CABB832921086CB100CECB1E /* TipsShowTotalCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		CAC18D392075DB2B008A2997 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -816,8 +853,10 @@
 		CAE9A9812107149200B338F3 /* UserOptionsTable */ = {
 			isa = PBXGroup;
 			children = (
+				CABB831E210860E200CECB1E /* Tips */,
 				CAE9A97F2107141400B338F3 /* UserOptionsTable.swift */,
 				CAE9A982210714A200B338F3 /* UserOptionCell.swift */,
+				CABB83262108686800CECB1E /* UserOptionHeader.swift */,
 			);
 			path = UserOptionsTable;
 			sourceTree = "<group>";
@@ -1171,6 +1210,7 @@
 				CA9ADA4520FCBD57000C6365 /* OrderDetailsCell.swift in Sources */,
 				CAFB763B206B81DF00EEFD10 /* MenuCell.swift in Sources */,
 				CA9265B71FC5E21200A2F43A /* MenuPage.swift in Sources */,
+				CABB831D2108608600CECB1E /* TipsCell.swift in Sources */,
 				CA93D6E120E95AD500BB83C8 /* NormalUIButton.swift in Sources */,
 				CA36AD192000230300A981A8 /* TosPage.swift in Sources */,
 				CAFB7639206B819E00EEFD10 /* MenuNavBar.swift in Sources */,
@@ -1193,10 +1233,12 @@
 				CAFF98F2201AD4990088A3EC /* EmailPage.swift in Sources */,
 				CAD83F4720D9899600566175 /* OrderModel.swift in Sources */,
 				CAF1EC6320F0478D00B80B59 /* GlobalVariables.swift in Sources */,
+				CABB8325210863AC00CECB1E /* TipsCollectionViewCell.swift in Sources */,
 				CAF1EC6620F0640600B80B59 /* CreditCardCell.swift in Sources */,
 				CA9A1F6D20EAA5D3003FEC13 /* SpecialOptionsHeader.swift in Sources */,
 				CAADF67D20F9D9A100B6CC77 /* SignUpView.swift in Sources */,
 				CAE7241B1FC52E7C00AA01C0 /* ProfilePage.swift in Sources */,
+				CABB83272108686800CECB1E /* UserOptionHeader.swift in Sources */,
 				CAE9A9802107141400B338F3 /* UserOptionsTable.swift in Sources */,
 				CA1E3D8B20E60D74008529C6 /* PriceCollectionViewCell.swift in Sources */,
 				CAF1EC6D20F17A7B00B80B59 /* Customer.swift in Sources */,
@@ -1255,6 +1297,7 @@
 				CA5A7A0C205BD386003B024F /* TermsView.swift in Sources */,
 				CA36AD1D2000235C00A981A8 /* ReportProblemPage.swift in Sources */,
 				CAFB7633206B812C00EEFD10 /* PopUpMenuCell.swift in Sources */,
+				CABB832A21086CB100CECB1E /* TipsShowTotalCell.swift in Sources */,
 				CAD83F4220D8EE4D00566175 /* SectionTitlesCell.swift in Sources */,
 				CA1E3D8E20E629DA008529C6 /* RecommendedBottomView.swift in Sources */,
 				CAE509E81FDB5B70008EF4CC /* TrackingPage.swift in Sources */,
@@ -1263,6 +1306,7 @@
 				CA93D6DF20E9587800BB83C8 /* SpecialOptionsCell.swift in Sources */,
 				CAB7C4FD20868A1500FF0CD9 /* StartingNavigationPage.swift in Sources */,
 				CAFB7642206DC94800EEFD10 /* ProfileSubscriptionPage.swift in Sources */,
+				CABB83232108636A00CECB1E /* TipsCollectionView.swift in Sources */,
 				CA435BF2207EDF1500A8A2D2 /* ProfileLoginSignUpCell.swift in Sources */,
 				CAF1EC6120F0457200B80B59 /* OneAddressCell.swift in Sources */,
 			);
