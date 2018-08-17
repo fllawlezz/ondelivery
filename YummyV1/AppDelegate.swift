@@ -54,8 +54,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
             }
-            let placeOrder = PlaceOrderPage();
-            let navigationController = UINavigationController(rootViewController: placeOrder);
+//            let placeOrder = PlaceOrderPage();
+            let orderReview = OrderReviewPage();
+            let navigationController = UINavigationController(rootViewController: orderReview);
             navigationController.navigationBar.isTranslucent = false;
             navigationController.navigationBar.backgroundColor = UIColor.black;
             navigationController.navigationBar.barTintColor = UIColor.black;

@@ -26,10 +26,17 @@ class UserOptionCell: UICollectionViewCell{
         return optionSelection;
     }()
     
-    var indicatorLabel: NormalUILabel = {
-        let indicatorLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 14), textAlign: .left);
-        indicatorLabel.text = ">";
-        return indicatorLabel;
+//    var indicatorLabel: NormalUILabel = {
+//        let indicatorLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 14), textAlign: .left);
+//        indicatorLabel.text = ">";
+//        return indicatorLabel;
+//    }()
+    
+    var rightArrowImage: UIImageView = {
+        let rightArrowIamge = UIImageView();
+        rightArrowIamge.translatesAutoresizingMaskIntoConstraints = false;
+        rightArrowIamge.image = #imageLiteral(resourceName: "arrowToRight");
+        return rightArrowIamge;
     }()
     
     var bottomBorder: UIView = {
@@ -71,12 +78,21 @@ class UserOptionCell: UICollectionViewCell{
         optionSelection.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
 //        optionSelection.backgroundColor = UIColor.red;
         
-        self.addSubview(indicatorLabel);
-        indicatorLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
-        indicatorLabel.leftAnchor.constraint(equalTo: self.optionSelection.rightAnchor, constant: -5).isActive = true;
-        indicatorLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
-        indicatorLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
+//        self.addSubview(indicatorLabel);
+//        indicatorLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
+//        indicatorLabel.leftAnchor.constraint(equalTo: self.optionSelection.rightAnchor, constant: -5).isActive = true;
+//        indicatorLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
+//        indicatorLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
 //        indicatorLabel.backgroundColor = UIColor.blue;
+        
+        self.addSubview(rightArrowImage);
+        rightArrowImage.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
+        rightArrowImage.leftAnchor.constraint(equalTo: self.optionSelection.rightAnchor, constant: -5).isActive = true;
+//        rightArrowImage.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
+//        rightArrowImage.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
+        rightArrowImage.heightAnchor.constraint(equalToConstant: 20).isActive = true;
+        rightArrowImage.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
+
         
         self.addSubview(bottomBorder);
         bottomBorder.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
