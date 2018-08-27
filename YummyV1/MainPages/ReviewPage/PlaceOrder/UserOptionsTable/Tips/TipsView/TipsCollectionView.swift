@@ -8,7 +8,8 @@
 
 import UIKit
 
-class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, TipsCollectionViewCellDelegate{
+    
     var placeOrderPage: PlaceOrderPage?
     
     let percentageArray = ["10","15","20","Other"];
@@ -39,7 +40,9 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
         if(indexPath.item != 4){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! TipsCollectionViewCell;
             cell.setButtonTitle(percentage: percentageArray[indexPath.item]);
-            cell.tipsCollectionView = self;
+            cell.cellIndex = indexPath.item;
+            cell.delegate = self;
+//            cell.tipsCollectionView = self;
             return cell;
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTwo, for: indexPath) as! TipsShowTotalCell;
@@ -71,4 +74,20 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
         }
     }
     
+}
+
+extension TipsCollectionView{
+    func handleSelectedTip(cellIndex: Int) {
+        var count = 0;
+        while(count < percentageArray.count){
+            let indexPath = IndexPath(item: count, section: 0);
+            let cell = self.cellForItem(at: indexPath) as! TipsCollectionViewCell;
+            cell.unselectButton();
+            count+=1;
+        }
+        
+        let indexPath = IndexPath(item: cellIndex, section: 0);
+        let cell = self.cellForItem(at: indexPath) as! TipsCollectionViewCell;
+        cell.selectButton();
+    }
 }

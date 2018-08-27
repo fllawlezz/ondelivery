@@ -8,10 +8,14 @@
 
 import UIKit
 
-class SpecialInstructionsCell: UICollectionViewCell{
+let specialInstructionsKeyboardUp = "specialInstructionsKeyboardUp";
+let specialInstructionsKeyboardDown = "specialInstructionsKeyboardDown";
+
+class SpecialInstructionsCell: UICollectionViewCell, UITextViewDelegate{
     
     var specialInstructionsLabel: NormalUILabel = {
         let specialInstructionsLabel = NormalUILabel(textColor: .black, font: .montserratSemiBold(fontSize: 16), textAlign: .center);
+        specialInstructionsLabel.text = "Special Instructions";
         return specialInstructionsLabel;
         
     }()
@@ -21,6 +25,8 @@ class SpecialInstructionsCell: UICollectionViewCell{
         instructionsField.translatesAutoresizingMaskIntoConstraints = false;
         instructionsField.font = .systemFont(ofSize: 14);
         instructionsField.textColor = UIColor.black;
+        instructionsField.layer.borderColor = UIColor.lightGray.cgColor;
+        instructionsField.layer.borderWidth = 1;
         return instructionsField;
     }()
     
@@ -47,9 +53,17 @@ class SpecialInstructionsCell: UICollectionViewCell{
     fileprivate func setupInstructionsField(){
         self.addSubview(instructionsField);
         instructionsField.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
-        instructionsField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 10).isActive = true;
+        instructionsField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
         instructionsField.topAnchor.constraint(equalTo: self.specialInstructionsLabel.bottomAnchor, constant: 10).isActive = true;
-        instructionsField.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+//        instructionsField.heightAnchor.constraint(equalToConstant: 25).isActive = true;
+        instructionsField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true;
+        instructionsField.delegate = self;
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+//        print("editing");
+        let name = Notification.Name(rawValue: specialInstructionsKeyboardUp);
+        NotificationCenter.default.post(name: name, object: nil);
     }
     
 }

@@ -22,4 +22,6 @@ class Restaurant {
     var restaurantAdvertisedFoodURL: String?
     var restaurantBuildingImage: UIImage?
     var restaurantAdvertisedFoodImage: UIImage?
+    var restaurantCity: String?
+    var updateDate: String?;
 }

@@ -9,9 +9,17 @@
 import UIKit
 import Foundation
 
+protocol UserOptionsTableDelegate{
+    func toAddressPage();
+    func toDeliveryTimePage();
+    func toPaymentPage();
+    func toCredentialsPage();
+}
 
-class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-    var placeOrderPage: PlaceOrderPage?;
+class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UserAddressPageDelegate, DeliveryTimePageDelegate, PaymentPageDelegate, CustomerCredentialsPageDelegate{
+    
+//    var placeOrderPage: PlaceOrderPage?;
+    var userOptionsDelegate: UserOptionsTableDelegate?;
     
     let reuseOne = "one";
     let reuseTwo = "two";
@@ -34,8 +42,11 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout);
         orderTotal = 22.00
+//        user = User(firstName: "Brandon", lastName: "In", userID: "2", email: "fllawlezz@gmail.com", telephone: "(510)-289-6877", subscriptionPlan: "NONE", freeOrders: 0);
 //        user = nil;
-//        customer = Customer();
+        if(user == nil){
+            customer = Customer();
+        }
 //        customer?.customerEmail = "hi";
 //        customer?.customerName = "what";
 //        customer?.customerPhone = "555555";
@@ -67,11 +78,17 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
             }else if(indexPath.item == 2 && self.paymentCard != nil){
                 cell.setOption(option: self.paymentCard!.cardNumber!);
             }else if(indexPath.item == 3){
-                cell.setOption(option: "\(customer!.customerName!)")
+                if(customer!.customerName != nil){
+                    cell.setOption(option: "\(customer!.customerName!)")
+                }
             }else if(indexPath.row == 4){
-                cell.setOption(option: "\(customer!.customerPhone!)")
+                if(customer!.customerPhone != nil){
+                    cell.setOption(option: "\(customer!.customerPhone!)")
+                }
             }else if(indexPath.row == 5){
-                cell.setOption(option: "\(customer!.customerEmail!)");
+                if(customer!.customerEmail != nil){
+                    cell.setOption(option: "\(customer!.customerEmail!)");
+                }
             }
             
             return cell;
@@ -146,18 +163,62 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     
     func selectAddress(){
 //        let selectAddress = SelectAddress();
+        userOptionsDelegate?.toAddressPage();
     }
     
     func selectDeliveryTime(){
-        
+        userOptionsDelegate?.toDeliveryTimePage();
     }
     
     func selectPayment(){
-        
+        userOptionsDelegate?.toPaymentPage();
     }
     
     func enterCredentials(){
-        
+        userOptionsDelegate?.toCredentialsPage();
+    }
+    
+}
+
+extension UserOptionsTable{
+    func didSelectAddress(selectedAddress: SelectedAddress) {
+//        if(user != nil){
+            let cell = self.cellForItem(at: IndexPath(item: 0, section: 0)) as! UserOptionCell;
+            cell.setOption(option: selectedAddress.addressTitle!);
+//        }
+    }
+    
+    func handleSubmitTime(deliveryTime: String) {
+//        if(user != nil){
+            let cell = self.cellForItem(at: IndexPath(item: 1, section: 0)) as! UserOptionCell;
+            cell.setOption(option: deliveryTime);
+//        }
+    }
+    
+    func selectedPayment(paymentTitle: String) {
+//        if(user != nil){
+            let cell = self.cellForItem(at: IndexPath(item: 2, section: 0)) as! UserOptionCell;
+            cell.setOption(option: paymentTitle);
+//        }
+    }
+
+    func handleSaveCustomerInfo(customerName: String, customerPhone: String, customerEmail: String) {
+        self.customer?.customerName = customerName;
+        self.customer?.customerPhone = customerPhone;
+        self.customer?.customerEmail = customerEmail;
+        var count = 3;
+        while(count<6){
+            let cellIndexPath = IndexPath(item: count, section: 0);
+            let cell = self.cellForItem(at: cellIndexPath) as! UserOptionCell;
+            switch(count){
+            case 3:cell.setOption(option: customerName);break;
+            case 4: cell.setOption(option: customerPhone);break;
+            case 5: cell.setOption(option: customerEmail);break;
+                
+            default: break;
+            }
+            count+=1;
+        }
     }
     
 }

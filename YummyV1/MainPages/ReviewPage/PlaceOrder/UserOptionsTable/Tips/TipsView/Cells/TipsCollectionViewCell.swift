@@ -7,9 +7,14 @@
 //
 
 import UIKit
+protocol TipsCollectionViewCellDelegate{
+    func handleSelectedTip(cellIndex: Int);
+}
 
 class TipsCollectionViewCell: UICollectionViewCell{
-    var tipsCollectionView: TipsCollectionView?;
+//    var tipsCollectionView: TipsCollectionView?;
+    
+    var delegate: TipsCollectionViewCellDelegate?
     
     var tipButton: NormalUIButton = {
         let tipButton = NormalUIButton(backgroundColor: UIColor.white, title: "10%", font: UIFont.montserratSemiBold(fontSize: 14), fontColor: UIColor.black);
@@ -19,6 +24,7 @@ class TipsCollectionViewCell: UICollectionViewCell{
     }()
     
     var percentage: String?;
+    var cellIndex: Int?
     
     override init(frame: CGRect) {
         super.init(frame: frame);
@@ -48,6 +54,14 @@ class TipsCollectionViewCell: UICollectionViewCell{
     }
     
     @objc func buttonPressed(){
+        if let cellIndex = self.cellIndex{
+            delegate?.handleSelectedTip(cellIndex: cellIndex);
+//            self.tipButton.backgroundColor = UIColor.appYellow;
+        }
+        
+    }
+    
+    func selectButton(){
         self.tipButton.backgroundColor = UIColor.appYellow;
     }
     

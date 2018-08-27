@@ -11,7 +11,7 @@ import UIKit
 class DeliveryFeeCell: UICollectionViewCell{
     
     var deliveryFeeLabel: NormalUILabel = {
-        let deliveryFeeLabel = NormalUILabel(textColor: .black, font: .montserratSemiBold(fontSize: 14), textAlign: .left);
+        let deliveryFeeLabel = NormalUILabel(textColor: .black, font: .montserratSemiBold(fontSize: 14), textAlign: .right);
         return deliveryFeeLabel;
     }()
     
@@ -28,13 +28,14 @@ class DeliveryFeeCell: UICollectionViewCell{
     fileprivate func setupDeliveryFeeLabel(){
         self.addSubview(deliveryFeeLabel);
         deliveryFeeLabel.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
-        deliveryFeeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        deliveryFeeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
         deliveryFeeLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
         deliveryFeeLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
     }
     
-    func setDeliveryFee(deliveryFee: String){
-        self.deliveryFeeLabel.text = "Delivery Fee: $\(deliveryFee)";
+    func setDeliveryFee(deliveryFee: Double){
+        let doubleFormat = String(format: "%.2f", deliveryFee);
+        self.deliveryFeeLabel.text = "Delivery Fee: $\(doubleFormat)";
     }
     
 }

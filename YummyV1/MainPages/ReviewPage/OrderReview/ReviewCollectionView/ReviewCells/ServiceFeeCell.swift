@@ -13,7 +13,8 @@ class ServiceFeeCell: UICollectionViewCell{
     var serviceFeeLabel: UITextViewNoResponder = {
         let serviceFeeLabel = UITextViewNoResponder();
         serviceFeeLabel.translatesAutoresizingMaskIntoConstraints = false;
-        serviceFeeLabel.font = .montserratRegular(fontSize: 14);
+        serviceFeeLabel.font = .montserratSemiBold(fontSize: 14);
+        serviceFeeLabel.textAlignment = .right;
         return serviceFeeLabel;
     }()
     
@@ -30,13 +31,14 @@ class ServiceFeeCell: UICollectionViewCell{
     fileprivate func setupServiceFeeLabel(){
         self.addSubview(serviceFeeLabel);
         serviceFeeLabel.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
-        serviceFeeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        serviceFeeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
         serviceFeeLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
         serviceFeeLabel.heightAnchor.constraint(equalToConstant: 25).isActive = true;
     }
     
-    func setServiceFeePrice(serviceFee: String){
-        self.serviceFeeLabel.text = "ServiceFee: $\(serviceFee)";
+    func setServiceFeePrice(taxAndFees: Double){
+        let taxAndFeesFormat = String(format: "%.2f", taxAndFees);
+        self.serviceFeeLabel.text = "Tax and Fees: $\(taxAndFeesFormat)";
     }
     
 }

@@ -22,15 +22,9 @@ class UserOptionCell: UICollectionViewCell{
     }()
     
     var optionSelection: NormalUILabel = {
-        let optionSelection = NormalUILabel(textColor: UIColor.gray, font: UIFont.montserratRegular(fontSize: 12), textAlign: .left);
+        let optionSelection = NormalUILabel(textColor: UIColor.gray, font: UIFont.montserratRegular(fontSize: 12), textAlign: .center);
         return optionSelection;
     }()
-    
-//    var indicatorLabel: NormalUILabel = {
-//        let indicatorLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 14), textAlign: .left);
-//        indicatorLabel.text = ">";
-//        return indicatorLabel;
-//    }()
     
     var rightArrowImage: UIImageView = {
         let rightArrowIamge = UIImageView();
@@ -76,20 +70,10 @@ class UserOptionCell: UICollectionViewCell{
         optionSelection.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -20).isActive = true;
         optionSelection.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
         optionSelection.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
-//        optionSelection.backgroundColor = UIColor.red;
-        
-//        self.addSubview(indicatorLabel);
-//        indicatorLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
-//        indicatorLabel.leftAnchor.constraint(equalTo: self.optionSelection.rightAnchor, constant: -5).isActive = true;
-//        indicatorLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
-//        indicatorLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
-//        indicatorLabel.backgroundColor = UIColor.blue;
         
         self.addSubview(rightArrowImage);
         rightArrowImage.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
         rightArrowImage.leftAnchor.constraint(equalTo: self.optionSelection.rightAnchor, constant: -5).isActive = true;
-//        rightArrowImage.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
-//        rightArrowImage.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
         rightArrowImage.heightAnchor.constraint(equalToConstant: 20).isActive = true;
         rightArrowImage.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
 

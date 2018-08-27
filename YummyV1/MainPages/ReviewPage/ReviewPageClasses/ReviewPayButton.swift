@@ -18,7 +18,6 @@ class ReviewPayButton: UIButton{
         }
     }
     
-
     var restaurant: Restaurant?
     
     var customer: Customer?

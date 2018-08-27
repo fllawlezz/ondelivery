@@ -115,15 +115,15 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad();
         self.automaticallyAdjustsScrollViewInsets = false;
-
+        
+        print(restaurants?.count);
+        
         self.setUpScrollView();
         self.continueSetup();
     }
     
     private func loadImage(urlString: String)-> UIImage{
-//        print("urlString:\(urlString)");
         let url = URL(string: urlString);
-//        print(url);
         let data = try? Data(contentsOf: url!);
         let image = UIImage(data: data!);
         return image!;
@@ -328,7 +328,7 @@ class HomePage: UIViewController,UICollectionViewDelegate,UICollectionViewDataSo
             count+=1;
         }
         
-        self.view.addSubview(self.scrollView);
+        self.view.addSubview(self.scrollView);
         let gesture = UITapGestureRecognizer();
         gesture.delegate = self;
         gesture.addTarget(self, action: #selector(self.tappedScrollView));

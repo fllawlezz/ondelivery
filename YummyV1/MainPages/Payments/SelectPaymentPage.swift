@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import Stripe
 
-
 class SelectPaymentPage: UIViewController,UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
     var reviewPage: ReviewPage?
     

@@ -32,14 +32,22 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
         
         setupCheckoutButton();
         setupCollectionView();
+        if(UIScreenHeight == 568 || UIScreenHeight == 667){
+            createObservers();
+        }
     }
     
     fileprivate func setupCheckoutButton(){
         self.view.addSubview(checkoutButton);
         checkoutButton.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 20).isActive = true;
         checkoutButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -20).isActive = true;
-        checkoutButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -10).isActive = true;
         checkoutButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        if #available(iOS 11.0, *) {
+            checkoutButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        } else {
+            // Fallback on earlier versions
+            checkoutButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -10).isActive = true;
+        };
         
     }
     
@@ -51,7 +59,9 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
         reviewCollectionView.bottomAnchor.constraint(equalTo: self.checkoutButton.topAnchor, constant: -5).isActive = true;
     }
     
-    
+    deinit {
+        NotificationCenter.default.removeObserver(self);
+    }
     
 }
 
@@ -60,5 +70,25 @@ extension OrderReviewPage{
         let placeOrderPage = PlaceOrderPage();
         self.navigationController?.pushViewController(placeOrderPage, animated: true);
 
+    }
+    
+    func createObservers(){
+        let name = Notification.Name(rawValue: specialInstructionsKeyboardUp);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardUp), name: name, object: nil);
+        
+        let keyboardDownName = Notification.Name(rawValue: specialInstructionsKeyboardDown);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDown), name: keyboardDownName, object: nil);
+    }
+    
+    @objc func keyboardUp(){
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y -= 150;
+        }
+    }
+    
+    @objc func keyboardDown(){
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y += 150;
+        }
     }
 }

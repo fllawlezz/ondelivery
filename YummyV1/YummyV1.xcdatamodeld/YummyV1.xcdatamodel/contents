@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17E199" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Address" representedClassName="Address" syncable="YES" codeGenerationType="class">
         <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="addressID" optional="YES" attributeType="String" syncable="YES"/>
@@ -28,9 +28,25 @@
         <attribute name="restaurantID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="restaurantName" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="RestaurantData" representedClassName="RestaurantData" syncable="YES" codeGenerationType="class">
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="lastUpdateDate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantAddress" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantAdvertised" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantBuildingImage" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="restaurantBuildingPic" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="restaurantCloseTime" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantOpenTime" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantPicUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="restaurantTelephone" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
         <element name="Address" positionX="-18" positionY="54" width="128" height="120"/>
         <element name="Card" positionX="-18" positionY="144" width="128" height="30"/>
         <element name="Order" positionX="-18" positionY="81" width="128" height="195"/>
+        <element name="RestaurantData" positionX="-18" positionY="144" width="128" height="240"/>
     </elements>
 </model>

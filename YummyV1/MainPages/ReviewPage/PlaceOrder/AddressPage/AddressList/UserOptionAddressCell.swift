@@ -20,12 +20,20 @@ class UserOptionAddressCell: UICollectionViewCell{
         return addressDetails;
     }()
     
+    lazy var border: UIView = {
+        let border = UIView();
+        border.translatesAutoresizingMaskIntoConstraints = false;
+        border.backgroundColor = UIColor.gray;
+        return border;
+    }()
+    
     var addressTitleString: String?
     var addressDetailsString: String?
     
     override init(frame: CGRect) {
         super.init(frame: frame);
         setup();
+        setupBorder();
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,6 +53,14 @@ class UserOptionAddressCell: UICollectionViewCell{
         addressDetails.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5).isActive = true;
         addressDetails.topAnchor.constraint(equalTo: self.addressTitle.bottomAnchor, constant: 5).isActive = true;
         
+    }
+    
+    fileprivate func setupBorder(){
+        self.addSubview(border);
+        border.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
+        border.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        border.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
+        border.heightAnchor.constraint(equalToConstant: 0.3).isActive = true;
     }
     
     func setAddressTitle(addressTitle: String){

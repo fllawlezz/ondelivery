@@ -40,6 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         defaults = UserDefaults.standard;
         
+        defaults.removeObject(forKey: "startup");
+        
         //MARK: Previous Login Check
         if(defaults.object(forKey: "startup") != nil){
             if(defaults.object(forKey: "firstName") != nil){
@@ -55,16 +57,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 user = User(firstName: firstName, lastName: lastName, userID: userID, email: email, telephone: telephone, subscriptionPlan: subscriptionPlan, freeOrders: freeOrders);
             }
 //            let placeOrder = PlaceOrderPage();
-            let orderReview = OrderReviewPage();
-            let navigationController = UINavigationController(rootViewController: orderReview);
-            navigationController.navigationBar.isTranslucent = false;
-            navigationController.navigationBar.backgroundColor = UIColor.black;
-            navigationController.navigationBar.barTintColor = UIColor.black;
-            window?.rootViewController = navigationController;
+//            let orderReview = OrderReviewPage();
+//            let navigationController = UINavigationController(rootViewController: orderReview);
+//            navigationController.navigationBar.isTranslucent = false;
+//            navigationController.navigationBar.backgroundColor = UIColor.black;
+//            navigationController.navigationBar.barTintColor = UIColor.black;
+//            window?.rootViewController = navigationController;
             
-//            window?.rootViewController = SplashPage();
+            window?.rootViewController = SplashPage();
         }else{
-            window?.rootViewController = StartingNavigationPage();
+//            window?.rootViewController = StartingNavigationPage();
+//            let orderReview = OrderReviewPage();
+//            let navigationController = UINavigationController(rootViewController: orderReview);
+//            navigationController.navigationBar.isTranslucent = false;
+//            navigationController.navigationBar.backgroundColor = UIColor.black;
+//            navigationController.navigationBar.barTintColor = UIColor.black;
+//            navigationController.navigationBar.tintColor = UIColor.white;
+//            window?.rootViewController = navigationController;
+            
+            window?.rootViewController = SplashPage();
         }
         
         return true

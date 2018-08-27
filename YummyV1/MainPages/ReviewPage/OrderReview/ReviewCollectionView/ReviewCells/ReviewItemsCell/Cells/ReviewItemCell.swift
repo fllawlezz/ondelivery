@@ -25,12 +25,20 @@ class ReviewItemCell: UICollectionViewCell{
         return itemTotalCostLabel;
     }()
     
+    var border: UIView = {
+        let border = UIView();
+        border.translatesAutoresizingMaskIntoConstraints = false;
+        border.backgroundColor = UIColor.gray;
+        return border;
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame);
         self.backgroundColor = UIColor.white;
         setupitemLabel();
         setupQuantityLabel();
         setupItemTotalCost();
+        setupBorder();
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -61,6 +69,18 @@ class ReviewItemCell: UICollectionViewCell{
         itemTotalCostLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
         itemTotalCostLabel.widthAnchor.constraint(equalToConstant: 90).isActive = true;
 //        itemTotalCostLabel.backgroundColor = .red;
+    }
+    
+    fileprivate func setupBorder(){
+        self.addSubview(border);
+        border.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
+        border.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
+        border.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
+        border.heightAnchor.constraint(equalToConstant: 0.3).isActive = true;
+    }
+    
+    func hideBorder(){
+        self.border.isHidden = true;
     }
     
     func setItemData(itemName: String, itemQuantity: Int, itemTotalCost: Double){

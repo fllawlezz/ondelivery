@@ -159,6 +159,7 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
             let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Address");
             let fetchOrders = NSFetchRequest<NSFetchRequestResult>(entityName: "Order");
             let fetchCards = NSFetchRequest<NSFetchRequestResult>(entityName: "Card");
+            
             let request = NSBatchDeleteRequest(fetchRequest: fetch);
             let requestOrder = NSBatchDeleteRequest(fetchRequest: fetchOrders);
             let requestCards = NSBatchDeleteRequest(fetchRequest: fetchCards);
@@ -172,13 +173,9 @@ class ProfilePage: UIViewController, UITableViewDelegate, UITableViewDataSource{
                 print("Error");
             }
             
-//            addresses.removeAll();
-//            cCards.removeAll();
             addresses.removeAll();
             orders.removeAll();
             cCards.removeAll();
-//            print(addresses.count);
-//            print(orders.count);
             
             //goBack to startup page
             let profileLoginPage = ProfileLogin();

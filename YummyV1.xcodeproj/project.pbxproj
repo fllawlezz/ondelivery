@@ -57,6 +57,15 @@
 		CA278BB0207756EF00C2399C /* SpinningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA278BAF207756EF00C2399C /* SpinningView.swift */; };
 		CA311377206EB735002DD79A /* SubscriptionPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA311376206EB735002DD79A /* SubscriptionPopUp.swift */; };
 		CA311379206EC908002DD79A /* SubscriptionUpgradePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA311378206EC908002DD79A /* SubscriptionUpgradePage.swift */; };
+		CA3401AC212B994500B27FDA /* ReviewItemsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401AB212B994500B27FDA /* ReviewItemsCell.swift */; };
+		CA3401AF212B998B00B27FDA /* ReviewItemsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401AE212B998B00B27FDA /* ReviewItemsCollectionView.swift */; };
+		CA3401B2212E116200B27FDA /* SelectedAddressDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401B1212E116200B27FDA /* SelectedAddressDataModel.swift */; };
+		CA3401B5212E289B00B27FDA /* PaymentPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401B4212E289B00B27FDA /* PaymentPage.swift */; };
+		CA3401B8212E28C200B27FDA /* PaymentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401B7212E28C200B27FDA /* PaymentList.swift */; };
+		CA3401BA212E294500B27FDA /* PaymentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401B9212E294500B27FDA /* PaymentCell.swift */; };
+		CA3401BD212E315A00B27FDA /* CustomerCredentialsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401BC212E315A00B27FDA /* CustomerCredentialsPage.swift */; };
+		CA3401BF212E31A100B27FDA /* CustomerCredentialsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401BE212E31A100B27FDA /* CustomerCredentialsList.swift */; };
+		CA3401C1212E31E500B27FDA /* CredentialsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3401C0212E31E500B27FDA /* CredentialsCell.swift */; };
 		CA36AD131FFF222500A981A8 /* RenamePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA36AD121FFF222500A981A8 /* RenamePage.swift */; };
 		CA36AD15200021AE00A981A8 /* TelephonePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA36AD14200021AE00A981A8 /* TelephonePage.swift */; };
 		CA36AD192000230300A981A8 /* TosPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA36AD182000230300A981A8 /* TosPage.swift */; };
@@ -229,6 +238,15 @@
 		CA278BAF207756EF00C2399C /* SpinningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinningView.swift; sourceTree = "<group>"; };
 		CA311376206EB735002DD79A /* SubscriptionPopUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPopUp.swift; sourceTree = "<group>"; };
 		CA311378206EC908002DD79A /* SubscriptionUpgradePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionUpgradePage.swift; sourceTree = "<group>"; };
+		CA3401AB212B994500B27FDA /* ReviewItemsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewItemsCell.swift; sourceTree = "<group>"; };
+		CA3401AE212B998B00B27FDA /* ReviewItemsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewItemsCollectionView.swift; sourceTree = "<group>"; };
+		CA3401B1212E116200B27FDA /* SelectedAddressDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedAddressDataModel.swift; sourceTree = "<group>"; };
+		CA3401B4212E289B00B27FDA /* PaymentPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentPage.swift; sourceTree = "<group>"; };
+		CA3401B7212E28C200B27FDA /* PaymentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentList.swift; sourceTree = "<group>"; };
+		CA3401B9212E294500B27FDA /* PaymentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCell.swift; sourceTree = "<group>"; };
+		CA3401BC212E315A00B27FDA /* CustomerCredentialsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerCredentialsPage.swift; sourceTree = "<group>"; };
+		CA3401BE212E31A100B27FDA /* CustomerCredentialsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerCredentialsList.swift; sourceTree = "<group>"; };
+		CA3401C0212E31E500B27FDA /* CredentialsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsCell.swift; sourceTree = "<group>"; };
 		CA36AD121FFF222500A981A8 /* RenamePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenamePage.swift; sourceTree = "<group>"; };
 		CA36AD14200021AE00A981A8 /* TelephonePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelephonePage.swift; sourceTree = "<group>"; };
 		CA36AD182000230300A981A8 /* TosPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TosPage.swift; sourceTree = "<group>"; };
@@ -532,6 +550,44 @@
 			path = SubscriptionPage;
 			sourceTree = "<group>";
 		};
+		CA3401AD212B997800B27FDA /* ReviewItemsCell */ = {
+			isa = PBXGroup;
+			children = (
+				CA3401B0212B99CE00B27FDA /* Cells */,
+				CA3401AB212B994500B27FDA /* ReviewItemsCell.swift */,
+				CA3401AE212B998B00B27FDA /* ReviewItemsCollectionView.swift */,
+			);
+			path = ReviewItemsCell;
+			sourceTree = "<group>";
+		};
+		CA3401B0212B99CE00B27FDA /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CA93BB9721092F4900E805C7 /* ReviewItemCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		CA3401B3212E288C00B27FDA /* PaymentPage */ = {
+			isa = PBXGroup;
+			children = (
+				CA3401B4212E289B00B27FDA /* PaymentPage.swift */,
+				CA3401B7212E28C200B27FDA /* PaymentList.swift */,
+				CA3401B9212E294500B27FDA /* PaymentCell.swift */,
+			);
+			path = PaymentPage;
+			sourceTree = "<group>";
+		};
+		CA3401BB212E314700B27FDA /* CustomerCredentials */ = {
+			isa = PBXGroup;
+			children = (
+				CA3401BC212E315A00B27FDA /* CustomerCredentialsPage.swift */,
+				CA3401BE212E31A100B27FDA /* CustomerCredentialsList.swift */,
+				CA3401C0212E31E500B27FDA /* CredentialsCell.swift */,
+			);
+			path = CustomerCredentials;
+			sourceTree = "<group>";
+		};
 		CA36AD0D1FFF1CD200A981A8 /* SecondaryPages */ = {
 			isa = PBXGroup;
 			children = (
@@ -576,6 +632,7 @@
 			children = (
 				CA52C6882107B7C700A72CC7 /* AddressList */,
 				CA52C6842107B6A500A72CC7 /* UserOptionAddressPage.swift */,
+				CA3401B1212E116200B27FDA /* SelectedAddressDataModel.swift */,
 			);
 			path = AddressPage;
 			sourceTree = "<group>";
@@ -718,7 +775,7 @@
 		CA93BB9621092F3500E805C7 /* ReviewCells */ = {
 			isa = PBXGroup;
 			children = (
-				CA93BB9721092F4900E805C7 /* ReviewItemCell.swift */,
+				CA3401AD212B997800B27FDA /* ReviewItemsCell */,
 				CAAAA442212649150044CE9D /* DeliveryFeeCell.swift */,
 				CAAAA44421264B3A0044CE9D /* ServiceFeeCell.swift */,
 				CAB9EF0F21264CFD0058EB27 /* SpecialInstructionsCell.swift */,
@@ -939,6 +996,8 @@
 		CAE9A97E210713CF00B338F3 /* PlaceOrder */ = {
 			isa = PBXGroup;
 			children = (
+				CA3401BB212E314700B27FDA /* CustomerCredentials */,
+				CA3401B3212E288C00B27FDA /* PaymentPage */,
 				CA52C6832107B68D00A72CC7 /* AddressPage */,
 				CAE9A9812107149200B338F3 /* UserOptionsTable */,
 				CAE9A97C2107139500B338F3 /* PlaceOrderPage.swift */,
@@ -1289,7 +1348,9 @@
 				CAFB762E206B808900EEFD10 /* MenuBottomBar.swift in Sources */,
 				CAFB762C2068ED4700EEFD10 /* SubscriptionChargePage2.swift in Sources */,
 				CA93BB8C210912AB00E805C7 /* TotalsCollectionViewCell.swift in Sources */,
+				CA3401BF212E31A100B27FDA /* CustomerCredentialsList.swift in Sources */,
 				CAFB7637206B817800EEFD10 /* MenuNavBarCell.swift in Sources */,
+				CA3401B2212E116200B27FDA /* SelectedAddressDataModel.swift in Sources */,
 				CAFB7635206B815A00EEFD10 /* MainItem.swift in Sources */,
 				CA93BB862109101E00E805C7 /* UserOptionTotalsCell.swift in Sources */,
 				CA36AD1B2000231D00A981A8 /* PrivacyPage.swift in Sources */,
@@ -1312,6 +1373,7 @@
 				CABB831D2108608600CECB1E /* TipsCell.swift in Sources */,
 				CA93D6E120E95AD500BB83C8 /* NormalUIButton.swift in Sources */,
 				CA36AD192000230300A981A8 /* TosPage.swift in Sources */,
+				CA3401C1212E31E500B27FDA /* CredentialsCell.swift in Sources */,
 				CAFB7639206B819E00EEFD10 /* MenuNavBar.swift in Sources */,
 				CA5A7A0E205BDA51003B024F /* PrivacyView.swift in Sources */,
 				CADE0F4020B74AF400621700 /* MenuDataModel.swift in Sources */,
@@ -1322,6 +1384,7 @@
 				CA1F2893202D49AF00A7BF37 /* SplashPage.swift in Sources */,
 				CA9ADA4720FCC44F000C6365 /* OrderHistoryItem.swift in Sources */,
 				CAFB7640206B85C900EEFD10 /* Food.swift in Sources */,
+				CA3401BD212E315A00B27FDA /* CustomerCredentialsPage.swift in Sources */,
 				CAFF98F7201B1A540088A3EC /* ChangePasswordPage2.swift in Sources */,
 				CAAAA443212649150044CE9D /* DeliveryFeeCell.swift in Sources */,
 				CA1E3D8220E5E64A008529C6 /* FiltersDataModel.swift in Sources */,
@@ -1361,6 +1424,7 @@
 				CAAAA44521264B3A0044CE9D /* ServiceFeeCell.swift in Sources */,
 				CA1E3D8820E60CA9008529C6 /* FiltersSectionTwoCell.swift in Sources */,
 				CA93BB922109242500E805C7 /* OrderReviewCheckoutButton.swift in Sources */,
+				CA3401B8212E28C200B27FDA /* PaymentList.swift in Sources */,
 				CA36AD131FFF222500A981A8 /* RenamePage.swift in Sources */,
 				CA93234520E29DD400F40C63 /* SectionItem.swift in Sources */,
 				CAF1EC5A20EEDF5100B80B59 /* OptionsCell.swift in Sources */,
@@ -1379,11 +1443,13 @@
 				CA1E3D8420E5E782008529C6 /* FiltersCell.swift in Sources */,
 				CAD83F4420D8EEBA00566175 /* FontExtensions.swift in Sources */,
 				CAADF68320FAB6E500B6CC77 /* OrderPageCell.swift in Sources */,
+				CA3401B5212E289B00B27FDA /* PaymentPage.swift in Sources */,
 				CA099C5E20119AF40012412F /* AddPaymentPage.swift in Sources */,
 				CA1E3D9520E62B6F008529C6 /* TextFieldPadded.swift in Sources */,
 				CAEC8D3D20E2A0C4002F7D7A /* ForgotPasswordPage2.swift in Sources */,
 				CA36AD1F200023A300A981A8 /* SpecialOffers.swift in Sources */,
 				CA435BF0207ECCA300A8A2D2 /* ProfileLogin.swift in Sources */,
+				CA3401BA212E294500B27FDA /* PaymentCell.swift in Sources */,
 				CAC18D3E2075DD1E008A2997 /* FiltersViewCell.swift in Sources */,
 				CA311379206EC908002DD79A /* SubscriptionUpgradePage.swift in Sources */,
 				CA52C6852107B6A500A72CC7 /* UserOptionAddressPage.swift in Sources */,
@@ -1400,11 +1466,13 @@
 				CA1E3D9C20E62C40008529C6 /* RatingsView.swift in Sources */,
 				CAF1EC5820EEDF2200B80B59 /* ReviewCell.swift in Sources */,
 				CA5A7A13205F41BB003B024F /* SubscriptionClasses.swift in Sources */,
+				CA3401AC212B994500B27FDA /* ReviewItemsCell.swift in Sources */,
 				CAFB763D206B820800EEFD10 /* InfoCell.swift in Sources */,
 				CA5A7A0C205BD386003B024F /* TermsView.swift in Sources */,
 				CA36AD1D2000235C00A981A8 /* ReportProblemPage.swift in Sources */,
 				CAFB7633206B812C00EEFD10 /* PopUpMenuCell.swift in Sources */,
 				CABB832A21086CB100CECB1E /* TipsShowTotalCell.swift in Sources */,
+				CA3401AF212B998B00B27FDA /* ReviewItemsCollectionView.swift in Sources */,
 				CAD83F4220D8EE4D00566175 /* SectionTitlesCell.swift in Sources */,
 				CA1E3D8E20E629DA008529C6 /* RecommendedBottomView.swift in Sources */,
 				CAE509E81FDB5B70008EF4CC /* TrackingPage.swift in Sources */,

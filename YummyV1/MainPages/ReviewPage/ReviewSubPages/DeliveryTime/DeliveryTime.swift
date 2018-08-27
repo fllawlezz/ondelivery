@@ -9,9 +9,14 @@
 import Foundation
 import UIKit
 
+protocol DeliveryTimePageDelegate{
+    func handleSubmitTime(deliveryTime: String);
+}
+
 class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     
     var reviewPage: ReviewPage?
+    var deliveryTimeDelegate: DeliveryTimePageDelegate?;
     
     var deliveryTime: String?
     var deliveryDescription: UILabel = {
@@ -68,19 +73,24 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
         submitButton.backgroundColor = UIColor.appYellow;
         submitButton.setTitleColor(UIColor.black, for: .normal);
         submitButton.setTitle("Submit", for: .normal);
-        submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 18);
+        submitButton.titleLabel?.font = UIFont.montserratSemiBold(fontSize: 15);
         return submitButton;
     }()
     
     override func viewDidLoad() {
-        self.navigationItem.title = "Delivery Time";
-        let leftBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
-        self.navigationController?.navigationBar.topItem?.backBarButtonItem = leftBarButton;
+        setupNavBar();
         
         self.view.backgroundColor = UIColor.white;
         
         setup();
         datePickerSetup();
+    }
+    
+    fileprivate func setupNavBar(){
+        self.navigationItem.title = "Delivery Time";
+        
+        let leftBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil);
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = leftBarButton;
     }
     
     private func setup(){
@@ -171,10 +181,12 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     fileprivate func setupSubmitButton(){
         self.view.addSubview(submitButton);
         //need x,y,width,height
-        submitButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        submitButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
-        submitButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
-        submitButton.heightAnchor.constraint(equalToConstant: 80).isActive = true;
+        submitButton.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 25).isActive = true;
+        submitButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -25).isActive = true;
+//        submitButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
+        submitButton.topAnchor.constraint(equalTo: self.timeField.bottomAnchor, constant: 20).isActive = true;
+        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true;
+        
         submitButton.addTarget(self, action: #selector(self.submit), for: .touchUpInside);
     }
     
@@ -226,13 +238,19 @@ class DeliveryTimePage: UIViewController, UITextFieldDelegate{
     @objc private func submit(){
         if(!asapBool){
             self.deliveryTime = self.timeField.text;
-            self.reviewPage?.deliveryTime = self.deliveryTime;
-            self.reviewPage?.tableView.handleReloadTable();
+//            self.reviewPage?.deliveryTime = self.deliveryTime;
+//            self.reviewPage?.tableView.handleReloadTable();
+            
+            deliveryTimeDelegate?.handleSubmitTime(deliveryTime: self.deliveryTime!);
+            
             self.navigationController?.popViewController(animated: true);
         }else{
             self.deliveryTime = "ASAP";
-            self.reviewPage?.deliveryTime = self.deliveryTime;
-            self.reviewPage?.tableView.handleReloadTable();
+//            self.reviewPage?.deliveryTime = self.deliveryTime;
+//            self.reviewPage?.tableView.handleReloadTable();
+            
+            deliveryTimeDelegate?.handleSubmitTime(deliveryTime: self.deliveryTime!);
+            
             self.navigationController?.popViewController(animated: true);
         }
     }
