@@ -30,6 +30,11 @@ class UserOptionAddressCell: UICollectionViewCell{
     var addressTitleString: String?
     var addressDetailsString: String?
     
+    var address: String?;
+    var city: String?;
+    var zipcode: String?;
+    var state: String?;
+    
     override init(frame: CGRect) {
         super.init(frame: frame);
         setup();
@@ -63,14 +68,16 @@ class UserOptionAddressCell: UICollectionViewCell{
         border.heightAnchor.constraint(equalToConstant: 0.3).isActive = true;
     }
     
-    func setAddressTitle(addressTitle: String){
-        self.addressTitle.text = addressTitle;
-        self.addressTitleString = addressTitle;
+    func setAddressTitle(address: String){
+        self.addressTitle.text = address;
+        self.address = address;
     }
     
-    func setAddressDetails(addressDetails: String){
-        self.addressDetails.text = addressDetails;
-        self.addressDetailsString = addressDetails;
+    func setAddressDetails(city: String, zipcode: String, state: String){
+        self.addressDetails.text = "\(city),\(state) \(zipcode)";
+        self.city = city;
+        self.zipcode = zipcode;
+        self.state = state;
     }
     
     

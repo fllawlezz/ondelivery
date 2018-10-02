@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         defaults = UserDefaults.standard;
         
-        defaults.removeObject(forKey: "startup");
+//        defaults.removeObject(forKey: "startup");
         
         //MARK: Previous Login Check
         if(defaults.object(forKey: "startup") != nil){
@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             window?.rootViewController = SplashPage();
         }else{
-//            window?.rootViewController = StartingNavigationPage();
+            window?.rootViewController = StartingNavigationPage();
 //            let orderReview = OrderReviewPage();
 //            let navigationController = UINavigationController(rootViewController: orderReview);
 //            navigationController.navigationBar.isTranslucent = false;
@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            navigationController.navigationBar.tintColor = UIColor.white;
 //            window?.rootViewController = navigationController;
             
-            window?.rootViewController = SplashPage();
+//            window?.rootViewController = SplashPage();
         }
         
         return true

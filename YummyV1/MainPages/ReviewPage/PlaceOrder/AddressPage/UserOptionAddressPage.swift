@@ -9,10 +9,10 @@
 import UIKit
 
 protocol UserAddressPageDelegate{
-    func didSelectAddress(selectedAddress: SelectedAddress);
+    func didSelectAddress(selectedAddress: UserAddress);
 }
 
-class UserOptionAddressPage: UIViewController,AddressListDelegate{
+class UserOptionAddressPage: UIViewController,AddressListDelegate, NewAddressPageDelegate{
     
     var delegate: UserAddressPageDelegate?;
     
@@ -34,6 +34,9 @@ class UserOptionAddressPage: UIViewController,AddressListDelegate{
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil);
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton;
+        
+        let addAddressButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.handleToAddAddressPage));
+        self.navigationItem.rightBarButtonItem = addAddressButton;
     }
     
     fileprivate func setupAddressList(){
@@ -49,12 +52,35 @@ class UserOptionAddressPage: UIViewController,AddressListDelegate{
 }
 
 extension UserOptionAddressPage{
-    func didSelectAddress(addressTitle: String, addressDetails: String) {
-        let selectedAddress = SelectedAddress();
-        selectedAddress.addressTitle = addressTitle;
-        selectedAddress.addressDetails = addressDetails;
+//    func didSelectAddress(addressTitle: String, addressDetails: String) {
+//        let selectedAddress = SelectedAddress();
+//        selectedAddress.addressTitle = addressTitle;
+//        selectedAddress.addressDetails = addressDetails;
+//
+//        self.delegate?.didSelectAddress(selectedAddress: selectedAddress);
+//        self.navigationController?.popViewController(animated: true);
+//    }
+    
+    func didSelectAddress(address: String, city: String, zipcode: String, state: String) {
+        let userAddress = UserAddress();
+        userAddress.address = address;
+        userAddress.city = city;
+        userAddress.zipcode = zipcode;
+        userAddress.state = state;
         
-        self.delegate?.didSelectAddress(selectedAddress: selectedAddress);
+        self.delegate?.didSelectAddress(selectedAddress: userAddress);
         self.navigationController?.popViewController(animated: true);
     }
+    
+    
+    @objc func handleToAddAddressPage(){
+        let addAddressPage = NewAddress();
+        addAddressPage.newAddressPageDelegate = self;
+        self.navigationController?.pushViewController(addAddressPage, animated: true);
+    }
+    
+    func reloadAddresses() {
+        self.addressList.reloadData();
+    }
+    
 }

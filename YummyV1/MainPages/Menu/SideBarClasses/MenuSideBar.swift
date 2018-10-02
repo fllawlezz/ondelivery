@@ -8,9 +8,15 @@
 
 import UIKit
 
+protocol MenuSideBarDelegate{
+    func selectSection(currentSection: Int);
+}
+
 class MenuSideBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     var menuPage: MenuPage?;
+    
+    var menuSideBarDelegate: MenuSideBarDelegate?;
     
     lazy var backgroundView: UIView = {
         let backgroundView = UIView();
@@ -82,10 +88,10 @@ class MenuSideBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource,
 //        sectionTitlesList.heightAnchor.constraint(equalToConstant: 200).isActive = true;
         sectionTitlesList.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
         
-        print("sectionItems:\(sectionItems.count)")
-        for title in sectionItems{
-            print("titles:\(title.sectionTitle!)");
-        }
+//        print("sectionItems:\(sectionItems.count)")
+//        for title in sectionItems{
+//            print("titles:\(title.sectionTitle!)");
+//        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -115,11 +121,13 @@ class MenuSideBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource,
         let section = sectionItems[indexPath.item];
         let sectionNumber = section.sectionNumber!;
         //mainPage reload table with sectionTitles
-        pageNum = 1;
-        self.menuPage?.navBar.moveLine(item: 0);
-        self.menuPage?.currentSection = sectionNumber-1;
-        self.menuPage?.collectionView.reloadData();
-        self.menuPage?.sideBarAnimate();
+        if let delegate = self.menuSideBarDelegate{
+            delegate.selectSection(currentSection: sectionNumber-1);
+        }
+//        self.menuPage?.menuNavBar.moveLine(item: 0);
+//        self.menuPage?.currentSection = sectionNumber-1;
+//        self.menuPage?.menuCollectionView.reloadData();
+//        self.menuPage?.sideBarAnimate();
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0;

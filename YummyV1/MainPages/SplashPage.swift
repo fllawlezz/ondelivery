@@ -39,6 +39,7 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
     var userCity: String?{
         didSet{
             //load core data
+            userCurrentCity = userCity!;
             self.loadCoreData();
         }
     }
@@ -157,7 +158,10 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
         }
         
 //        print(addresses.count);
-        print(coreDataRestaurants.count);
+//        print(coreDataRestaurants.count);
+//        for restaurant in coreDataRestaurants{
+//            print(restaurant.value(forKey: "restaurantID") as! String);
+//        }
 //        print(coreDataRestaurants[0].value(forKey: "lastUpdateDate"));
         
         //once it fetches, check to see if restaurants are up to date, etc.
@@ -167,15 +171,33 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
     }
     
     fileprivate func removeRestaurantFromList(deleteRestaurantID: String){
+        print(deleteRestaurantID);
+        
+        print("coreDataCount:\(coreDataRestaurants.count)");
+        
         var count = 0;
-        while(count<coreDataRestaurants.count){
-            let restaurantID = coreDataRestaurants[count].value(forKey: "restaurantID") as! String;
-            if(restaurantID == deleteRestaurantID){
-                coreDataRestaurants.remove(at: count);
+        while(count<restaurantIDs.count){
+            let restaurantID = restaurantIDs[count];
+            if(deleteRestaurantID == restaurantID){
+                self.coreDataRestaurants.remove(at: count);
                 return;
             }
+            
             count += 1;
         }
+        
+//        while(count<coreDataRestaurants.count){
+////            print(count);f
+//
+//            print(coreDataRestaurants[count].value(forKey: "restaurantID") as! String);
+//
+//            let restaurantID = coreDataRestaurants[count].value(forKey: "restaurantID") as! String;
+//            if(restaurantID == deleteRestaurantID){
+//                coreDataRestaurants.remove(at: count);
+//                return;
+//            }
+//            count += 1;
+//        }
     }
     
     fileprivate func sortRestaurantData(){
@@ -183,11 +205,6 @@ class SplashPage: UIViewController, CLLocationManagerDelegate{
             restaurantIDs.append(restaurantData.value(forKey: "restaurantID") as! String);
             lastUpdateDates.append(restaurantData.value(forKey: "lastUpdateDate") as! String);
         }
-        
-//        print("restaurantData");
-//        print(restaurantIDs);
-//        print("lastUpdateDates");
-//        print(lastUpdateDates);
         
     }
     
@@ -302,6 +319,7 @@ extension SplashPage{
         locManager.desiredAccuracy = kCLLocationAccuracyBest;
         locManager.delegate = self;
         locManager.requestLocation();
+//        print("getting Location");
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -324,28 +342,18 @@ extension SplashPage{
     //MARK: Get data HomeScreen
     //get the data for homescreen and the recommended.
     private func updateRestaurants(){
-        print(self.userCity!);
-        
-//        restaurantIDs.append("1");
-//        restaurantIDs.append("2");
-//        lastUpdateDates.append("1");
-//        lastUpdateDates.append("1");
+//        print(self.userCity!);
         
         if let userCity = self.userCity{
-//            print("in user city");
-            print("restaurantIds:\(self.restaurantIDs.count)")
+//            print("restaurantIds:\(self.restaurantIDs.count)")
             
             let city = "Santa Cruz";
-            
-//            let userInfoArray = [userLatitude!,userLongtiude!,userCity];
+            userCurrentCity = "Santa Cruz"
             let userInfoArray = [userLatitude!,userLongtiude!,city];
             
             let jsonArray:[String:Any] = ["restaurantIDs":restaurantIDs,"restaurantUpdateDates":lastUpdateDates,"userInfo":userInfoArray];
             
             let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted);
-            
-//            let jsonDataPrint = try? JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments);
-//            print(jsonDataPrint);
             
             let url: URL = URL(string: "https://ondeliveryinc.com/UpdateRestaurantData.php")!;
             var request:URLRequest = URLRequest(url: url);
@@ -370,7 +378,7 @@ extension SplashPage{
                         do{
                             let restaurantJsonArray = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! NSDictionary
                             
-                            print(restaurantJsonArray);
+//                            print(restaurantJsonArray);
                             
                             let updateRestaurantIDs = restaurantJsonArray["updateRestaurantIDs"] as! NSArray;
                             let restaurantNames = restaurantJsonArray["restaurantNames"] as! NSArray;
@@ -408,16 +416,16 @@ extension SplashPage{
                                 if(exists){
                                     //update the data
                                     self.deleteOldRestaurantData(restaurantID: newRestaurantID);
+                                    self.removeRestaurantFromList(deleteRestaurantID: newRestaurantID);
                                     let newRestaurant = self.appendRestaurant(name: name, address: address, id: id, advertised: advertised, telephone: telephone, openHour: openHour, closeHour: closeHour, picURL: picURL, city: city, distance: distance, buildingImage: buildingPic, updateDate: updateDate);
                                     self.saveCoreData(newRestaurant: newRestaurant);
-                                    
                                 }else{
                                     //doesn't exist
                                     let newRestaurant = self.appendRestaurant(name: name, address: address, id: id, advertised: advertised, telephone: telephone, openHour: openHour, closeHour: closeHour, picURL: picURL, city: city, distance: distance, buildingImage: buildingPic, updateDate: updateDate);
                                     self.saveCoreData(newRestaurant: newRestaurant);
                                 }
                                 
-                                self.removeRestaurantFromList(deleteRestaurantID: newRestaurantID);
+                                
                                 
                                 count+=1;
                             }
@@ -465,7 +473,7 @@ extension SplashPage{
             _ = appendRestaurant(name: name, address: address, id: id, advertised: advertised, telephone: telephone, openHour: openHour, closeHour: closeHour, picURL: picURL, city: city, distance: distance, buildingImage: buildingPic!, updateDate: updateDate);
         }
         
-        print(self.homePageRestaurants.count);
+//        print(self.homePageRestaurants.count);
         
     }
     

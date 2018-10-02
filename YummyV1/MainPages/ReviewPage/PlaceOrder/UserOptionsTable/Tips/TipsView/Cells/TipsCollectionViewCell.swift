@@ -8,7 +8,7 @@
 
 import UIKit
 protocol TipsCollectionViewCellDelegate{
-    func handleSelectedTip(cellIndex: Int);
+    func handleSelectedTip(cellIndex: Int, percentage: Double);
 }
 
 class TipsCollectionViewCell: UICollectionViewCell{
@@ -23,7 +23,7 @@ class TipsCollectionViewCell: UICollectionViewCell{
         return tipButton;
     }()
     
-    var percentage: String?;
+    var percentage: Double?;
     var cellIndex: Int?
     
     override init(frame: CGRect) {
@@ -44,18 +44,29 @@ class TipsCollectionViewCell: UICollectionViewCell{
         tipButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside);
     }
     
-    func setButtonTitle(percentage: String){
+    func setButtonTitle(percentage: Double){
         self.percentage = percentage;
-        if(percentage != "Other"){
-            self.tipButton.setTitle("\(percentage)%", for: .normal);
+        let percentageInt = Int(percentage);
+        if(percentage != 0){
+            self.tipButton.setTitle("\(percentageInt)%", for: .normal);
         }else{
-            self.tipButton.setTitle(percentage, for: .normal);
+            self.tipButton.setTitle("Other", for: .normal);
         }
     }
     
     @objc func buttonPressed(){
+        
         if let cellIndex = self.cellIndex{
-            delegate?.handleSelectedTip(cellIndex: cellIndex);
+            var percent: Double = 0.0;
+            if(percentage! == 10.0){
+                percent = 0.1;
+            }else if (percentage! == 15.0){
+                percent = 0.15;
+            }else if (percentage! == 20.0){
+                percent = 0.2;
+            }
+            
+            delegate?.handleSelectedTip(cellIndex: cellIndex, percentage: percent);
 //            self.tipButton.backgroundColor = UIColor.appYellow;
         }
         

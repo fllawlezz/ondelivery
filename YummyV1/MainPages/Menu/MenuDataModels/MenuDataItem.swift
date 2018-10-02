@@ -8,7 +8,6 @@
 import UIKit
 
 class MenuDataItem{
-    
     var foodName: String?
     var foodSection: Int?
     var foodPrice: Double?

@@ -8,8 +8,26 @@
 
 import UIKit
 
-
 class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
+    
+    var totalSum: Double?{
+        didSet{
+            if(self.totalSum != nil){
+                calculateTaxAndFees();
+            }
+        }
+    }
+    var deliveryCharge: Double?;
+    var taxAndFees: Double?{
+        didSet{
+            if let taxAndFees = self.taxAndFees{
+                self.reviewCollectionView.taxAndFees = taxAndFees;
+            }
+        }
+    }
+    
+    var menuItemArray: [MainItem]?;
+    var restaurant: Restaurant?;
     
     //collectionView
     var reviewCollectionView: ReviewCollectionView = {
@@ -17,7 +35,6 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
         let reviewCollectionView = ReviewCollectionView(frame: .zero, collectionViewLayout: layout);
         return reviewCollectionView;
     }()
-    //special Instructions (textField)
     
     //checkout
     lazy var checkoutButton: OrderReviewCheckoutButton = {
@@ -29,12 +46,16 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
     override func viewDidLoad() {
         super.viewDidLoad();
         self.view.backgroundColor = UIColor.white;
-        
+        setupNavBar();
         setupCheckoutButton();
         setupCollectionView();
         if(UIScreenHeight == 568 || UIScreenHeight == 667){
             createObservers();
         }
+    }
+    
+    fileprivate func setupNavBar(){
+        self.navigationItem.title = "Review Order";
     }
     
     fileprivate func setupCheckoutButton(){
@@ -57,6 +78,10 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
         reviewCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
         reviewCollectionView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         reviewCollectionView.bottomAnchor.constraint(equalTo: self.checkoutButton.topAnchor, constant: -5).isActive = true;
+        
+//        print(self.menuItemArray!.count)
+        reviewCollectionView.menuItemArray = self.menuItemArray;
+        reviewCollectionView.deliveryCharge = self.deliveryCharge;
     }
     
     deinit {
@@ -68,6 +93,12 @@ class OrderReviewPage: UIViewController,OrderReviewCheckoutButtonDelegate{
 extension OrderReviewPage{
     func handleToCheckout(){
         let placeOrderPage = PlaceOrderPage();
+        placeOrderPage.restaurant = self.restaurant;
+        placeOrderPage.menuItemArray = self.menuItemArray;
+        placeOrderPage.deliveryCharge = self.deliveryCharge;
+        placeOrderPage.taxAndFees = self.taxAndFees;
+//        placeOrderPage.totalSum = self.totalSum! + self.deliveryCharge! + self.taxAndFees!;
+        placeOrderPage.totalSum = self.totalSum;
         self.navigationController?.pushViewController(placeOrderPage, animated: true);
 
     }
@@ -82,13 +113,20 @@ extension OrderReviewPage{
     
     @objc func keyboardUp(){
         UIView.animate(withDuration: 0.3) {
-            self.view.frame.origin.y -= 150;
+            self.view.frame.origin.y -= 200;
         }
     }
     
     @objc func keyboardDown(){
         UIView.animate(withDuration: 0.3) {
-            self.view.frame.origin.y += 150;
+            self.view.frame.origin.y += 200;
         }
+    }
+    
+    fileprivate func calculateTaxAndFees(){
+        let taxFee = self.totalSum! * 0.0975;
+        let companyFee = 3.99;
+        let taxAndFees = taxFee+companyFee;
+        self.taxAndFees = taxAndFees;
     }
 }

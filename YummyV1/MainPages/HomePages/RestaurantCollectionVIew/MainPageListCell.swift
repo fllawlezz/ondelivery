@@ -17,7 +17,6 @@ class MainPageListCell: UICollectionViewCell{
     var distance: UILabel!;
     var seeMenu: UIButton!;
     //    var ratingsView: RatingsViewImage!;
-    var btnTapAction: (()->())?;//callback method
     
     
     override init(frame: CGRect) {
@@ -89,7 +88,8 @@ class MainPageListCell: UICollectionViewCell{
         seeMenu.topAnchor.constraint(equalTo: distance.bottomAnchor).isActive = true;
         seeMenu.widthAnchor.constraint(equalToConstant: 60).isActive = true;
         seeMenu.heightAnchor.constraint(equalToConstant: 20).isActive = true;
-        seeMenu.addTarget(self, action: #selector(self.callBack), for: .touchUpInside);
+        
+        seeMenu.isUserInteractionEnabled = false;
         
         
         //MARK: Delivery Price
@@ -121,10 +121,6 @@ class MainPageListCell: UICollectionViewCell{
         
     }
     
-    @objc public func callBack(){
-        btnTapAction?();
-    }
-    
     public func setImage(imageName: String){
         self.cellImage.image = UIImage(named: imageName);
     }
@@ -143,5 +139,7 @@ class MainPageListCell: UICollectionViewCell{
         let distString = String(format: "%.1f",dist);
         self.distance.text = distString+"mi.";
     }
+    
+    
     
 }

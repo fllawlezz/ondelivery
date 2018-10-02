@@ -9,10 +9,10 @@
 import UIKit
 
 protocol PaymentPageDelegate{
-    func selectedPayment(paymentTitle: String);
+    func selectedPayment(cardNum: String, last4: String, cvc: String, expirationDate: String, nickName: String, cardID: String);
 }
 
-class PaymentPage: UIViewController, PaymentListDelegate{
+class PaymentPage: UIViewController, PaymentListDelegate, AddPaymentPageDelegate{
 
     var paymentPageDelegate:PaymentPageDelegate?
     
@@ -25,7 +25,19 @@ class PaymentPage: UIViewController, PaymentListDelegate{
     override func viewDidLoad() {
         super.viewDidLoad();
         self.view.backgroundColor = UIColor.white;
+        
+        setupNavBar();
         setupPaymentList();
+    }
+    
+    fileprivate func setupNavBar(){
+        self.navigationItem.title = "Select Payment";
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: nil);
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton;
+        
+        let rightBarButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.handleToAddPayment));
+        self.navigationItem.rightBarButtonItem = rightBarButton;
     }
     
     fileprivate func setupPaymentList(){
@@ -40,10 +52,23 @@ class PaymentPage: UIViewController, PaymentListDelegate{
 }
 
 extension PaymentPage{
-    func selectedPaymentOption(optionTitle: String) {
-        self.paymentPageDelegate?.selectedPayment(paymentTitle: optionTitle);
+    
+    func selectedPaymentOption(cardNum: String, last4: String, cvc: String, expirationDate: String, nickName: String, cardID: String) {
+        self.paymentPageDelegate?.selectedPayment(cardNum: cardNum, last4: last4, cvc: cvc, expirationDate: expirationDate, nickName: nickName, cardID: cardID);
         self.navigationController?.popViewController(animated: true);
     }
     
     
+    
+    @objc func handleToAddPayment(){
+        let addPaymentPage = AddPaymentPage();
+        addPaymentPage.addPaymentPageDelegate = self;
+        self.navigationController?.pushViewController(addPaymentPage, animated: true);
+    }
+    
+    func paymentAdded() {
+        self.paymentList.reloadData();
+    }
+    
+
 }

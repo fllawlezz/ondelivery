@@ -8,11 +8,18 @@
 
 import UIKit
 
+protocol MenuBottomBarDelegate{
+    func handleShowPopUpMenu();
+    func handleCheckout(deliveryPrice: Double, totalSum: Double);
+}
+
+let updateBottomBarNotification = "updateBottomBarSpecialOptions";
+
 //MARK: MenuBottomBar
 class MenuBottomBar: UIView{
     
     var menuController: MenuPage?
-    
+    var menuBottomBarDelegate: MenuBottomBarDelegate?
     //Data Elements
     
     var itemNumber = 0;
@@ -49,7 +56,7 @@ class MenuBottomBar: UIView{
         return totalSum;
     }()
     
-    lazy var item: UILabel = {
+    lazy var itemLabel: UILabel = {
         let item = UILabel();
         item.translatesAutoresizingMaskIntoConstraints = false;
         item.textColor = UIColor.red;
@@ -70,15 +77,36 @@ class MenuBottomBar: UIView{
         return deliveryPriceLabel;
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame);
-        setUp();
+    var totalPrice = 0.00;
+    
+    deinit{
+        NotificationCenter.default.removeObserver(self);
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame);
+        self.translatesAutoresizingMaskIntoConstraints = false;
+        self.addObservers();
+        setupImageView();
+        setupCheckoutButton();
+        setupTotalSum();
+        setupItemLabel();
+        setupDeliveryPrice();
+        setupBorder();
+    }
     
-    private func setUp(){
-        //iphone 5s: 320x 568
+    fileprivate func addObservers(){
+        let name = Notification.Name(rawValue: addedMenuItemNotification);
+        let removeName = Notification.Name(rawValue: removeMenuItemNotification);
+        let updateBottomBarName = Notification.Name(rawValue: updateBottomBarNotification);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleAddFoodItem(notification:)), name: name, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleRemoveFoodItem(notification:)), name: removeName, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleUpdateBottomBar(notification:)), name: updateBottomBarName, object: nil);
+    }
+    
+    fileprivate func setupImageView(){
         self.addSubview(imageView);
+        imageView.isUserInteractionEnabled = true;
         //we need a x,y,width,height
         imageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true;
         imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true;
@@ -90,8 +118,11 @@ class MenuBottomBar: UIView{
             imageView.heightAnchor.constraint(equalToConstant: 60).isActive = true;
         }
         
-        
-        //setUp checkOutButton
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.handleCartPressed));
+        imageView.addGestureRecognizer(gestureRecognizer);
+    }
+    
+    fileprivate func setupCheckoutButton(){
         self.addSubview(checkoutButton);
         //need x,y,width,andheight
         checkoutButton.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true;
@@ -106,33 +137,40 @@ class MenuBottomBar: UIView{
             checkoutButton.heightAnchor.constraint(equalToConstant: 60).isActive = true;
         }
         
-        //setup Price
+        checkoutButton.addTarget(self, action: #selector(self.checkout), for: .touchUpInside);
+    }
+    
+    fileprivate func setupTotalSum(){
         self.addSubview(totalSum);
         totalSum.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 10).isActive = true;
         totalSum.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true;
         totalSum.widthAnchor.constraint(equalToConstant: 150).isActive = true;
         totalSum.heightAnchor.constraint(equalToConstant: 20).isActive = true;
-        
-        //setUp number
-        self.addSubview(item);
+    }
+    
+    fileprivate func setupItemLabel(){
+        self.addSubview(itemLabel);
         if(UIScreenHeight != 568){
-            item.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 75).isActive = true;
-            item.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true;
+            itemLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 75).isActive = true;
+            itemLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true;
         }else{
-            item.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 50).isActive = true;
-            item.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true;
+            itemLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 50).isActive = true;
+            itemLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true;
         }
-        item.widthAnchor.constraint(equalToConstant: 20).isActive = true;
-        item.heightAnchor.constraint(equalToConstant: 20).isActive = true;
-        
+        itemLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true;
+        itemLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true;
+    }
+    
+    fileprivate func setupDeliveryPrice(){
         self.addSubview(deliveryPriceLabel);
         //need x,y,width,height
         deliveryPriceLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 10).isActive = true;
         deliveryPriceLabel.topAnchor.constraint(equalTo: self.totalSum.bottomAnchor).isActive = true;
         deliveryPriceLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true;
         deliveryPriceLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true;
-        
-        //set up border
+    }
+    
+    fileprivate func setupBorder(){
         let border = UIView();
         border.translatesAutoresizingMaskIntoConstraints = false;
         border.backgroundColor = UIColor.lightGray;
@@ -150,23 +188,25 @@ class MenuBottomBar: UIView{
     required init?(coder aDecoder: NSCoder) {
         fatalError();
     }
+    
+    
     func getNumber()-> Int{
         return itemNumber;
     }
     
     func addItem(){
         itemNumber = itemNumber + 1;
-        self.item.text = String(itemNumber);
+        self.itemLabel.text = String(itemNumber);
     }
     
     func subItem(){
         itemNumber = itemNumber - 1;
-        self.item.text = String(itemNumber);
+        self.itemLabel.text = String(itemNumber);
     }
     
     func setItem(number: Int){
         itemNumber = number;
-        self.item.text = String(itemNumber);
+        self.itemLabel.text = String(itemNumber);
     }
     
     func setTotalSum(sum: Double){
@@ -183,5 +223,72 @@ class MenuBottomBar: UIView{
     
     func setFreeOrderDeliveryPrice(){
         self.deliveryPriceLabel.text = "Delivery Price: 1 free order";
+    }
+    
+    func addItemPrice(foodPrice: Double){
+        self.totalPrice += foodPrice;
+        let formatedPrice = String(format: "%.2f", totalPrice);
+        self.totalSum.text = "Total: $\(formatedPrice)"
+        
+    }
+    
+    func removeItemPrice(foodPrice: Double){
+        self.totalPrice -= foodPrice;
+        let formatedPrice = String(format: "%.2f", totalPrice);
+        self.totalSum.text = "Total: $\(formatedPrice)"
+    }
+}
+
+extension MenuBottomBar{
+    @objc func handleAddFoodItem(notification: NSNotification){
+        
+        if let userInfo = notification.userInfo{
+            
+            let foodPrice = userInfo["foodPrice"]!;
+            let hasOptions = userInfo["hasOptions"] as! Bool;
+//            print(foodPrice);
+            if(!hasOptions){
+                self.addItem();
+                self.addItemPrice(foodPrice: foodPrice as! Double);
+            }
+        }
+    }
+    
+    @objc func handleRemoveFoodItem(notification: NSNotification){
+        if let userInfo = notification.userInfo{
+            let foodPrice = userInfo["foodPrice"]!;
+//            let foodID = userInfo["foodID"];
+            let options = userInfo["hasOptions"] as! Bool;
+            if(!options){
+                self.subItem();
+                self.removeItemPrice(foodPrice: foodPrice as! Double);
+            }
+            
+        }
+    }
+    
+    @objc func handleUpdateBottomBar(notification: NSNotification){
+        if let userInfo = notification.userInfo{
+            let foodPrice = userInfo["foodPrice"]!;
+            self.addItem();
+            self.addItemPrice(foodPrice: foodPrice as! Double);
+        }
+    }
+    
+    @objc func updateBottomBarSubtractSpecialOption(foodPrice: Double){
+        self.subItem();
+        self.removeItemPrice(foodPrice: foodPrice);
+    }
+    
+    @objc func handleCartPressed(){
+        if let delegate = self.menuBottomBarDelegate{
+            delegate.handleShowPopUpMenu();
+        }
+    }
+    
+    @objc func checkout(){
+        if let delegate = self.menuBottomBarDelegate{
+            delegate.handleCheckout(deliveryPrice: self.deliveryPrice, totalSum: self.totalPrice);
+        }
     }
 }

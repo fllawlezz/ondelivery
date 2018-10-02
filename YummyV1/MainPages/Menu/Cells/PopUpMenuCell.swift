@@ -15,6 +15,8 @@ class PopUpMenuCell: UICollectionViewCell{
     var numberOfItems: Int?
     var mainFoodPrice: Double?
     var foodName: String?
+    var foodID: Int?
+    var hasOptions: Bool?
     
     //variables
     var foodNameLabel: UILabel = {
@@ -65,10 +67,20 @@ class PopUpMenuCell: UICollectionViewCell{
     required init?(coder aDecoder: NSCoder) {
         fatalError();
     }
-    
+
     
     private func setup(){
         //food name
+        setupFoodNameLabel();
+        //add button
+        setupAddButton();
+        setupQuantityLabel();
+        setupMinusButton();
+        setupBorder();
+    }
+    
+    
+    fileprivate func setupFoodNameLabel(){
         self.addSubview(foodNameLabel);
         //need x,y,width,and height
         foodNameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
@@ -76,9 +88,9 @@ class PopUpMenuCell: UICollectionViewCell{
         foodNameLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true;
         foodNameLabel.heightAnchor.constraint(equalToConstant: 25).isActive = true;
         foodNameLabel.backgroundColor = UIColor.white;
-        
-        //add button
-
+    }
+    
+    fileprivate func setupAddButton(){
         self.addSubview(addButton);
         //need x,y,width,height
         addButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
@@ -88,17 +100,18 @@ class PopUpMenuCell: UICollectionViewCell{
         addButton.layer.cornerRadius = 17.5;
         addButton.backgroundColor = UIColor.appYellow;
         addButton.addTarget(self, action: #selector(self.addItem), for: .touchUpInside);
-        
-        //quanityt
+    }
+    
+    fileprivate func setupQuantityLabel(){
         self.addSubview(quantity);
         //need x,y,width,height
         quantity.rightAnchor.constraint(equalTo: addButton.leftAnchor, constant: -5).isActive = true;
         quantity.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true;
         quantity.widthAnchor.constraint(equalToConstant: 30).isActive = true;
         quantity.heightAnchor.constraint(equalToConstant: 25).isActive = true;
-        
-        //minus button
-        
+    }
+    
+    fileprivate func setupMinusButton(){
         self.addSubview(minusButton);
         //need x,y,width,height
         minusButton.rightAnchor.constraint(equalTo: quantity.leftAnchor, constant: -5).isActive = true;
@@ -106,8 +119,9 @@ class PopUpMenuCell: UICollectionViewCell{
         minusButton.widthAnchor.constraint(equalToConstant: 35).isActive = true;
         minusButton.heightAnchor.constraint(equalToConstant: 35).isActive = true;
         minusButton.addTarget(self, action: #selector(self.subtractItem), for: .touchUpInside);
-        
-        //Border
+    }
+    
+    fileprivate func setupBorder(){
         self.addSubview(border);
         //need x,y,width,and height
         border.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true;
@@ -130,147 +144,15 @@ class PopUpMenuCell: UICollectionViewCell{
     }
     
     @objc func addItem(){
-        let bottomBar = menuPopup?.menuPage?.menuBottomBar
-        
-        var count = 0;
-        var menuItemArray = menuPopup?.menuPage?.menuItemArray;
-        while(count < menuItemArray!.count){
-            let mainItem = menuItemArray![count];
-            if(mainItem.name == self.foodNameLabel.text!){
-                if(mainItem.hasOptions){
-                    //go to the optionsPage
-                    handleLoadOptions(foodID: Int(mainItem.id!)!, foodPrice: self.mainFoodPrice!);
-                }else{
-                    numberOfItems! += 1;
-                    self.quantity.text = String(numberOfItems!);
-//                    let foodItem = mainItem.foodItems[0];
-                    let newFoodItem = FoodItem(foodName: self.foodName!, foodPrice: self.mainFoodPrice!, hasOptions: false);
-                    
-                    mainItem.addQuantity(giveQuantity: 1);
-                    mainItem.addPrice(price: self.mainFoodPrice!);
-                    mainItem.foodItems.append(newFoodItem);
-                    
-                    var orderTotal = menuPopup?.menuPage?.totalPrice;
-                    orderTotal = orderTotal! + newFoodItem.foodPrice!;
-                    menuPopup?.menuPage?.totalPrice = orderTotal!;
-                    bottomBar?.setTotalSum(sum: orderTotal!);
-                    
-                    var bottomBarItemTotal = bottomBar?.getNumber();//number of items
-                    bottomBarItemTotal = bottomBarItemTotal! + 1;
-                    bottomBar?.setItem(number: bottomBarItemTotal!);
-                    
-                    
-                    return;
-                }
-            }
-            count+=1;
-        }
+        let name = Notification.Name(rawValue: addedMenuItemNotification);
+        let info = ["foodID": self.foodID!, "foodPrice": self.mainFoodPrice!, "foodName": self.foodName!, "hasOptions": self.hasOptions!] as [String : Any];
+        NotificationCenter.default.post(name: name, object: nil, userInfo: info);
     }
     
     @objc func subtractItem(){
-        if(numberOfItems! > 0){
-            numberOfItems! -= 1;
-            self.quantity.text = String(numberOfItems!);
-            let bottomBar = menuPopup?.menuPage?.menuBottomBar
-            
-            var count = 0;
-            var menuItemArray = menuPopup?.menuPage?.menuItemArray;
-            while(count < menuItemArray!.count){
-                let mainFoodItem = menuItemArray![count];
-                if(mainFoodItem.name == self.foodNameLabel.text!){
-//                    print("mainFoodItemCount:\(mainFoodItem.foodItems.count)");
-                    let foodItem = mainFoodItem.foodItems.removeLast();
-                    mainFoodItem.subtractQuantity(giveQuantity: 1);
-                    mainFoodItem.subtractPrice(price: foodItem.foodPrice!);
-                    
-                    var orderTotal = menuPopup?.menuPage?.totalPrice;
-                    orderTotal = orderTotal! - foodItem.foodPrice!;
-                    menuPopup?.menuPage?.totalPrice = orderTotal!;
-                    
-                    bottomBar?.setTotalSum(sum: orderTotal!);
-                    
-                    var bottomBarItemTotal = bottomBar?.getNumber();//number of items
-                    bottomBarItemTotal = bottomBarItemTotal! - 1;
-                    bottomBar?.setItem(number: bottomBarItemTotal!);
-                    
-                    return;
-                }
-                count+=1;
-            }
-        }
-    }
-    
-    fileprivate func handleLoadOptions(foodID: Int, foodPrice: Double){
-        let conn = Conn();
-        let postBody = "FoodID=\(foodID)"
-        conn.connect(fileName: "LoadOptions.php", postString: postBody) { (result) in
-            if(urlData != nil){
-                do{
-                    let json = try JSONSerialization.jsonObject(with: urlData!, options: .allowFragments) as! NSDictionary;
-                    //                    print(json);
-                    let numSections = json["numberOfSections"] as! String;
-                    //                    let foodOptionSections = json["foodOptionSection"] as! NSArray;
-                    let extraFoodNames = json["extraFoodNames"] as! NSArray;
-                    let extraFoodPrices = json["extraFoodPrices"] as! NSArray;
-                    let extraFoodIDs = json["extraFoodIDs"] as! NSArray;
-                    let sectionNames = json["sectionNames"] as! NSArray;
-                    
-                    DispatchQueue.main.async {
-                        let numberOfSections = Int(numSections)!
-                        
-                        var count = 0;
-                        var optionsBySection = [[SpecialOption]]();
-                        while(count < extraFoodNames.count){
-                            var sectionOfFoods = [SpecialOption]();
-                            
-                            let foodNameOptions = extraFoodNames[count] as! NSArray;
-                            let foodPriceOptions = extraFoodPrices[count] as! NSArray;
-                            let extraFoodIDs = extraFoodIDs[count] as! NSArray;
-                            
-                            var count2 = 0;
-                            while(count2<foodNameOptions.count){
-                                let currentFoodNameOption = foodNameOptions[count2] as? String;
-                                let currentFoodPriceOption = foodPriceOptions[count2] as? String;
-                                let currentFoodID = extraFoodIDs[count2] as? String;
-                                let currentFoodIDInt = Int(currentFoodID!);
-                                
-                                let option = SpecialOption();
-                                option.specialOptionName = currentFoodNameOption!;
-                                option.specialOptionPrice = Double(currentFoodPriceOption!);
-                                option.specialOptionID = currentFoodIDInt;
-                                
-                                sectionOfFoods.append(option);
-                                
-                                count2+=1;
-                            }
-                            count2 = 0;
-                            optionsBySection.append(sectionOfFoods);
-                            count+=1;
-                        }
-                        var sectionNameArray = [String]()
-                        for sectionName in sectionNames{
-                            let sectionName = sectionName as! String
-                            sectionNameArray.append(sectionName);
-                        }
-                        
-                        let foodIDInt =  foodID;
-                        
-                        let specialOptions = SpecialOptionsPage();
-                        specialOptions.mainFoodName = self.foodNameLabel.text!;
-                        specialOptions.mainFoodPrice = foodPrice;
-                        specialOptions.mainFoodID = foodIDInt;
-                        specialOptions.numberOfSections = numberOfSections;
-                        specialOptions.specialOptions = optionsBySection;
-                        specialOptions.sectionHeaders = sectionNameArray;
-                        specialOptions.menuPage = self.menuPopup?.menuPage;
-                        self.menuPopup?.menuPage?.navigationController?.pushViewController(specialOptions, animated: true);
-                        
-                    }
-                }catch{
-                    print("error");
-                }
-            }
-        }
+        let name = Notification.Name(rawValue: removeMenuItemNotification);
+        let info = ["foodID": self.foodID!, "foodPrice":self.mainFoodPrice!, "hasOptions": self.hasOptions!] as [String : Any];
+        NotificationCenter.default.post(name: name, object: nil, userInfo: info);
     }
     
 }

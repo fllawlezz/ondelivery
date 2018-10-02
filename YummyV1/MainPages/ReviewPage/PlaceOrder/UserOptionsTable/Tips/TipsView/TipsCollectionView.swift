@@ -8,11 +8,14 @@
 
 import UIKit
 
+let updateTipsValueNotification = "updateTipsValueNotification"
+let showTipsAlert = "showTipsAlert";
+
 class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, TipsCollectionViewCellDelegate{
     
     var placeOrderPage: PlaceOrderPage?
-    
-    let percentageArray = ["10","15","20","Other"];
+    var totalSum: Double?;
+    let percentageArray = [10.0,15.0,20.0,0];
     let reuseOne = "one";
     let reuseTwo = "two";
     
@@ -42,7 +45,7 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
             cell.setButtonTitle(percentage: percentageArray[indexPath.item]);
             cell.cellIndex = indexPath.item;
             cell.delegate = self;
-//            cell.tipsCollectionView = self;
+
             return cell;
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTwo, for: indexPath) as! TipsShowTotalCell;
@@ -77,7 +80,29 @@ class TipsCollectionView: UICollectionView, UICollectionViewDelegate, UICollecti
 }
 
 extension TipsCollectionView{
-    func handleSelectedTip(cellIndex: Int) {
+    func handleSelectedTip(cellIndex: Int, percentage: Double) {
+        deselectAllCells()
+        
+        let indexPath = IndexPath(item: cellIndex, section: 0);
+        let cell = self.cellForItem(at: indexPath) as! TipsCollectionViewCell;
+        cell.selectButton();
+        
+        if(cellIndex == 3){
+            //present tip alert
+            let name = Notification.Name(rawValue: showTipsAlert);
+            NotificationCenter.default.post(name: name, object: nil);
+            return;
+        }
+        
+        if let totalSum = self.totalSum{
+            let tipTotal = totalSum * percentage;
+            let name = Notification.Name(rawValue: updateTipsValueNotification);
+            let userInfo = ["tipTotal":tipTotal]
+            NotificationCenter.default.post(name: name, object: nil, userInfo: userInfo);
+        }
+    }
+    
+    fileprivate func deselectAllCells(){
         var count = 0;
         while(count < percentageArray.count){
             let indexPath = IndexPath(item: count, section: 0);
@@ -85,9 +110,5 @@ extension TipsCollectionView{
             cell.unselectButton();
             count+=1;
         }
-        
-        let indexPath = IndexPath(item: cellIndex, section: 0);
-        let cell = self.cellForItem(at: indexPath) as! TipsCollectionViewCell;
-        cell.selectButton();
     }
 }

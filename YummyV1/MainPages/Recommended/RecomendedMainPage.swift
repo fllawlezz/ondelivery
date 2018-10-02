@@ -117,9 +117,6 @@ class RecomendedMainPage: UIViewController, UICollectionViewDelegate, UICollecti
             cell.setPrice(price: 3.99);
             cell.setDistance(dist: restaurant.restaurantDistance!);
             //            cell.seeMenu.addTarget(self, action: #selector(self.tappedCell), for: .touchUpInside);
-            cell.btnTapAction = {
-                self.tappedCell(index: indexPath);
-            }
             return cell;
         }else{
             let cell = self.recommendedList.dequeueReusableCell(withReuseIdentifier: identifier3, for: indexPath) as! NoRestaurantsCell;

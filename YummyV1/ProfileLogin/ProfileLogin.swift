@@ -43,11 +43,13 @@ class ProfileLogin: UIViewController, UITextFieldDelegate, CLLocationManagerDele
     
     lazy var skipButton: UIBarButtonItem = {
         let skipButton = UIBarButtonItem(title: "Skip", style: .plain, target: self, action: #selector(self.skipFunction)); // change action
+        skipButton.tintColor = UIColor.white;
         return skipButton;
     }()
     
     lazy var cancelButton: UIBarButtonItem = {
         let cancelButton = UIBarButtonItem(title: "cancel", style: .plain, target: self, action: #selector(self.cancelFunction)); //change action
+        cancelButton.tintColor = UIColor.white;
         return cancelButton;
     }()
     

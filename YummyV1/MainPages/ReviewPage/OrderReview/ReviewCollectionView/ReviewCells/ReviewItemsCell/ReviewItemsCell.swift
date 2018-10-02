@@ -10,6 +10,12 @@ import UIKit
 
 class ReviewItemsCell: UICollectionViewCell{
     
+    var menuItemArray: [MainItem]?{
+        didSet{
+            reviewCollectionView.menuItemArray = menuItemArray;
+        }
+    }
+    
     lazy var reviewCollectionView: ReviewItemsCollectionView = {
         let layout = UICollectionViewFlowLayout();
         let reviewCollectionView = ReviewItemsCollectionView(frame: .zero, collectionViewLayout: layout);
@@ -20,6 +26,7 @@ class ReviewItemsCell: UICollectionViewCell{
         super.init(frame: frame);
         self.backgroundColor = UIColor.white;
         setupCollectionView();
+//        print(menuItemArray!.count);
     }
     
     required init?(coder aDecoder: NSCoder) {

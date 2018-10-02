@@ -11,9 +11,15 @@ import UIKit
 import Stripe
 import CoreData
 
+protocol AddPaymentPageDelegate{
+    func paymentAdded();
+}
+
 class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
     //STPPaymentCardTextField
     var selectPaymentPage: SelectPaymentPage?
+    
+    var addPaymentPageDelegate: AddPaymentPageDelegate?;
     
     var payment: STPPaymentCardTextField = {
         let payment = STPPaymentCardTextField();
@@ -168,6 +174,9 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
                         print("error");
                     }
                     self.selectPaymentPage?.creditCardTable.reloadData();
+                    if let delegate = self.addPaymentPageDelegate{
+                        delegate.paymentAdded()
+                    }
                     self.navigationController?.popViewController(animated: true);
                 }
             })
@@ -187,14 +196,17 @@ class AddPaymentPage: UIViewController, STPPaymentCardTextFieldDelegate{
             cardObject.setValue(nickName, forKey: "nickName");
             cardObject.setValue(main!, forKey: "mainCard");
 //
-//////            do{
-//////                try context.save();
-            cCards.append(cardObject);
-//            }catch{
-//                print("error");
-//            }
+            do{
+                try context?.save();
+                cCards.append(cardObject);
+            }catch{
+                print("error");
+            }
 //            print(cCards.count);
             self.selectPaymentPage?.creditCardTable.reloadData();
+            if let delegate = self.addPaymentPageDelegate{
+                delegate.paymentAdded()
+            }
             self.navigationController?.popViewController(animated: true);
         }
         

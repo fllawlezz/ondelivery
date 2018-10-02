@@ -15,4 +15,20 @@ class Customer: NSObject{
     var customerSubPlan: String?
     var customerID: String?
     var customerFreeOrders: Int?
+    
+    func isNil()->Bool{
+        if(customerName == nil){
+            return true;
+        }
+        
+        if(customerPhone == nil){
+            return true;
+        }
+        
+        if(customerEmail == nil){
+            return true;
+        }
+        
+        return false;
+    }
 }

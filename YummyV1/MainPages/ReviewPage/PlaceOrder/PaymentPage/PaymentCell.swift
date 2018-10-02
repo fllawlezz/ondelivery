@@ -27,8 +27,15 @@ class PaymentCell: UICollectionViewCell{
         return border;
     }()
     
-    var paymentTitle: String?
-    var paymentDetails: String?
+//    var paymentTitle: String?
+//    var paymentDetails: String?
+    
+    var nickName: String?;
+    var last4: String?;
+    var cardNumber: String?;
+    var cvc: String?;
+    var cardID: String?;
+    var expirationDate: String?;
     
     override init(frame: CGRect) {
         super.init(frame: frame);
@@ -66,11 +73,24 @@ class PaymentCell: UICollectionViewCell{
         border.heightAnchor.constraint(equalToConstant: 0.3).isActive = true;
     }
     
-    func setData(paymentTitle: String, paymentDetails: String){
-        self.paymentTitle = paymentTitle;
-        self.paymentDetails = paymentDetails;
-        self.paymentTitleLabel.text = paymentTitle;
-        self.paymentDetailsLabel.text = paymentDetails;
+//    func setData(paymentTitle: String, paymentDetails: String){
+//        self.paymentTitle = paymentTitle;
+//        self.paymentDetails = paymentDetails;
+//        self.paymentTitleLabel.text = paymentTitle;
+//        self.paymentDetailsLabel.text = paymentDetails;
+//    }
+    
+    func setData(cardNum: String, expirationDate: String, cvc: String, last4: String, nickName: String, cardID: String){
+        self.paymentTitleLabel.text = nickName;
+        self.paymentDetailsLabel.text = "...\(last4)";
+        
+        self.nickName = nickName;
+        self.last4 = last4;
+        self.cardID = cardID;
+        
+        self.cardNumber = cardNum;
+        self.expirationDate = expirationDate;
+        self.cvc = cvc;
     }
     
 }

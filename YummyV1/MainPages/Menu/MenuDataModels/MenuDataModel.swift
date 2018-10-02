@@ -9,7 +9,6 @@
 import UIKit
 
 class Menu {
-    
     var menu = [MenuDataItem]();
     var menuID: String?
     var sectionItems = [SectionItem]();

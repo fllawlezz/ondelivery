@@ -9,7 +9,7 @@
 import UIKit
 
 protocol AddressListDelegate{
-    func didSelectAddress(addressTitle: String, addressDetails: String);
+    func didSelectAddress(address: String, city: String, zipcode: String, state: String);
 }
 
 class AddressList: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
@@ -33,18 +33,34 @@ class AddressList: UICollectionView, UICollectionViewDelegate, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! UserOptionAddressCell
-        cell.setAddressTitle(addressTitle: "3421 13th Ave");
-        cell.setAddressDetails(addressDetails: "Oakland,CA 94610");
+//        cell.setAddressTitle(addressTitle: "3421 13th Ave");
+//        cell.setAddressDetails(addressDetails: "Oakland,CA 94610");
+        let addressObject = addresses[indexPath.item];
+        let address = addressObject.value(forKey: "address") as! String;
+        let city = addressObject.value(forKey: "city") as! String;
+        let state = addressObject.value(forKey: "state") as! String;
+        let zipcode = addressObject.value(forKey: "zipcode") as! String;
+        
+        cell.setAddressTitle(address: address);
+        cell.setAddressDetails(city: city, zipcode: zipcode, state: state);
+        
+//        cell.setAddressTitle(addressTitle: address);
+//        cell.setAddressDetails(addressDetails: "\(city),\(state) \(zipcode)")
         return cell;
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! UserOptionAddressCell;
-        self.addressListDelegate?.didSelectAddress(addressTitle: cell.addressTitleString!, addressDetails: cell.addressDetailsString!);
+//        self.addressListDelegate?.didSelectAddress(addressTitle: cell.addressTitleString!, addressDetails: cell.addressDetailsString!);
+        self.addressListDelegate?.didSelectAddress(address: cell.address!, city: cell.city!, zipcode: cell.zipcode!, state: cell.state!);
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1;
+        if(addresses.count > 0){
+            return addresses.count;
+        }else{
+            return 0;
+        }
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

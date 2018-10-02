@@ -24,9 +24,11 @@ class SpecialInstructionsCell: UICollectionViewCell, UITextViewDelegate{
         let instructionsField = UITextView();
         instructionsField.translatesAutoresizingMaskIntoConstraints = false;
         instructionsField.font = .systemFont(ofSize: 14);
-        instructionsField.textColor = UIColor.black;
+        instructionsField.textColor = UIColor.lightGray;
         instructionsField.layer.borderColor = UIColor.lightGray.cgColor;
         instructionsField.layer.borderWidth = 1;
+        instructionsField.text = "Special Instructions";
+        instructionsField.returnKeyType = .done;
         return instructionsField;
     }()
     
@@ -55,15 +57,37 @@ class SpecialInstructionsCell: UICollectionViewCell, UITextViewDelegate{
         instructionsField.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true;
         instructionsField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true;
         instructionsField.topAnchor.constraint(equalTo: self.specialInstructionsLabel.bottomAnchor, constant: 10).isActive = true;
-//        instructionsField.heightAnchor.constraint(equalToConstant: 25).isActive = true;
         instructionsField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true;
         instructionsField.delegate = self;
     }
     
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if (text == "\n") {
+            self.instructionsField.resignFirstResponder();
+            let keyboardDown = Notification.Name(rawValue: specialInstructionsKeyboardDown);
+            NotificationCenter.default.post(name: keyboardDown, object: nil);
+            return false
+        }
+        return true
+    }
+    // hides text fields
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if (string == "\n") {
+            self.instructionsField.resignFirstResponder();
+            let keyboardDown = Notification.Name(rawValue: specialInstructionsKeyboardDown);
+            NotificationCenter.default.post(name: keyboardDown, object: nil);
+            return false
+        }
+        return true
+    }
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
-//        print("editing");
+        if(textView.text == "Special Instructions"){
+            self.instructionsField.textColor = UIColor.black;
+            self.instructionsField.text = "";
+        }
+        
         let name = Notification.Name(rawValue: specialInstructionsKeyboardUp);
         NotificationCenter.default.post(name: name, object: nil);
     }
-    
 }

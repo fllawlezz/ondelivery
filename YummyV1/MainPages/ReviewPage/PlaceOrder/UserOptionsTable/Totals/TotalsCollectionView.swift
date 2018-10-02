@@ -13,19 +13,17 @@ class TotalsCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
     let reuseOne = "one";
     let descriptionTitles = ["Delivery Fee", "Tax and Fees","Total"]
     
-    var deliveryTotal: Double?;
-    var taxTotal: Double?;
-    var feeTotal: Double?;
-    
-    var orderTotal:Double?;
-    var taxAndFees: Double?;
+    var deliveryTotal: Double?
+    var orderTotal:Double?
+    var taxAndFees: Double?
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
-        taxAndFees = 7.99
-        deliveryTotal = 3.99;
-        orderTotal = 21.00
+        taxAndFees = 0;
+        deliveryTotal = 0;
+        orderTotal = 0;
         
         super.init(frame: frame, collectionViewLayout: layout);
+        addObservers();
         self.translatesAutoresizingMaskIntoConstraints = false;
         self.delegate = self;
         self.dataSource = self;
@@ -41,13 +39,29 @@ class TotalsCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
         fatalError();
     }
     
+    deinit{
+        NotificationCenter.default.removeObserver(self);
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! TotalsCollectionViewCell;
         cell.setDescription(description: descriptionTitles[indexPath.item])
         switch(indexPath.item){
-        case 0: cell.setTotal(total: deliveryTotal!);break;
-        case 1: cell.setTotal(total: taxAndFees!);break;
-        case 2: cell.setTotal(total: orderTotal!);break;
+        case 0:
+            if let deliveryTotal = self.deliveryTotal{
+                cell.setTotal(total: deliveryTotal);
+            }
+            break;
+        case 1:
+            if let taxAndFees = self.taxAndFees{
+                cell.setTotal(total: taxAndFees);
+            }
+            break;
+        case 2:
+            if let orderTotal = self.orderTotal{
+                cell.setTotal(total: orderTotal);
+            }
+            break;
         default: break;
         }
         return cell;
@@ -73,7 +87,36 @@ class TotalsCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
         return CGSize(width: self.frame.width, height: 25);
     }
     
+    fileprivate func addObservers(){
+        let notification = Notification.Name(rawValue: updateTipsValueNotification);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateTotal(notification:)), name: notification, object: nil);
+    }
     
+    @objc fileprivate func updateTotal(notification: NSNotification){
+        if let info = notification.userInfo{
+            let tipTotal = info["tipTotal"] as! Double;
+            //            self.totalSum += tipTotal;
+            let newTotal = self.orderTotal! + tipTotal;
+            setOrderTotal(orderTotal: newTotal);
+            
+        }
+    }
     
+}
+
+extension TotalsCollectionView{
+    fileprivate func setDeliveryFee(deliveryFee: Double){
+        let cell = self.cellForItem(at: IndexPath(item: 0, section: 0)) as! TotalsCollectionViewCell;
+        cell.setTotal(total: deliveryFee);
+    }
     
+    fileprivate func setTaxAndFees(taxAndFees:Double){
+        let cell = self.cellForItem(at: IndexPath(item: 1, section: 0)) as! TotalsCollectionViewCell;
+        cell.setTotal(total: taxAndFees);
+    }
+    
+    fileprivate func setOrderTotal(orderTotal: Double){
+        let cell = self.cellForItem(at: IndexPath(item: 2, section: 0)) as! TotalsCollectionViewCell;
+        cell.setTotal(total: orderTotal);
+    }
 }

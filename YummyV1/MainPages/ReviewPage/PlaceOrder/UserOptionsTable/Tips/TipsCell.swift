@@ -11,17 +11,23 @@ import UIKit
 class TipsCell: UICollectionViewCell{
     
     var placeOrderPage: PlaceOrderPage?
+    var totalSum: Double?{
+        didSet{
+            tipsCollectionView.totalSum = self.totalSum;
+        }
+    }
     
     lazy var tipsCollectionView: TipsCollectionView = {
         let layout = UICollectionViewFlowLayout();
         let tipsCollectionView = TipsCollectionView(frame: .zero, collectionViewLayout: layout);
         tipsCollectionView.placeOrderPage = self.placeOrderPage;
+        tipsCollectionView.totalSum = self.totalSum;
         return tipsCollectionView;
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame);
-//        self.backgroundColor = UIColor.red;
+//        print(totalSum!);
         setupCollectionView();
     }
     
@@ -35,6 +41,8 @@ class TipsCell: UICollectionViewCell{
         tipsCollectionView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true;
         tipsCollectionView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true;
         tipsCollectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true;
+        
+        
     }
     
 }

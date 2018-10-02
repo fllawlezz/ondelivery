@@ -14,11 +14,13 @@ protocol UserOptionsTableDelegate{
     func toDeliveryTimePage();
     func toPaymentPage();
     func toCredentialsPage();
+    func setAddress(userAddress: UserAddress);
+    func setDeliveryTime(deliveryTime: String);
+    func setPaymentCard(paymentCard: PaymentCard);
 }
 
 class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UserAddressPageDelegate, DeliveryTimePageDelegate, PaymentPageDelegate, CustomerCredentialsPageDelegate{
-    
-//    var placeOrderPage: PlaceOrderPage?;
+
     var userOptionsDelegate: UserOptionsTableDelegate?;
     
     let reuseOne = "one";
@@ -31,25 +33,35 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     
     let sectionTitles = ["Your Info","Tip","Totals"];
     
-    var userAddress: UserAddress?;
-    var deliveryTime: String?;
-    var paymentCard: PaymentCard?;
+    var userAddress: UserAddress?{
+        didSet{
+            self.setAddress();
+        }
+    }
+    var deliveryTime: String?{
+        didSet{
+            self.setDeliveryTime();
+        }
+    }
+    var paymentCard: PaymentCard?{
+        didSet{
+            self.setPaymentCard();
+        }
+    }
     
     var customer: Customer?;
     
     var orderTotal: Double?;
+    var deliveryCharge: Double?;
+    var taxesAndFees: Double?;
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout);
-        orderTotal = 22.00
-//        user = User(firstName: "Brandon", lastName: "In", userID: "2", email: "fllawlezz@gmail.com", telephone: "(510)-289-6877", subscriptionPlan: "NONE", freeOrders: 0);
-//        user = nil;
         if(user == nil){
             customer = Customer();
+            customer?.customerID = "1";
         }
-//        customer?.customerEmail = "hi";
-//        customer?.customerName = "what";
-//        customer?.customerPhone = "555555";
+        
         self.translatesAutoresizingMaskIntoConstraints = false;
         self.dataSource = self;
         self.delegate = self;
@@ -94,9 +106,13 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
             return cell;
         }else if (indexPath.section == 1){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseTwo, for: indexPath) as! TipsCell;
+            cell.totalSum = self.orderTotal!;
             return cell;
         }else{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseThree, for: indexPath) as! UserOptionTotalsCell;
+            cell.totalSum = self.orderTotal!+self.deliveryCharge!+self.taxesAndFees!;
+            cell.deliveryCharge = self.deliveryCharge;
+            cell.taxAndFees = self.taxesAndFees;
             return cell;
         }
     }
@@ -162,7 +178,6 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
     }
     
     func selectAddress(){
-//        let selectAddress = SelectAddress();
         userOptionsDelegate?.toAddressPage();
     }
     
@@ -181,32 +196,51 @@ class UserOptionsTable: UICollectionView, UICollectionViewDelegate, UICollection
 }
 
 extension UserOptionsTable{
-    func didSelectAddress(selectedAddress: SelectedAddress) {
-//        if(user != nil){
-            let cell = self.cellForItem(at: IndexPath(item: 0, section: 0)) as! UserOptionCell;
-            cell.setOption(option: selectedAddress.addressTitle!);
-//        }
+    func didSelectAddress(selectedAddress: UserAddress) {
+        let cell = self.cellForItem(at: IndexPath(item: 0, section: 0)) as! UserOptionCell;
+        cell.setOption(option: selectedAddress.address!);
+        
+        let address = UserAddress();
+        address.address = selectedAddress.address;
+        address.city = selectedAddress.city;
+        address.zipcode = selectedAddress.zipcode;
+        address.state = selectedAddress.state;
+        
+        self.userAddress = address;
     }
+    
     
     func handleSubmitTime(deliveryTime: String) {
-//        if(user != nil){
-            let cell = self.cellForItem(at: IndexPath(item: 1, section: 0)) as! UserOptionCell;
-            cell.setOption(option: deliveryTime);
-//        }
+        let cell = self.cellForItem(at: IndexPath(item: 1, section: 0)) as! UserOptionCell;
+        cell.setOption(option: deliveryTime);
+        
+        self.deliveryTime = deliveryTime;
     }
     
-    func selectedPayment(paymentTitle: String) {
-//        if(user != nil){
-            let cell = self.cellForItem(at: IndexPath(item: 2, section: 0)) as! UserOptionCell;
-            cell.setOption(option: paymentTitle);
-//        }
+    func selectedPayment(cardNum: String, last4: String, cvc: String, expirationDate: String, nickName: String, cardID: String) {
+        let cell = self.cellForItem(at: IndexPath(item: 2, section: 0)) as! UserOptionCell;
+        cell.setOption(option: "...\(last4)");
+        
+        let paymentCard = PaymentCard();
+        paymentCard.cardID = cardID;
+        paymentCard.cardNumber = cardNum;
+        paymentCard.expirationDate = expirationDate;
+        paymentCard.cvcNumber = cvc;
+        paymentCard.nickName = nickName;
+        paymentCard.last4 = last4;
+        
+        self.paymentCard = paymentCard;
     }
+    
+
 
     func handleSaveCustomerInfo(customerName: String, customerPhone: String, customerEmail: String) {
         self.customer?.customerName = customerName;
         self.customer?.customerPhone = customerPhone;
         self.customer?.customerEmail = customerEmail;
+        
         var count = 3;
+        
         while(count<6){
             let cellIndexPath = IndexPath(item: count, section: 0);
             let cell = self.cellForItem(at: cellIndexPath) as! UserOptionCell;
@@ -218,6 +252,25 @@ extension UserOptionsTable{
             default: break;
             }
             count+=1;
+        }
+    }
+    
+    fileprivate func setAddress(){
+        if let delegate = self.userOptionsDelegate{
+            delegate.setAddress(userAddress: self.userAddress!);
+        }
+        
+    }
+    
+    fileprivate func setDeliveryTime(){
+        if let delegate = self.userOptionsDelegate{
+            delegate.setDeliveryTime(deliveryTime: self.deliveryTime!);
+        }
+    }
+    
+    fileprivate func setPaymentCard(){
+        if let delegate = self.userOptionsDelegate{
+            delegate.setPaymentCard(paymentCard: self.paymentCard!);
         }
     }
     

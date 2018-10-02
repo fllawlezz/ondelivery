@@ -16,7 +16,7 @@ class ReviewItemCell: UICollectionViewCell{
     }()
     
     var quantityLabel: NormalUILabel = {
-        let quantityLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratBold(fontSize: 14), textAlign: .center);
+        let quantityLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratSemiBold(fontSize: 14), textAlign: .center);
         return quantityLabel;
     }()
     
@@ -86,7 +86,10 @@ class ReviewItemCell: UICollectionViewCell{
     func setItemData(itemName: String, itemQuantity: Int, itemTotalCost: Double){
         self.itemNameLabel.text = itemName;
         self.quantityLabel.text = "x\(itemQuantity)"
-        self.itemTotalCostLabel.text = "$\(itemTotalCost)";
+        
+        let formatString = String(format:"%.2f",itemTotalCost);
+        
+        self.itemTotalCostLabel.text = "$\(formatString)";
     }
     
 }

@@ -14,9 +14,9 @@ import CallKit
 //var totalSum = 0.00;
 //var menuItemArray = [MenuItem]();//saves the menu items that are added when added into an array
 
-var pageNum = 1;// page num is for the navigation bar
+//var pageNum = 1;// page num is for the navigation bar
 
-class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate{
+class MenuPage: UIViewController, UIGestureRecognizerDelegate, MenuCollectionViewDelegate, MenuPopUpDelegate, MenuBottomBarDelegate, SpecialOptionsPageDelegate, MenuSideBarDelegate{
     
     var selectedRestaurant: Restaurant?;
     var menuItemArray = [MainItem]()
@@ -42,7 +42,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     
     //UI elements
     
-    lazy var navBar: MenuNavBar = {
+    lazy var menuNavBar: MenuNavBar = {
         let navBar = MenuNavBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 40));
         navBar.backgroundColor = UIColor.red;
         navBar.menuPage = self;
@@ -53,7 +53,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         let bottomBar = MenuBottomBar();
         bottomBar.deliveryPrice = 0;
         bottomBar.backgroundColor = UIColor.white;
-        bottomBar.checkoutButton.addTarget(self, action: #selector(self.checkOut), for: .touchUpInside);
+//        bottomBar.checkoutButton.addTarget(self, action: #selector(self.checkOut), for: .touchUpInside);
         return bottomBar;
     }()
     
@@ -61,7 +61,6 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         let popUpMenu = MenuPopUp();
         popUpMenu.translatesAutoresizingMaskIntoConstraints = false;
         popUpMenu.totalPrice = self.totalPrice;
-        popUpMenu.menuPage = self;
         return popUpMenu;
     }()
     
@@ -69,8 +68,14 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         let darkView = UIView();
         darkView.translatesAutoresizingMaskIntoConstraints = false;
         darkView.backgroundColor = UIColor.black;
-        darkView.alpha = 0.0;
+        darkView.alpha = 0;
         return darkView;
+    }()
+    
+    lazy var menuCollectionView: MenuCollectionView = {
+        let layout = UICollectionViewFlowLayout();
+        let menuCollectionView = MenuCollectionView(frame: .zero, collectionViewLayout: layout);
+        return menuCollectionView;
     }()
     
     
@@ -117,22 +122,44 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
     
     
     override func viewDidLoad() {
-        pageNum = 1;
+        self.view.backgroundColor = UIColor.veryLightGray;
+        addObservers();
+        
+        setupNavBar();
+        
+        setupCustomer();
+        calculateDeliveryFee();
+        
+        setData();
+        setupMenuNavBar();
+        setupMenuBottomBar();
+        setupMenuCollectionView();
+        
+        setupSidebar();
+        setupSectionsBox();
+        
+        setupDarkView();
+        setupPopUpMenu();
+        
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self);
+    }
+    
+    func addObservers(){
+        let addName = Notification.Name(rawValue: addedMenuItemNotification);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addMenuItem(notification:)), name: addName, object: nil);
+        
+        let removeName = Notification.Name(rawValue: removeMenuItemNotification);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.removeFoodItem(notification:)), name: removeName, object: nil);
+    }
+    
+    fileprivate func setupNavBar(){
         
         let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);
         navigationItem.backBarButtonItem = leftBackButton;
         navigationItem.title = "\(selectedRestaurant!.restaurantTitle!)";
-        
-        setupCustomer();
-        calculateDeliveryFee();
-        self.view.backgroundColor = UIColor.white;
-        let inset = UIEdgeInsets(top: 40, left: 0, bottom: 60, right: 0);
-        self.collectionView?.contentInset = inset;
-        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 40, left: 0, bottom: 60, right: 0);
-        self.collectionView?.backgroundColor = UIColor.white;
-        
-        setData();
-        setup();
     }
     
     fileprivate func setupCustomer(){
@@ -153,6 +180,27 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }
     }
     
+    fileprivate func setupMenuCollectionView(){
+        self.view.addSubview(menuCollectionView);
+        //need x,y,width,and height
+        menuCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        menuCollectionView.topAnchor.constraint(equalTo: self.menuNavBar.bottomAnchor).isActive = true;
+        menuCollectionView.bottomAnchor.constraint(equalTo: self.menuBottomBar.topAnchor).isActive = true;
+        menuCollectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
+        
+        menuCollectionView.foods = self.allFoodsArray;
+        
+        if let sectionItems = self.menu?.sectionItems{
+            menuCollectionView.sectionItems = sectionItems;
+        }
+        
+        if let selectedRestaurant = self.selectedRestaurant{
+            menuCollectionView.selectedRestaurant = selectedRestaurant;
+        }
+        
+        menuCollectionView.menuItemArray = self.menuItemArray;
+    }
+    
     fileprivate func setBottomBarDeliveryPrice(){
         if(customer.customerFreeOrders! > 0 && totalPrice <= 20){
             menuBottomBar.setFreeOrderDeliveryPrice();
@@ -161,58 +209,44 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }
     }
     
-    fileprivate func setup(){
-        self.view.addSubview(navBar);
+    fileprivate func setupMenuNavBar(){
+        self.view.addSubview(menuNavBar);
+        menuNavBar.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
+        menuNavBar.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
+        menuNavBar.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
+        menuNavBar.heightAnchor.constraint(equalToConstant: 40).isActive = true;
+        
+        menuNavBar.menuNavBarDelegate = menuCollectionView;
+    }
+    
+    fileprivate func setupMenuBottomBar(){
         //set up the bottom bar
-        menuBottomBar.translatesAutoresizingMaskIntoConstraints = false;
         self.view.addSubview(menuBottomBar);
         menuBottomBar.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         menuBottomBar.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
         menuBottomBar.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
         menuBottomBar.heightAnchor.constraint(equalToConstant: 60).isActive = true;//60
         
+        menuBottomBar.menuBottomBarDelegate = self;
+        
         menuBottomBar.setTotalSum(sum: totalPrice);
         self.menuBottomBar.setItem(number: 0);
-        
         setBottomBarDeliveryPrice();
-        
-        //        tap gesture to show menu view for when the cart is clicked
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.showCart));
-        tapGesture.numberOfTapsRequired = 1;
-        menuBottomBar.imageView.isUserInteractionEnabled = true;
-        menuBottomBar.imageView.addGestureRecognizer(tapGesture);
-        
-        //collectionView initialization
-        let layout = UICollectionViewFlowLayout();
-        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 30);
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout);
-        collectionView.translatesAutoresizingMaskIntoConstraints = false;
-        collectionView.backgroundColor = UIColor.white;
-        collectionView.delegate = self;
-        collectionView.dataSource = self;
-        collectionView.register(MenuCell.self, forCellWithReuseIdentifier: self.reuseIdentifier);
-        self.collectionView?.register(InfoCell.self, forCellWithReuseIdentifier: reuseIdentifier2);
-        collectionView.register(CollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseIdentifier3);
-        self.view.addSubview(collectionView);
-        //need x,y,width,and height
-        collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
-        collectionView.topAnchor.constraint(equalTo: self.navBar.bottomAnchor).isActive = true;
-        collectionView.bottomAnchor.constraint(equalTo: self.menuBottomBar.topAnchor).isActive = true;
-        collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
-        
+    }
+    
+    fileprivate func setupDarkView(){
         self.view.addSubview(darkView);
         darkView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
         darkView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true;
         darkView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true;
         darkView.rightAnchor.constraint(equalTo:self.view.rightAnchor).isActive = true;
         darkView.isUserInteractionEnabled = true;
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(self.darkViewTouhced));
+        
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(self.darkViewTouched));
         darkView.addGestureRecognizer(gesture);
-        
-        setupSidebar();
-        setupSectionsBox();
-        
-        //popUpMenu
+    }
+    
+    fileprivate func setupPopUpMenu(){
         self.view.addSubview(popUpMenu);
         //need x,y,width,height anchor
         yAnchor = popUpMenu.topAnchor.constraint(equalTo: self.view.bottomAnchor);
@@ -221,10 +255,10 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         popUpMenu.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true;
         popUpMenu.heightAnchor.constraint(equalToConstant: 300).isActive = true;
         
+        popUpMenu.itemArray = self.menuItemArray;
+        popUpMenu.menuPopUpDelegate = self;
+        
         self.view.bringSubview(toFront: menuBottomBar);
-        
-        navBar.setCollectionViewReference(collectionView: collectionView);
-        
     }
     
     fileprivate func setupSidebar(){
@@ -239,9 +273,12 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         sideBarBackground.addGestureRecognizer(gestureRecognizer);
         
         
+        
         sideBar = MenuSideBar(sectionItems: self.menu!.sectionItems);
         sideBar?.translatesAutoresizingMaskIntoConstraints = false;
         sideBar!.menuPage = self;
+        sideBar?.menuSideBarDelegate = self;
+        
         self.view.addSubview(sideBar!);
         sideBarLeftAnchorConstraint = sideBar!.leftAnchor.constraint(equalTo:self.view.leftAnchor, constant: -1000);
         sideBarLeftAnchorConstraint!.isActive = true;
@@ -269,6 +306,7 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         imageView.rightAnchor.constraint(equalTo: sectionsBox.rightAnchor).isActive = true;
         imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true;
         imageView.centerYAnchor.constraint(equalTo: self.sectionsBox.centerYAnchor).isActive = true;
+        
     }
     
     //MARK: addressDeliveryFee
@@ -330,39 +368,8 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }
     }
     
-    
-    @objc func showCart(sender: UITapGestureRecognizer){
-        if(menuItemArray.count == 0){
-            popUpMenu.collectionView.isHidden = true;
-        }else{
-            popUpMenu.collectionView.isHidden = false;
-        }
-        self.popUpMenu.collectionView.reloadData();
-        UIView.animate(withDuration: 0.3) {
-            self.darkView.alpha = 0.7;
-            self.yAnchor.constant = -360;
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    @objc func checkOut(){
-        if(menuItemArray.count > 0){
-            let reviewPage = ReviewPage();
-            reviewPage.deliveryPrice = self.deliveryPrice;
-            reviewPage.totalPrice = self.totalPrice;
-            reviewPage.mainItems = self.menuItemArray;
-            reviewPage.customer = self.customer;
-            reviewPage.selectedRestaurant = self.selectedRestaurant!;
-            
-            let leftBackButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil);
-            navigationController?.navigationBar.topItem?.backBarButtonItem = leftBackButton;
-            navigationController?.pushViewController(reviewPage, animated: true);
-        }
-    }
-    
-    @objc func darkViewTouhced(){
-        minusSearchArray();
-        self.collectionView?.reloadData();
+    @objc func darkViewTouched(){
+        self.menuCollectionView.reloadData();
         //go through the array list and remove any with teh quantity of zero
         UIView.animate(withDuration: 0.3) {
             self.darkView.alpha = 0;
@@ -384,90 +391,24 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         }
     }
     
-    //MARK: FoodsList
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        //Page Num is not 3
-        if(pageNum != 3){
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MenuCell;
-            //model CELL: shown = false, hidden
-            cell.menuPage = self;
-//            cell.options = false;
-            cell.buttonShown = false;//set shown = to false.
-            cell.hideButton();//hide the minus and the label
-            cell.setQuantity(quantity: 0);//reset the quantity to zero
-            
-            if(pageNum == 1){
-                //if hotFoods
-                let foodArray = allFoodsArray[currentSection];
-                let food = foodArray[indexPath.item];
-                cell.setName(name: food.name!);
-                cell.setPrice(charge: food.price!);
-                cell.setFoodID(id: food.id!);
-                cell.foodImage.image = food.image!;
-                cell.setDescription(description: food.descript!);
-                if(food.options == "Y"){
-                    cell.options = true;
-                }else{
-                    cell.options = false;
-                }
-                //if food is selected then set orders and
-                
-            }else if(pageNum == 2){
-                //do that
-                var count = 0;//count to run through array
-                while(count<allFoodsArray.count){
-                    if(indexPath.section == count){
-                        let sectionArray = allFoodsArray[count];
-                        let food = sectionArray[indexPath.item];
-                        
-                        cell.setName(name: food.name!);
-                        cell.setPrice(charge: food.price!);
-                        cell.setFoodID(id: food.id!);
-                        cell.foodImage.image = food.image!;
-                        cell.setDescription(description: food.descript!);
-                        
-                        if(food.options == "Y"){
-                            cell.options = true;
-                        }else{
-                            cell.options = false;
-                        }
-                    }
-                    count+=1;
-                }
-            }
-            
-            //MARK: Hide/unhide minus button and update quantity
-            for item in self.menuItemArray{//for every item in the menuItemArray
-                if(item.name == cell.foodNameLabel.text!){//if the names are the same
-                    if(item.quantity != 0){
-                        cell.buttonShown = true;//shown = true to notify that the cell minus and plus are unhidden
-                        cell.unhideAddButton();//make sure to unhide the minus and the quantity indicator
-                        cell.setQuantity(quantity: item.quantity);//set the quantity to the actual menu Item quantity
-                    }
-                }
-            }
-            return cell;
-        }else{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier2, for: indexPath) as! InfoCell;
-            if(indexPath.item == 0){
-                cell.setTitle(text: self.selectedRestaurant!.restaurantTelephone!);
-                cell.phoneImage.isHidden = false;
-                cell.makeCallClosure = {
-                    self.makeCall();
-                }
-            }else if(indexPath.item == 1){
-                cell.setTitle(text: self.selectedRestaurant!.restaurantAddress!);
-                cell.phoneImage.isHidden = true;
-            }else{
-                cell.setTitle(text: "\(self.selectedRestaurant!.restaurantOpenHour!)-\(self.selectedRestaurant!.restaurantCloseHour!)");
-                cell.phoneImage.isHidden = true;
-            }
-            
-            return cell;
+}
+
+extension MenuPage{
+    func handleCheckout(deliveryPrice: Double, totalSum: Double) {
+        if(self.menuItemArray.count > 0){
+            let orderReviewPage = OrderReviewPage();
+            orderReviewPage.restaurant = self.selectedRestaurant;
+            orderReviewPage.menuItemArray = self.menuItemArray;
+            orderReviewPage.totalSum = totalSum;
+            orderReviewPage.deliveryCharge = self.deliveryPrice;
+            self.navigationController?.pushViewController(orderReviewPage, animated: true);
         }
     }
-    
-    private func makeCall(){
+}
+
+
+extension MenuPage{
+    func makeCall(){
         let actionSheet = UIAlertController(title: nil, message: "Call Restaurant?", preferredStyle: .actionSheet);
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil);
         let callAction = UIAlertAction(title: "Call", style: .default) { (action) in
@@ -482,69 +423,255 @@ class MenuPage: UIViewController, UICollectionViewDelegate, UICollectionViewData
         self.present(actionSheet, animated: true, completion: nil);
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if(pageNum == 2){
-            return CGSize(width: self.view.frame.width, height: 30);
+    func updateItemArray() {
+        self.popUpMenu.itemArray = self.menuItemArray;
+        if(self.menuItemArray.count > 0){
+            self.popUpMenu.showCollectionView();
         }else{
-            return CGSize(width: self.view.frame.width, height: 30);
+            self.popUpMenu.hideCollectionView();
         }
     }
     
-    
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if(pageNum == 1){
-            return 1;
-        }else if(pageNum == 2){
-            return allFoodsArray.count;
-        }else if(pageNum == 3){
-            return 1
-        }else{
-            return 1;
+    func handleShowPopUpMenu() {
+        UIView.animate(withDuration: 0.3) {
+            self.yAnchor.constant = -360;
+            self.darkView.alpha = 0.7;
+            self.view.layoutIfNeeded();
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if(pageNum == 1){
-            let array = allFoodsArray[currentSection];
-            return array.count;
-        }else if(pageNum == 2){
-            let array = allFoodsArray[section];
-            return array.count;
-        }else if(pageNum == 3){
-            return 3;
+    func addSpecialFood(mainFoodName: String, mainFoodID: String, mainFoodPrice: Double, orderItemTotal: Double, selectedOptions: [SpecialOption]){
+        //mainFoodName, orderItemTotal, has options
+        for mainItem in menuItemArray{
+            if(mainFoodName == mainItem.name){
+                let foodItem = FoodItem(foodName: mainFoodName, foodPrice: orderItemTotal, hasOptions: true);
+                for option in selectedOptions{
+                    let appendedOption = SpecialOption();
+                    appendedOption.specialOptionName = option.specialOptionName;
+                    appendedOption.specialOptionPrice = option.specialOptionPrice;
+                    appendedOption.specialOptionID = option.specialOptionID;
+                    
+                    foodItem.options.append(appendedOption);
+                }
+                
+                mainItem.foodItems.append(foodItem);
+                mainItem.addPrice(price: orderItemTotal);
+                mainItem.addQuantity(giveQuantity: 1);
+                //update bottom bar
+                updateBottomBar(foodPrice: orderItemTotal);
+                reloadCollectionViews();
+                return;
+            }
         }
-        return 1;
+        
+        //not in the menuItemArray
+        addNewSpecialFood(mainFoodName: mainFoodName, mainFoodID: mainFoodID, mainFoodPrice: mainFoodPrice, orderItemTotal: orderItemTotal, selectedOptions: selectedOptions);
+       
+    }
+    
+    func addNewSpecialFood(mainFoodName: String, mainFoodID: String, mainFoodPrice: Double, orderItemTotal: Double, selectedOptions: [SpecialOption]){
+        let orderItem = MainItem(name: mainFoodName, price: 0, quantity: 1);
+        orderItem.id = String(mainFoodID);
+        orderItem.itemPrice = mainFoodPrice;
+        orderItem.hasOptions = true;
+        orderItem.addPrice(price: orderItemTotal);
+        
+        let foodItem = FoodItem(foodName: mainFoodName, foodPrice: orderItemTotal, hasOptions: true);
+        for option in selectedOptions{
+            let appendedOption = SpecialOption();
+            appendedOption.specialOptionName = option.specialOptionName;
+            appendedOption.specialOptionPrice = option.specialOptionPrice;
+            appendedOption.specialOptionID = option.specialOptionID;
+            
+            foodItem.options.append(appendedOption);
+        }
+        orderItem.foodItems.append(foodItem);
+        menuItemArray.append(orderItem);
+        //update bottom bar
+        updateBottomBar(foodPrice: orderItemTotal);
+        reloadCollectionViews();
+    }
+    
+    fileprivate func updateBottomBar(foodPrice: Double){
+        let name = Notification.Name(rawValue: updateBottomBarNotification);
+        let info = ["foodPrice":foodPrice]
+        NotificationCenter.default.post(name: name, object: nil, userInfo: info);
+    }
+    
+    func reloadCollectionViews() {
+        self.menuCollectionView.menuItemArray = self.menuItemArray;
+        menuCollectionView.reloadData();
+        self.updateItemArray();
+        
+        
     }
     
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if(pageNum != 3){
-            return CGSize(width: self.view.frame.width, height: 110);
-        }else{
-            return CGSize(width: self.view.frame.width, height: 40);
+    @objc func removeFoodItem(notification: NSNotification){
+        //search through array to find the name
+        if let info = notification.userInfo{
+            let foodID = info["foodID"] as! Int
+            let options = info["hasOptions"] as! Bool
+            
+            var count = 0;
+            while(count<menuItemArray.count){
+                let food = menuItemArray[count];
+                if(food.id == "\(foodID)"){
+                    let subtractedFood = food.foodItems.removeLast();//last food item
+                    food.subtractQuantity(giveQuantity: 1);
+                    food.subtractPrice(price: subtractedFood.foodPrice!);
+                    if(options){
+                        self.menuBottomBar.updateBottomBarSubtractSpecialOption(foodPrice: subtractedFood.foodPrice!);
+                    }
+                    if(food.quantity == 0){
+                        menuItemArray.remove(at: count);
+                        self.popUpMenu.collectionView.reloadData();
+                    }
+                }
+                count += 1;
+            }
+            self.menuCollectionView.menuItemArray = self.menuItemArray;
         }
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: reuseIdentifier3, for: indexPath) as! CollectionViewHeader;
-        headerView.frame.size.height = 30;
-        headerView.backgroundColor = UIColor.veryLightGray;
-        if(pageNum == 1){
-            let sectionItem = self.menu!.sectionItems[self.currentSection];
-            let sectionName = sectionItem.sectionTitle!;
-            headerView.setTitle(string: sectionName);
-        }else if(pageNum == 2){
-            let index = indexPath.section;
-            let sectionItem = self.menu!.sectionItems[index];
-            let sectionName = sectionItem.sectionTitle!;
-            headerView.setTitle(string: sectionName);
+    @objc func addMenuItem(notification: NSNotification){
+        if let userInfo = notification.userInfo{
+            let foodID = userInfo["foodID"] as! Int;
+            let foodPrice = userInfo["foodPrice"] as! Double
+            let foodName = userInfo["foodName"] as! String
+            let hasOptions = userInfo["hasOptions"] as! Bool;
+            
+            if(hasOptions){
+//                print("load options");
+                self.handleLoadOptions(foodID: foodID, foodName: foodName, foodPrice: foodPrice);
+                return;
+            }
+
+            for food in menuItemArray{
+                if(food.id == "\(foodID)"){
+                    food.addQuantity(giveQuantity: 1);
+                    food.addPrice(price: foodPrice);
+                    
+                    let foodItem = FoodItem(foodName: foodName, foodPrice: foodPrice, hasOptions: false);
+                    food.foodItems.append(foodItem);
+                    self.menuCollectionView.menuItemArray = self.menuItemArray;
+                    
+                    //update bottom bar
+                    
+                    return;
+                }
+            }
+            
+            let orderItem = MainItem(name: foodName, price: foodPrice, quantity: 1);
+            orderItem.id = "\(foodID)";
+            orderItem.itemPrice = foodPrice;
+            let foodItem = FoodItem(foodName: foodName, foodPrice: foodPrice, hasOptions: false);
+            orderItem.foodItems.append(foodItem);
+            menuItemArray.append(orderItem);
+            self.menuCollectionView.menuItemArray = self.menuItemArray;
         }
-        return headerView;
+        
     }
     
+    func selectSection(currentSection: Int) {
+        self.menuNavBar.moveLine(item: 0);
+        self.menuCollectionView.currentSection = currentSection;
+        self.menuCollectionView.pageNum = 0;
+        self.menuCollectionView.reloadData();
+        self.sideBarAnimate();
+    }
     
 }
 
+extension MenuPage{
+    
+    fileprivate func showError(){
+        let alert = UIAlertController(title: "Ugh-Oh!!", message: "There was a problem connecting to our servers! Please try again later", preferredStyle: .alert);
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
+            self.navigationController?.popViewController(animated: true);
+        }))
+    }
+    
+    func handleLoadOptions(foodID: Int, foodName: String, foodPrice: Double ){
+        let url = URL(string: "https://ondeliveryinc.com/LoadOptions.php");
+        var request = URLRequest(url: url!);
+        let postBody = "FoodID=\(foodID)"
+        request.httpMethod = "POST";
+        request.httpBody = postBody.data(using: .utf8);
+        let task = URLSession.shared.dataTask(with: request) { (data, response, errorOrNil) in
+            if errorOrNil != nil{
+                DispatchQueue.main.async {
+                    self.showError();
+                }
+            }
+            if(data != nil){
+                do{
+                    let json = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! NSDictionary;
+                    //                    print(json);
+                    let numSections = json["numberOfSections"] as! String;
+                    let extraFoodNames = json["extraFoodNames"] as! NSArray;
+                    let extraFoodPrices = json["extraFoodPrices"] as! NSArray;
+                    let extraFoodIDs = json["extraFoodIDs"] as! NSArray;
+                    let sectionNames = json["sectionNames"] as! NSArray;
+                    
+                    DispatchQueue.main.async {
+                        let numberOfSections = Int(numSections)!
+                        print(numberOfSections);
+                        
+                        var count = 0;
+                        var optionsBySection = [[SpecialOption]]();
+                        while(count < extraFoodNames.count){
+                            var sectionOfFoods = [SpecialOption]();
+                            
+                            let foodNameOptions = extraFoodNames[count] as! NSArray;
+                            let foodPriceOptions = extraFoodPrices[count] as! NSArray;
+                            let extraFoodIDs = extraFoodIDs[count] as! NSArray;
+                            
+                            var count2 = 0;
+                            while(count2<foodNameOptions.count){
+                                let currentFoodNameOption = foodNameOptions[count2] as? String;
+                                let currentFoodPriceOption = foodPriceOptions[count2] as? String;
+                                let currentFoodID = extraFoodIDs[count2] as? String;
+                                let currentFoodIDInt = Int(currentFoodID!);
+                                
+                                let option = SpecialOption();
+                                option.specialOptionName = currentFoodNameOption!;
+                                option.specialOptionPrice = Double(currentFoodPriceOption!);
+                                option.specialOptionID = currentFoodIDInt;
+                                
+                                sectionOfFoods.append(option);
+                                
+                                count2+=1;
+                            }
+                            count2 = 0;
+                            optionsBySection.append(sectionOfFoods);
+                            count+=1;
+                        }
+                        
+                        var sectionNameArray = [String]()
+                        for sectionName in sectionNames{
+                            let sectionName = sectionName as! String
+                            sectionNameArray.append(sectionName);
+                        }
+                        
+                        let foodIDInt =  foodID;
+                        
+                        let specialOptions = SpecialOptionsPage();
+                        specialOptions.mainFoodName = foodName;
+                        specialOptions.mainFoodPrice = foodPrice;
+                        specialOptions.mainFoodID = foodIDInt;
+                        specialOptions.numberOfSections = numberOfSections;
+                        specialOptions.specialOptions = optionsBySection;
+                        specialOptions.sectionHeaders = sectionNameArray;
+                        specialOptions.delegate = self;
+                        self.navigationController?.pushViewController(specialOptions, animated: true);
+                        
+                    }
+                }catch{
+                    print("error");
+                }
+            }
+        }
+        task.resume();
+    }
+}

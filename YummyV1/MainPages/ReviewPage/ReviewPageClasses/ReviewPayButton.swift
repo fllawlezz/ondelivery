@@ -60,34 +60,7 @@ class ReviewPayButton: UIButton{
         self.setTitle(buttonTitle, for: .normal);
     }
     
-    fileprivate func getOrderDetails(){
-        var count = 0;
-        while(count < mainItems!.count){
-            let mainItem = mainItems![count];
-            if(mainItem.hasOptions){
-                self.mainFoodHasOptions.append("Y");
-                //loop through foodItems and get each of the specialoptions and add them to an array
-                let itemOptions = getSpecialOptions(mainItem: mainItem);
-                self.mainFoodIDs.append(Int(mainItem.id)!);
-                self.mainFoodQuantities.append(mainItem.quantity);
-                self.optionIDs.append(itemOptions);
-            }else{
-                //get foodID and quantity
-                self.mainFoodHasOptions.append("N");
-                var count = 0;
-                var itemOptions = [[Int]]();
-                while(count < mainItem.quantity){
-                    let fakeOption = [0];
-                    itemOptions.append(fakeOption);
-                    count+=1;
-                }
-                self.mainFoodQuantities.append(mainItem.quantity);
-                self.mainFoodIDs.append(Int(mainItem.id)!);
-                self.optionIDs.append(itemOptions);
-            }
-            count+=1;
-        }
-    }
+    
     
     fileprivate func getSpecialOptions(mainItem: MainItem)->[[Int]]{
         var count = 0;
@@ -127,8 +100,6 @@ class ReviewPayButton: UIButton{
         //        print("pushed");
         renewOrderData();
         if(self.customer?.customerEmail != nil && self.customer?.customerName != nil && self.customer?.customerPhone != nil){
-            
-            getOrderDetails();
             
             if(user?.userID == nil && customer!.customerPhone! == "none" && customer!.customerName! == "none"){
                 let alert = UIAlertController(title: "Fill out all required fields", message: "Fill out Address, Payment, etc..", preferredStyle: .alert);

@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol PlaceOrderButtonDelegate{
+    func placeOrder();
+}
+
 class PlaceOrderButton: NormalUIButton{
+    
+    var delegate: PlaceOrderButtonDelegate?;
     
     override init(backgroundColor: UIColor, title: String, font: UIFont, fontColor: UIColor) {
         super.init(backgroundColor: backgroundColor, title: title, font: font, fontColor: fontColor);
@@ -20,7 +26,9 @@ class PlaceOrderButton: NormalUIButton{
     }
     
     @objc func submitOrder(){
-        
+        if let delegate = self.delegate{
+            delegate.placeOrder();
+        }
     }
     
 }

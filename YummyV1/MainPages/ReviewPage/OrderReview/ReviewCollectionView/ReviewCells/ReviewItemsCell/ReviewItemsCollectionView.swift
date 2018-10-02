@@ -11,6 +11,11 @@ import UIKit
 class ReviewItemsCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     let reuseItem = "reuseItem";
+    var menuItemArray: [MainItem]?{
+        didSet{
+            self.reloadData();
+        }
+    }
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout);
@@ -28,10 +33,15 @@ class ReviewItemsCollectionView: UICollectionView, UICollectionViewDelegate, UIC
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseItem, for: indexPath) as! ReviewItemCell;
-        cell.setItemData(itemName: "Fried Rice", itemQuantity: 2, itemTotalCost: 15.25);
-//        if(indexPath.item == 2){
-//            cell.hideBorder();
-//        }
+        
+        if let itemArray = self.menuItemArray{
+            let foodItem = itemArray[indexPath.item];
+            let name = foodItem.name!;
+            let quantity = foodItem.quantity!;
+            let totalCost = foodItem.itemTotals!;
+            cell.setItemData(itemName: name, itemQuantity: quantity, itemTotalCost: totalCost);
+        }
+        
         return cell;
     }
     
@@ -40,7 +50,11 @@ class ReviewItemsCollectionView: UICollectionView, UICollectionViewDelegate, UIC
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 7;
+        if let itemArray = self.menuItemArray{
+            return itemArray.count;
+        }
+        
+        return 0;
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

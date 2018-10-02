@@ -14,6 +14,13 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
     let reuseDeliveryFeeCell = "deliveryFeeCell";
     let reuseServiceFeeCell = "serviceFeeCell";
     let reuseInstructionsCell = "sepcialInstructionsCell";
+    let reusePromoCode = "promoCodeCell";
+    
+    var menuItemArray: [MainItem]?;
+    
+    var totalSum: Double?;
+    var deliveryCharge: Double?;
+    var taxAndFees: Double?;
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout);
@@ -25,6 +32,8 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
         self.register(DeliveryFeeCell.self, forCellWithReuseIdentifier: reuseDeliveryFeeCell);
         self.register(ServiceFeeCell.self, forCellWithReuseIdentifier: reuseServiceFeeCell);
         self.register(SpecialInstructionsCell.self, forCellWithReuseIdentifier: reuseInstructionsCell);
+        self.register(PromoCodeCell.self, forCellWithReuseIdentifier: reusePromoCode);
+//        print(menuItemArray!.count)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -34,16 +43,26 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(indexPath.section == 0){
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseItemcell, for: indexPath) as! ReviewItemsCell;
-//            cell.setItemData(itemName: "Fried Rice", itemQuantity: 2, itemTotalCost: 15.25);
+            cell.menuItemArray = self.menuItemArray;
             return cell;
         }else if(indexPath.section == 1){
             if(indexPath.item == 0){
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusePromoCode, for: indexPath) as! PromoCodeCell
+                return cell;
+                
+            }else if (indexPath.item == 1){
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseDeliveryFeeCell, for: indexPath) as! DeliveryFeeCell;
-                cell.setDeliveryFee(deliveryFee: 3.99);
+//                cell.setDeliveryFee(deliveryFee: 3.99);
+                if let deliveryCharge = self.deliveryCharge{
+                    cell.setDeliveryFee(deliveryFee: deliveryCharge);
+                }
                 return cell;
             }else{
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseServiceFeeCell, for: indexPath) as! ServiceFeeCell;
-                cell.setServiceFeePrice(taxAndFees: 3.99+2.21);
+//                cell.setServiceFeePrice(taxAndFees: 3.99+2.21);
+                if let taxAndFees = self.taxAndFees{
+                    cell.setServiceFeePrice(taxAndFees: taxAndFees);
+                }
                 return cell;
             }
         }else{
@@ -58,9 +77,12 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if(section == 0){
+//            if let itemArray = self.menuItemArray{
+//                return itemArray.count;
+//            }
             return 1;//change to the amount of items in the mainItemArray
         }else if(section == 1){
-            return 2;
+            return 3;
         }else{
             return 1;
         }
@@ -92,6 +114,8 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
         }
     }
     
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let indexPath = IndexPath(item: 0, section: 2);
         let cell = self.cellForItem(at: indexPath) as! SpecialInstructionsCell;
@@ -101,6 +125,9 @@ class ReviewCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
             let keyboardDown = Notification.Name(rawValue: specialInstructionsKeyboardDown);
             NotificationCenter.default.post(name: keyboardDown, object: nil);
         }
+        
+        let name = Notification.Name(rawValue: resignPromoCodeNotification);
+        NotificationCenter.default.post(name: name, object: nil);
     }
     
 

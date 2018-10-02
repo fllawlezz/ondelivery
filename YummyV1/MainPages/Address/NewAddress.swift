@@ -10,9 +10,15 @@ import Foundation
 import UIKit
 import CoreData
 
+protocol NewAddressPageDelegate{
+    func reloadAddresses();
+}
+
 class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     var selectAddress: SelectAddress?
+    
+    var newAddressPageDelegate: NewAddressPageDelegate?;
     
     //MARK: UI Elements
     var titleMessage: UILabel = {
@@ -227,6 +233,10 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                             }
                             self.selectAddress?.addressList.reloadData();
                             //pop view controller
+                            if let delegate = self.newAddressPageDelegate{
+                                delegate.reloadAddresses();
+                            }
+                            
                             self.navigationController?.popViewController(animated: true);
                         }
                     }
@@ -242,10 +252,18 @@ class NewAddress: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, U
                 address.setValue(self.zipcodeField.text!, forKey: "zipcode");
                 address.setValue(self.stateField.text!, forKey: "state");
                 address.setValue(addressID, forKey: "addressID");
-
-                addresses.append(address);
+                
+                do{
+                    try context?.save();
+                    addresses.append(address);
+                }catch{
+                    print("error");
+                }
 
                 self.selectAddress?.addressList.reloadData();
+                if let delegate = self.newAddressPageDelegate{
+                    delegate.reloadAddresses();
+                }
                 self.navigationController?.popViewController(animated: true);
         }
     }

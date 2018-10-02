@@ -7,8 +7,27 @@
 //
 
 import UIKit
+import NotificationCenter
 
 class UserOptionTotalsCell: UICollectionViewCell{
+    
+    var totalSum: Double?{
+        didSet{
+            totalsCollectionView.orderTotal = self.totalSum;
+        }
+    }
+    
+    var deliveryCharge: Double?{
+        didSet{
+            totalsCollectionView.deliveryTotal = self.deliveryCharge;
+        }
+    }
+    
+    var taxAndFees: Double?{
+        didSet{
+            totalsCollectionView.taxAndFees = self.taxAndFees;
+        }
+    }
     
     lazy var totalsCollectionView: TotalsCollectionView = {
         let layout = UICollectionViewFlowLayout();
@@ -32,5 +51,4 @@ class UserOptionTotalsCell: UICollectionViewCell{
         totalsCollectionView.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true;
         totalsCollectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5).isActive = true;
     }
-    
 }

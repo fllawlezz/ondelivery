@@ -8,7 +8,15 @@
 
 import UIKit
 
-class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextViewDelegate{
+protocol SpecialOptionsPageDelegate{
+//    func reloadCollectionViews();
+//    func addExistedSpecialFood(mainFoodName: String, mainFoodID: String, mainFoodPrice: Double, orderItemTotal: Double, selectedOptions: [SpecialOption])
+    func addSpecialFood(mainFoodName: String, mainFoodID: String, mainFoodPrice: Double, orderItemTotal: Double, selectedOptions: [SpecialOption])
+}
+
+class SpecialOptionsPage: UIViewController, UITextViewDelegate{
+    
+    var delegate: SpecialOptionsPageDelegate?;
     
     var foodTitleLabel: NormalUILabel = {
         let foodTitleLabel = NormalUILabel(textColor: UIColor.black, font: UIFont.montserratSemiBold(fontSize: 18), textAlign: NSTextAlignment.left);
@@ -42,11 +50,17 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         return borderView;
     }()
     
-    var collectionView: UICollectionView!;
+    lazy var collectionView: SpecialOptionsCollectionView = {
+        let layout = UICollectionViewFlowLayout();
+        let collectionView = SpecialOptionsCollectionView(frame: .zero, collectionViewLayout: layout);
+        return collectionView;
+    }()
+    
+//    var collectionView: UICollectionView!;
     
     //Data
-    let reuseOne = "SpecialOptionsCell";
-    let reuseTwo = "SpecialOptionsHeader";
+    var mainItemArray:[MainItem]?
+    
     var specialOptions: [[SpecialOption]]!;
     var numberOfSections: Int!;
     var mainFoodName: String?;
@@ -54,7 +68,6 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     var mainFoodID: Int?;
     var specialInstructions: String?;
     var sectionHeaders: [String]!
-    var menuPage: MenuPage?
     var menuCell: MenuCell?
     var selectedIndexPaths = [IndexPath]();
     var selectedOptions = [SpecialOption]();
@@ -87,19 +100,15 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
     }
     
     fileprivate func collectionViewSetup(){
-        let layout = UICollectionViewFlowLayout();
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout);
-        collectionView.translatesAutoresizingMaskIntoConstraints = false;
-        collectionView.register(SpecialOptionsCell.self, forCellWithReuseIdentifier: reuseOne);
-        collectionView.register(SpecialOptionsHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseTwo);
-        collectionView.dataSource = self;
-        collectionView.delegate = self;
-        collectionView.backgroundColor = UIColor.white;
         self.view.addSubview(collectionView);
         collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true;
         collectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true;
         collectionView.topAnchor.constraint(equalTo: self.borderView.bottomAnchor, constant: 5).isActive = true;
         collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -125).isActive = true;
+        
+        collectionView.numOfSections = self.numberOfSections;
+        collectionView.specialOptions = self.specialOptions;
+        collectionView.sectionHeaders = self.sectionHeaders;
     }
     
     fileprivate func setUpButton(){
@@ -129,159 +138,34 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
         self.navigationController?.pushViewController(specialInstructions, animated: true);
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseOne, for: indexPath) as! SpecialOptionsCell;
-        let option = specialOptions[indexPath.section];
-        let specialOption = option[indexPath.item];
-        
-        cell.setPrice(price: 0);
-        
-        cell.setTitle(title: specialOption.specialOptionName);
-        if(specialOption.specialOptionPrice > 0){
-            cell.setPrice(price: specialOption.specialOptionPrice);
-        }
-        cell.hideCheckmark();
-        
-        for selectedIndexPath in self.selectedIndexPaths{
-            if(selectedIndexPath == indexPath){
-                cell.unhideCheckmark();
-            }
-        }
-        return cell;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! SpecialOptionsCell
-        //add the option to the menu
-        hideAllCheckMarks(section: indexPath.section);
-        self.selectedIndexPaths.append(indexPath);
-        cell.unhideCheckmark();
-    }
-    
-    fileprivate func hideAllCheckMarks(section: Int){
-        var count = 0;
-        
-        let numItemsInSection = specialOptions![section].count;
-        while(count < numItemsInSection){
-            let indexPath = IndexPath(item: count, section: section);
-            if let cell = collectionView.cellForItem(at: indexPath) as? SpecialOptionsCell{
-                 cell.hideCheckmark();
-            }
-            count += 1;
-        }
-        removeIndexPath(section: section);
-    }
-    
-    func removeIndexPath(section: Int){
-        var count = 0;
-        while(count<self.selectedIndexPaths.count){
-            let selectedIndex = self.selectedIndexPaths[count];
-            if(selectedIndex.section == section){
-                self.selectedIndexPaths.remove(at: count);
-                return;
-            }
-            count+=1;
-        }
-    }
-    
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return numberOfSections;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let optionArrayCount = self.specialOptions[section].count;
-        return optionArrayCount;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.view.frame.width, height: 40);
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: self.view.frame.width, height: 50);
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseTwo, for: indexPath) as! SpecialOptionsHeader;
-        header.setTitle(title: sectionHeaders[indexPath.section]);
-        return header;
-    }
-    
-
-    
     @objc func handleAddFood(){
-        if(selectedIndexPaths.count == numberOfSections){
-            handleItemExists();
-            if(!itemExists){
-                let orderItem = MainItem(name: self.mainFoodName!, price: 0, quantity: 1);
-                orderItem.id = String(self.mainFoodID!);
-                orderItem.itemPrice = self.mainFoodPrice!;
-                orderItem.hasOptions = true;
-                calculateFoodPrice();
-                orderItem.addPrice(price: self.orderItemTotal);
-                let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
-                for option in self.selectedOptions{
-                    let appendedOption = SpecialOption();
-                    appendedOption.specialOptionName = option.specialOptionName;
-                    appendedOption.specialOptionPrice = option.specialOptionPrice;
-                    appendedOption.specialOptionID = option.specialOptionID;
-                    
-                    foodItem.options.append(appendedOption);
-                }
-                orderItem.foodItems.append(foodItem);
-                self.menuPage?.menuItemArray.append(orderItem);
-                
-                if(menuCell != nil){
-                    updateMenuCell();
-                }else{
-                    self.menuPage?.collectionView.reloadData();
-                }
-                
-                handleMenuAddItem();
-                
-                self.menuPage?.navigationController?.popViewController(animated: true);
+        //get options
+        getOptions();
+//        self.selectedOptions = self.collectionView.selectedOptions;
+        if(selectedOptions.count > 0){
+            calculateFoodPrice();
+            
+            if let delegate = self.delegate{
+                delegate.addSpecialFood(mainFoodName: self.mainFoodName!, mainFoodID: "\(self.mainFoodID!)", mainFoodPrice: self.mainFoodPrice!, orderItemTotal: orderItemTotal, selectedOptions: selectedOptions);
             }
+            self.navigationController?.popViewController(animated: true);
+        }
+    }
+    
+    func getOptions(){
+        self.selectedIndexPaths = self.collectionView.selectedIndexPaths;
+        for indexPath in selectedIndexPaths{
+            let optionSection = specialOptions[indexPath.section];//this is the section
+            let specialOption = optionSection[indexPath.item];//specialOption
+            self.selectedOptions.append(specialOption);
         }
     }
     
     func handleItemExists(){
-        let mainItemArray = menuPage!.menuItemArray;//reference
-        for mainItem in mainItemArray{
-            if(self.mainFoodName == mainItem.name){
-                self.itemExists = true;
-                calculateFoodPrice();
-                let foodItem = FoodItem(foodName: self.mainFoodName!, foodPrice: orderItemTotal, hasOptions: true);
-                for option in self.selectedOptions{
-                    let appendedOption = SpecialOption();
-                    appendedOption.specialOptionName = option.specialOptionName;
-                    appendedOption.specialOptionPrice = option.specialOptionPrice;
-                    appendedOption.specialOptionID = option.specialOptionID;
-                    
-                    foodItem.options.append(appendedOption);
-                }
-                
-                mainItem.foodItems.append(foodItem);
-                mainItem.addPrice(price: orderItemTotal);
-                mainItem.addQuantity(giveQuantity: 1);
-                
-                if(menuCell != nil){
-                    updateMenuCell();
-                }else{
-                    self.menuPage?.collectionView.reloadData();
-                }
-                handleMenuAddItem();
-                self.menuPage?.navigationController?.popViewController(animated: true);
-            }
+        calculateFoodPrice();
+        
+        if let delegate = self.delegate{
+            delegate.addSpecialFood(mainFoodName: self.mainFoodName!, mainFoodID: "\(self.mainFoodID!)", mainFoodPrice: self.mainFoodPrice!, orderItemTotal: orderItemTotal, selectedOptions: selectedOptions);
         }
     }
     
@@ -299,40 +183,16 @@ class SpecialOptionsPage: UIViewController, UICollectionViewDelegate, UICollecti
             let currentIndexPath = selectedIndexPaths[count];
             let currentSection = self.specialOptions[currentIndexPath.section];
             let selectedOption = currentSection[currentIndexPath.item];//selected option
-            print(selectedOption.specialOptionPrice);
             
             orderItemTotal = orderItemTotal+selectedOption.specialOptionPrice;
             
             selectedOptions.append(selectedOption);
             count+=1;
         }
+        print(orderItemTotal);
+        
     }
     
-    private func handleMenuAddItem(){
-        let menuBottomBar = menuPage?.menuBottomBar;
-        let popUpMenu = menuPage?.popUpMenu;
-        var orderTotalSum = menuPage?.totalPrice;
-        let deliveryPrice = menuPage?.deliveryPrice;
-        let freeOrders = menuPage?.customer.customerFreeOrders!;
-        
-        orderTotalSum = orderTotalSum! + self.orderItemTotal;
-        self.menuPage?.totalPrice = orderTotalSum!;
-        
-        menuBottomBar?.addItem();
-        menuBottomBar?.setTotalSum(sum: orderTotalSum!);
-        popUpMenu?.totalPrice = orderTotalSum;
-        
-        if(orderTotalSum! > 20.0){
-            menuBottomBar?.setDeliveryPrice(price: deliveryPrice!);
-        }else if(orderTotalSum! <= 20 && freeOrders! > 0){
-            menuBottomBar?.setFreeOrderDeliveryPrice();
-        }
-        
-//        popUpMenu?.numberOfItems += 1;
-//                popUpMenu?.quantity.text = String(popUpMenu.numberOfItems!);
-
-        
-        menuPage?.popUpMenu.collectionView.reloadData();
-    }
+    
     
 }
